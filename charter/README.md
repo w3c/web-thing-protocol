@@ -1,0 +1,1 @@
+[W3C Web Thing Protocol Community Group Charter](https://web-thing-protocol.github.io/charter)

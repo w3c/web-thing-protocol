@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Web Thing Protocol</title>
+    <script
+     src='https://www.w3.org/Tools/respec/respec-w3c'
+     class='remove' async></script>
+    <script class='remove'>
+      var respecConfig = {
+        specStatus: "CG-DRAFT",
+        editors: [{
+          name: "Ben Francis",
+          company: "Krellian",
+          mailto: "ben@krellian.com",
+          companyURL: "https://krellian.com",
+        }],
+        subtitle: "Use Cases & Requirements",
+        gitHub: "w3c/web-thing-protocol",
+        shortName: "web-thing-protocol",
+        xref: true,
+        wg: "Web Thing Protocol Community Group",
+        wgPublicList: "public-web-thing-protocol",
+        wgURI: "https://www.w3.org/community/web-thing-protocol/"
+      };
+    </script>
+  </head>
+  <body>
+    <section id='abstract'>
+      <p>This document outlines the use cases and requirements for a common sub-protocol for the <a href="https://www.w3.org/WoT/">Web of Things</a>, to enable ad-hoc interoperability between WoT clients and WoT devices. This includes requirements for an HTTP sub-protocol and a WebSocket sub-protocol which define a standard way to monitor and control a connected device over the World Wide Web.</p>
+    </section>
+    <section id='sotd'>
+    </section>
+    <section id="introduction">
+      <h2>Introduction</h2>
+     <p>The goal of the <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is to define a standard way to communicate with connected devices using the World Wide Web, in order to provide a unifying application layer for the <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of Things</a> (IoT) and promote ad-hoc interoperability between devices.</p>
+     <p>The W3C [[WOT-THING-DESCRIPTION]] specification defines the first building block of the Web of Things, by defining an information model and data format for describing the capabilities of a connected device and the interfaces with which to communicate with it.</p>
+     <p>The Thing Description specification was designed to be protocol-agnostic and flexible enough to describe a broad range of existing devices, rather than specifying a fixed protocol or application programming interface (API) which all devices must implement. The downside of this open ended flexibility is that it makes ad-hoc interoperability on the Web of Things very difficult, because it's nearly impossible to create a single WoT client which is guaranteed to be able to communicate with any WoT device.</p>
+     <p>The Web Thing Protocol specification will be designed to complement the WoT Thing Description specification by defining a common sub-protocol for the Web of Things, such that any WoT client and WoT device which follow the specification will be able to communicate with each other.</p>
+     <p>The Web Thing Protocol specification will define an <a href="#http-sub-protocol">HTTP sub-protocol</a> which defines a standard way to communicate with a WoT device or "web thing" using the [[HTTP11]] protocol, and a <a href="#websocket-sub-protocol">WebSocket sub-protocol</a> which defines how to communicate with a web thing over the [[WEBSOCKETS-PROTOCOL]].</p>
+     <p>This document outlines the use cases and requirements for such a specification, based on existing Web of Things implementations and the collective experience of members of the Web Thing Protocol Community Group.</p>
+    </section>
+    <section id="use-cases">
+      <h2>Use Cases</h2>
+      <section>
+        <h3>WoT Clients</h3>
+        <p>A WoT client is a software agent which monitors and controls a connected device on behalf of a user. This may include but is not limited to mobile applications, desktop applications, voice agents and mixed reality agents.</p>
+        <section>
+          <h4>Things</h4>
+          <ol>
+            <li>As a WoT client developer I want to get a list of devices hosted by a web thing directory so that the user can monitor and control them.</li>
+            <li>As a WoT client developer I want to get a list of web things representing devices in the physical proximity of the client so that the user can monitor and control them.</li>
+            <li>As a WoT client developer I want to get a list of web things connected to the same local network as the client so that the user can monitor and control them.</li>
+            <li>As a WoT client developer I want to get the Thing Description (metadata) for a device so that I know what operations can be performed on it and how to carry out those operations.</li>
+            <li>As a WoT client developer I want to discover what (sub-)protocols and file formats a device supports so that I know whether my client can communicate with it or not.</li>
+            <li>As a WoT client developer I want to tell a WoT device in what languages I would prefer human-readable strings to be provided in so that I can provide the user with text they can understand.</li>
+            <li>As a WoT client developer I want to authenticate with a device so that my client can be authorised to monitor and control it.</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Properties</h4>
+          <ol>
+            <li>As a WoT client developer I want to read the property of a device or be notified when its value changes so I can report its state to the user or automatically carry out an operation based on its value.</li>
+            <li>As a WoT client developer I want to set the value of a property of a device so that I can change its physical state.</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Actions</h4>
+          <ol>
+            <li>As a WoT client developer I want to invoke an action on a device which modifies its state in such a way that can't be achieved by simply setting the value of a property. E.g. To carry out a function which takes a period of time to complete or has a different outcome based on provided arguments or current state.</li>
+            <li>As a WoT client developer I want to get a list of instances of actions requested on a device so that I can find out their status</li>
+            <li>As a WoT client developer I want to get the status of a requested action so that I can report its status back to the user or otherwise act on the basis of its status.</li>
+            <li>As a WoT client developer I want to cancel an action request so that I can prevent the outcome of the action from occuring before it is complete.</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Events</h4>
+          <ol>
+            <li>As a WoT client developer I want to be able to subscribe/unsubscribe to a particular type of event so I can choose which events I want to be notified of by a WoT device.</li>
+            <li>As a WoT client developer I want to be notified when an event is emitted by a device so that I can notify the user or react accordingly (e.g. if a safety limit is reached).</li>
+          </ol>
+        </section>
+      </section>
+      <section>
+        <h3>WoT Devices</h3>
+        <p>A WoT device or "web thing" is a virtual representation of a physical device on the web, which acts as a WoT server with which a WoT client can communicate. Examples might include an IP camera, a smart thermostat or an internet-connected robot.</p>
+        <section>
+          <h4>Things</h4>
+          <ol>
+            <li>As a WoT device developer I want to advertise the prescence of my device on a local network so that WoT clients can discover it</li>
+            <li>As a WoT device developer I want to advertise the prescence of my device to WoT clients in its physical proximity so that they can discover it</li>
+            <li>As a WoT device developer I want to report to WoT clients what (sub-)protocols and file formats my device supports so that they know whether they can communicate with the device</li>
+            <li>As a WoT device developer I want to know what languages a WoT client would prefer for a Thing Description so that I can provide human readable strings in the most appropriate language for the end user</li>
+            <li>As a WoT device developer I want to authenticate requests to my device so that only authorised clients can monitor and control it</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Properties</h4>
+          <ol>
+            <li>As a WoT device developer I want to be able to report the value of a property to a WoT client when the client requests its value or the value changes, so that the client can be kept up to date with the value of the property</li>
+            <li>As a WoT device developer I want to provide the ability for a WoT client to set the value of a property so that the client can affect a physical change in state of the device</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Actions</h4>
+          <ol>
+            <li>As a WoT device developer I want to change the physical state of the device in response to an action request from a WoT client which is more complex than simply setting the value of a property (e.g. an operation which takes a period of time to complete)</li>
+            <li>As a WoT device developer I want to provide a WoT client with a list of instances of requested actions on a device so that the client can find out their status</li>
+            <li>As a WoT device developer I want to be able to report the status of an action request to a WoT client when requested or when the status changes so that the client can be informed whether the action has been completed</li>
+            <li>As a WoT device developer I want to cancel a running action at the request of a WoT client so that an action can be stopped before it has completed</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Events</h4>
+          <ol>
+            <li>As a WoT device developer I want my WoT device to be informed when a WoT client wants to subscribe/unsubscribe to notifications of a particular type of event so that I only need to notify clients which have subscribed.</li>
+            <li>As a WoT device developer I want to be able to notify a WoT client when an event occurs so that the client can react accordingly (e.g. if a safety limit is reached).</li>
+          </ol>
+        </section>
+      </section>
+      <section>
+        <h3>WoT Gateways & Directories</h3>
+        <p>A WoT gateway is hardware and/or software which bridges communications with a connected device from the Web Thing Protocol to another protocol, or acts as a proxy to bridge the Web Thing Protocol from one network to another. A WoT gateway may act as both a WoT client and WoT server (when acting as a proxy), or just as a WoT server (when briding other protocols to the Web of Things).</p>
+        <p>A WoT gateway may monitor and control WoT devices based on user commands issued via a WoT client, or automatically carry out operations on behalf of users based on changes in state or other criteria. Examples might include a smart home hub, the central computer system of a vehicle, or control software for a smart city.<p>
+        <p>A WoT directory is a service which provides a list of web things and links to their Thing Descriptions.</p>
+        <p>A WoT gateway may provide a directory of web things it hosts and may be hosted on-premises with devices (e.g. in the case of bridging a PAN protocol like Zigbee or Bluetooth to the Web of Things) or on a server on separate premises to devices (e.g. in the case of a cloud service bridging another IP-based protocol to the Web of Things).</p>
+        <section>
+          <h4>Things</h4>
+          <ol>
+            <li>As a WoT directory developer I want to provide a list of web things that my directory provides so that a WoT client knows where to get their Thing Descriptions.</li>
+            <li>As a WoT directory developer I want to provide a way for clients to add and remove web things from the directory so that the directory can be kept up to date.</li>
+            <li>As a WoT directory developer I want to notify WoT clients when a web thing is added or removed from the directory so that they can be kept up to date with the latest list of things.</li>
+            <li>As a WoT directory developer I want to notify WoT clients when the Thing Description of a web thing is updated so that they know when to retrieve a new version.</li>
+            <li>As a WoT gateway developer I want to bridge non-web IoT protocols (e.g. Zigbee, Z-Wave, Bluetooth, ONVIF or MQTT) to the Web Thing Protocol so that a WoT client can monitor and control them without needing to directly support all of those protocols.</li>
+            <li>As a WoT gateway developer I want to discover WoT devices on a local network so that my gateway can proxy them to another network.</li>
+          </ol>
+        </section>
+      </section>
+    </section>
+    <section id="requirements">
+      <h2>Requirements</h2>
+      <section>
+        <h3 id="http-sub-protocol">HTTP Sub-protocol</h3>
+        <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT client and WoT server should use in order to carry out the following set of operations, including methods, headers, payloads and expected response codes.</p>
+        <section>
+          <h4>Things</h4>
+          <ol>
+            <li>SHOULD define a way for a WoT client to get a list of web things hosted by a WoT directory</li>
+            <li>SHOULD define a way for a WoT client to retrieve a Thing Description for a web thing.</li>
+            <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
+            <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>
+            <li>MAY define a way for a WoT client to be notified when the Thing Description of a web thing is updated</li>
+            <li>MAY define a way for a WoT client to find out what other protocols and data formats a WoT device supports</li>
+            <li>MAY define a way for a WoT client to authenticate with a WoT server</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Properties</h4>
+          <ol>
+            <li>MUST define a way for a WoT client to get the current value of a property of a WoT device</li>
+            <li>MUST define a way for a WoT client to set the value of a property of a WoT device</li>
+            <li>SHOULD define a way for a WoT client to get values of all properties at once</li>
+            <li>MAY define a way for a WoT client to get values of multiple properties at once</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Actions</h4>
+          <ol>
+            <li>MUST define a way for a WoT client to invoke an action on a WoT device</li>
+            <li>SHOULD define a way for a WoT client to get a list of instances of actions requested on a WoT device</li>
+            <li>MUST define a way for a WoT client to get a list of instances of actions of a given type requested on a WoT device</li>
+            <li>MUST define a way for a WoT client to get the status of an action requested on a WoT device</li>
+            <li>MUST define a way for a WoT client to cancel an action request on a WoT device</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Events</h4>
+          <ol>
+           <li>MUST define a way for a WoT client to get information about the most recent instance of a given event</li>
+           <li>SHOULD define a way for a WoT client to get a list of recent instances of a given event</li>
+           <li>MAY define a way to get a list of recent instances of all events</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Error Conditions</h4>
+          <ol>
+            <li>MUST define a way for a WoT client to be notified when a given operation on a WoT device was not completed as expected</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Internationalisation</h4>
+          <ol>
+            <li>MAY define a way for a WoT client to express preference to a WoT server for the language in which to provide human-readable strings in a Thing Description</a>
+          </ol>
+        </section>
+        <section>
+          <h4>Caching</h4>
+          <ol>
+            <li>MAY define a way for a WoT server to notify a WoT client when the cache of a Thing Description should expire</li>
+            <li>MAY define a way for a WoT server to notify a WoT client when the cache of property, action and event data should expire</li>
+          </ol>
+        </section>
+      </section>
+      <section>
+        <h3 id="websocket-sub-protocol">WebSocket Sub-protocol</h3>
+        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used.
+        <section>
+          <h4>Protocol Handshake</h4>
+          <ol>
+            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the webthing WebSocket sub-protocol</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Things</h4>
+          <ol>
+            <li>MAY define a way for a WoT directory to send a list of web things it hosts to a WoT client</li>
+            <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
+            <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>
+            <li>MAY define a way for a WoT client to be notified when the Thing Description of a web thing is updated</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Properties</h4>
+          <ol>
+            <li>SHOULD provide a way for a WoT server to send the current values of all properties of a WoT device to a WoT client when a WebSocket is first opened</li>
+            <li>MUST provide a way for a WoT client to set the value of a property of a WoT device</li>
+            <li>MUST provide a way for a WoT server to notify a WoT client of the changed value of a property of a WoT device</li>
+            <li>MAY provide a way for a WoT client to set multiple properties of a WoT device in one message</li>
+            <li>MAY provide a way for a WoT server to notify a WoT client of the changed value of multiple properties in a single message</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Actions</h4>
+          <ol>
+            <li>MUST provide a way for a WoT client to invoke an action on a WoT device</li>
+            <li>MUST provide a way for a WoT server to notify a WoT client of the change in status of an action requested on a WoT device</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Events</h4>
+          <ol>
+            <li>MUST provide a way for a WoT client to subscribe to events of a given type from a WoT device</li>
+            <li>MUST provide a way for a WoT client to unsubscribe from events of a given type from a WoT device</li>
+            <li>MUST provide a way for a WoT server to notify a WoT client when an event is emitted by a WoT device, including an optional payload of event data</li>
+          </ol>
+        </section>
+        <section>
+          <h4>Error Conditions</h4>
+          <ol>
+            <li>MUST define a way for a WoT client to be notified when a given operation on a WoT device was not completed as expected</li>
+          </ol>
+        </section>
+      </section>
+    </section>
+    <section id="conformance">
+    </section>
+    <section id="privacy-considerations">
+      <h2>Privacy Considerations</h2>
+      <p>The Web of Things has a range of applications, including where privacy is particularly important such as in the medical and connected home domains. The specification SHOULD document any assumptions, recommendations and potential threats.
+    </section>
+    <section id="security-considerations">
+      <h2>Security Considerations</h2>
+      <p>The specification will mainly rely on existing web security mechanisms such as TLS, OAuth and JSON Web Tokens. Any assumptions, recommendations and identified potential threats SHOULD be documented.</p>
+    </section>
+    <section id="accessibility-considerations">
+      <h2>Accessibility Considerations</h2>
+      <p>The specification SHOULD document any considerations for making the Web of Things work for all people, whatever their language, location or abilities.
+    </section>
+  </body>
+</html>

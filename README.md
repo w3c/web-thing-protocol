@@ -1,2 +1,5 @@
-# web-thing-protocol
-Repository for the Web Thing Protocol Community Group
+# Web Thing Protocol
+This is the source code repository for the Web Thing Protocol Community Group.
+
+* [Charter](./charter)
+* [Use Cases & Requirements](./requirements)

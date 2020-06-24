@@ -204,16 +204,13 @@
       </section>
       <section>
         <h3 id="websocket-sub-protocol">WebSocket Sub-protocol</h3>
-        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used.
-        <section>
-          <h4>Protocol Handshake</h4>
-          <ol>
-            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the webthing WebSocket sub-protocol</li>
-          </ol>
-        </section>
+        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used.</p>
         <section>
           <h4>Things</h4>
           <ol>
+            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the webthing WebSocket sub-protocol</li>
+            <li>SHOULD define a way for a WoT client to carry out operations on multiple affordances of a web thing over a single WebSocket connection</li>
+            <li>MAY define a way for a WoT client to communicate with multiple web things over a single WebSocket connection.</li>
             <li>MAY define a way for a WoT directory to send a list of web things it hosts to a WoT client</li>
             <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
             <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>

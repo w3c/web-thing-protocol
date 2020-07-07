@@ -147,12 +147,12 @@
       <h2>Requirements</h2>
       <section>
         <h3 id="http-sub-protocol">HTTP Sub-protocol</h3>
-        <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT client and WoT server should use in order to carry out the following set of operations, including methods, headers, payloads and expected response codes. Payloads SHOULD be serialised in JSON by default.</p>
+        <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT client and WoT server should use in order to carry out the the set of operations described below, including methods, headers, payloads and expected response codes. Resources SHOULD be identified and located using the <code>http(s)://</code> URI scheme and serialised in [[JSON]] by default.</p>
         <section>
           <h4>Things</h4>
           <ol>
+            <li>MUST define that each web thing is identified by a URI that can be de-referenced to obtain a machine readable Thing Description</li>
             <li>SHOULD define a way for a WoT client to get a list of web things hosted by a WoT directory</li>
-            <li>SHOULD define a way for a WoT client to retrieve a Thing Description for a web thing.</li>
             <li>SHOULD define a way for a Thing Description to define that the web thing it describes supports the Web Thing Protocol</li>
             <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
             <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>
@@ -210,11 +210,11 @@
       </section>
       <section>
         <h3 id="websocket-sub-protocol">WebSocket Sub-protocol</h3>
-        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used. Messages SHOULD be serialised in JSON by default.</p>
+        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used. Messages SHOULD be serialised in [[JSON]] by default.</p>
         <section>
           <h4>Things</h4>
           <ol>
-            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the webthing WebSocket sub-protocol</li>
+            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the <code>ws(s)://</code> URI scheme and webthing WebSocket sub-protocol</li>
             <li>MUST define a way for a WoT client to carry out operations on multiple affordances of a web thing over a single WebSocket connection</li>
             <li>MAY define a way for a WoT client to communicate with multiple web things over a single WebSocket connection.</li>
             <li>MAY define a way for a WoT directory to send a list of web things it hosts to a WoT client</li>

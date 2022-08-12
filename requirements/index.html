@@ -27,30 +27,30 @@
   </head>
   <body>
     <section id='abstract'>
-      <p>This document outlines the use cases and requirements for a common sub-protocol for the <a href="https://www.w3.org/WoT/">Web of Things</a>, to enable ad-hoc interoperability between WoT clients and WoT devices. This includes requirements for an HTTP sub-protocol and a WebSocket sub-protocol which define a standard way to monitor and control a connected device over the World Wide Web.</p>
+      <p>This document outlines the use cases and requirements for a common sub-protocol for the <a href="https://www.w3.org/WoT/">Web of Things</a> to enable ad-hoc interoperability between <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing">Web Things</a> and their <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer">Consumers</a>. This includes requirements for an HTTP sub-protocol and a WebSocket sub-protocol which define a standard way to monitor and control a connected device over the World Wide Web.</p>
     </section>
     <section id='sotd'>
     </section>
     <section id="introduction">
       <h2>Introduction</h2>
-     <p>The goal of the <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is to define a standard way to communicate with connected devices using the World Wide Web, in order to provide a unifying application layer for the <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of Things</a> (IoT) and promote ad-hoc interoperability between devices.</p>
-     <p>The W3C [[WOT-THING-DESCRIPTION]] specification defines the first building block of the Web of Things, by defining an information model and data format for describing the capabilities of a connected device and the interfaces with which to communicate with it.</p>
-     <p>The Thing Description specification was designed to be protocol-agnostic and flexible enough to describe a broad range of existing devices, rather than specifying a fixed protocol or application programming interface (API) which all devices must implement. The downside of this open ended flexibility is that it makes ad-hoc interoperability on the Web of Things very difficult, because it's nearly impossible to create a single WoT client which is guaranteed to be able to communicate with any WoT device.</p>
-     <p>The Web Thing Protocol specification will be designed to complement the WoT Thing Description specification by defining a common sub-protocol for the Web of Things, such that any WoT client and WoT device (or "web thing") which follow the specification will be able to communicate with each other.</p>
-     <p>The Web Thing Protocol specification will define:
-       <ul>
-         <li>An <a href="#http-sub-protocol">HTTP sub-protocol</a> (REST API) which defines a standard way to communicate with a web thing using the [[HTTP11]] protocol</li>
-         <li>A <a href="#websocket-sub-protocol">WebSocket sub-protocol</a> which defines how to communicate with a web thing over the [[WEBSOCKETS-PROTOCOL]]</li>
-      </ul>
-     </p>
+      
+      <p>The goal of the <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is to counter the fragmentation of the <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of Things</a> (IoT) using web technologies. By providing standardised metadata and other re-usable technological building blocks, W3C WoT enables easy integration across IoT platforms and application domains.</p>
+      <p>The W3C WoT Thing Description [[wot-thing-description]] specification defines the first building block of the Web of Things, by defining an information model and JSON-based representation format for describing the capabilities of connected devices and the interfaces with which to communicate with them.</p>
+      <p>The Thing Description specification is designed to be protocol-agnostic and flexible enough to describe a wide range of existing (&quot;brownfield&quot;) IoT devices, rather than specifying a fixed protocol or application programming interface (API) which all devices must implement. The downside of this open ended flexibility is that it makes ad-hoc interoperability on the Web of Things very difficult, because it's nearly impossible to create a single <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer"></a>WoT Consumer</a> which is guaranteed to be able to communicate with any <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing"></a>Web Thing</a> [[wot-architecture]] out of the box.</p>
+      <p>The WoT Thing Protocol specification will be designed to complement the WoT Thing Description specification [[wot-thing-description]] by defining a common sub-protocol for the Web of Things such that any WoT Consumer and Web Thing which implement the specification will be guaranteed to be able to communicate with each other other out of the box, without device-specific customisation.</p>
+      <p>The Web Thing Protocol specification (or specifications) will define:</p>
+      <ul>
+        <li>An <a href="#http-sub-protocol">HTTP sub-protocol</a> (REST API) which defines a standard way to communicate with a Web Thing using the HTTP protocol [[HTTP11]]</li>
+        <li>A <a href="#websocket-sub-protocol">WebSocket sub-protocol</a> which defines how to communicate with a Web Thing over the WebSockets protocol [[WEBSOCKETS-PROTOCOL]]</li>
+     </ul>
      <p>This document outlines the use cases and requirements for such a specification, based on existing Web of Things implementations and the collective experience of members of the Web Thing Protocol Community Group.</p>
-     <p>In addition to the WoT Thing Description specification, the Web Thing Protocol Community Group should aim for the Web Thing Protocol specification to complement other deliverables in progress by the <a href="https://www.w3.org/WoT/WG/">WoT Working Group</a> where possible, including <a href="https://www.w3.org/TR/wot-binding-templates">WoT Binding Templates</a> and <a href="https://w3c.github.io/wot-profile/">WoT Profile</a>. It's possible some of the requirements below may be fulfilled by those specifications. The Web Thing Protocol specification itself, or subsections of it, are intended to eventually join a standards track at the W3C or another standards body such as the IETF.</p>
+     <p>In addition to the WoT Thing Description, the Web Thing Protocol Community Group should aim for the Web Thing Protocol specification to complement other deliverables in progress by the <a href="https://www.w3.org/WoT/WG/">WoT Working Group</a> where possible, including WoT Discovery [[wot-discovery]], WoT Binding Templates [[wot-binding-templates]] and WoT Profile [[wot-profile]]. It's possible some of the requirements below may be fulfilled by those specifications. The Web Thing Protocol specification itself, or subsections of it, are intended to eventually join a standards track at the W3C or another standards body such as the IETF.</p>
     </section>
     <section id="use-cases">
       <h2>Use Cases</h2>
       <section>
-        <h3>WoT Clients</h3>
-        <p>A WoT client is a software agent which monitors and controls a connected device on behalf of a user. This may include but is not limited to mobile applications, desktop applications, voice agents and mixed reality agents.</p>
+        <h3>Consumers</h3>
+        <p>A Consumer is a software agent which monitors and controls a connected device on behalf of a user. This may include but is not limited to mobile applications, desktop applications, voice agents and mixed reality agents.</p>
         <section>
           <h4>Things</h4>
           <ol>
@@ -88,7 +88,7 @@
         </section>
       </section>
       <section>
-        <h3>WoT Devices</h3>
+        <h3>Things</h3>
         <p>A WoT device or "web thing" is a virtual representation of a physical device on the web, which acts as a WoT server with which a WoT client can communicate. Examples might include an IP camera, a smart thermostat or an internet-connected robot.</p>
         <section>
           <h4>Things</h4>
@@ -125,7 +125,7 @@
         </section>
       </section>
       <section>
-        <h3>WoT Gateways & Directories</h3>
+        <h3>Gateways & Directories</h3>
         <p>A WoT gateway is hardware and/or software which bridges communications with a connected device from the Web Thing Protocol to another protocol, or acts as a proxy to bridge the Web Thing Protocol from one network to another. A WoT gateway may act as both a WoT client and WoT server (when acting as a proxy), or just as a WoT server (when briding other protocols to the Web of Things).</p>
         <p>A WoT gateway may monitor and control WoT devices based on user commands issued via a WoT client, or automatically carry out operations on behalf of users based on changes in state or other criteria. Examples might include a smart home hub, the central computer system of a vehicle, or control software for a smart city.<p>
         <p>A WoT directory is a service which provides a list of web things and links to their Thing Descriptions.</p>

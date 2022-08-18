@@ -45,6 +45,8 @@
      <p>This document outlines the use cases and requirements for such a specification, based on existing Web of Things implementations and the collective experience of members of the Web Thing Protocol Community Group.</p>
      <p>In addition to the WoT Thing Description, the Web Thing Protocol Community Group should aim for the Web Thing Protocol specification to complement other deliverables in progress by the <a href="https://www.w3.org/WoT/WG/">WoT Working Group</a> where possible, including WoT Discovery [[wot-discovery]], WoT Binding Templates [[wot-binding-templates]] and WoT Profile [[wot-profile]]. It's possible some of the requirements below may be fulfilled by those specifications. The Web Thing Protocol specification itself, or subsections of it, are intended to eventually join a standards track at the W3C or another standards body such as the IETF.</p>
     </section>
+    <section id="conformance">
+    </section>
     <section id="use-cases">
       <h1>Use Cases</h1>
       <p>Below are a selection of use cases of the Web Thing Protocol from a range of different application domains.</p>
@@ -167,130 +169,159 @@
     </section>
     <section id="requirements">
       <h1>Requirements</h1>
-      <section>
-        <h3 id="http-sub-protocol">HTTP Sub-protocol</h3>
-        <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT client and WoT server should use in order to carry out the the set of operations described below, including methods, headers, payloads and expected response codes. Resources SHOULD be identified and located using the <code>http(s)://</code> URI scheme and serialised in [[JSON]] by default.</p>
-        <section>
-          <h4>Things</h4>
+      <section id="http-sub-protocol">
+        <h2>HTTP Sub-Protocol</h2>
+        <p class="note">The HTTP Sub-protocol may be defined by the W3C WoT Profile specification [[wot-profile]].</p>
+        <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT Consumer and Web Thing would use in order to carry out the set of operations described below, including methods, headers, payloads and expected response codes. Resources SHOULD be retrieved using the HTTP protocol [[HTTP11]] and serialised in JSON [[JSON]].</p>
+        <section id="http-sub-protocol-mechanism">
+          <h3>Sub-Protocol Mechanism</h2>
           <ol>
-            <li>MUST define that each web thing is identified by a URI that can be de-referenced to obtain a machine readable Thing Description</li>
-            <li>SHOULD define a way for a WoT client to get a list of web things hosted by a WoT directory</li>
-            <li>SHOULD define a way for a Thing Description to define that the web thing it describes supports the Web Thing Protocol</li>
-            <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
-            <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>
-            <li>MAY define a way for a WoT client to be notified when the Thing Description of a web thing is updated</li>
-            <li>MAY define a way for a WoT client to find out what other protocols and data formats a WoT device supports</li>
-            <li>MAY define a way for a WoT client to authenticate with a WoT server</li>
+            <li>MUST define a mechanism by which the Thing Description of a Web Thing can denote that the Web Thing uses the Web Thing Protocol’s HTTP sub-protocol</li>
           </ol>
         </section>
-        <section>
-          <h4>Properties</h4>
+        <section id="http-sub-protocol-properties">
+          <h3>Properties</h2>
           <ol>
-            <li>MUST define a way for a WoT client to get the current value of a property of a WoT device</li>
-            <li>MUST define a way for a WoT client to set the value of a property of a WoT device</li>
-            <li>SHOULD define a way for a WoT client to get values of all properties at once</li>
-            <li>MAY define a way for a WoT client to get values of multiple properties at once</li>
+            <li>MUST define a way for a WoT Consumer to read the current value of a property of a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to write the value of a property of a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to read the values of all properties of a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to write the values of multiple properties of a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to read the values of multiple properties of a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to write the values of all properties of a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to observe a property of a Web Thing so that it gets notified when the value of the property changes</li>
+            <li>MUST define a way for a WoT Consumer to stop observing a property of a Web Thing so that it no longer gets notified when the value of the property changes</li>
+            <li>MUST define a way to observe all properties of a Web Thing at once</li>
+            <li>MUST define a way to stop observing all properties of a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to resume a dropped connection and catch up on missed property changes</li>
           </ol>
         </section>
-        <section>
-          <h4>Actions</h4>
+        <section id="http-sub-protocol-actions">
+          <h3>Actions</h2>
           <ol>
-            <li>MUST define a way for a WoT client to invoke an action on a WoT device</li>
-            <li>SHOULD define a way for a WoT client to get a list of instances of actions requested on a WoT device</li>
-            <li>MUST define a way for a WoT client to get a list of instances of actions of a given type requested on a WoT device</li>
-            <li>MUST define a way for a WoT client to get the status of an action requested on a WoT device</li>
-            <li>MUST define a way for a WoT client to cancel an action request on a WoT device</li>
+            <li>MUST define a way for a WoT Consumer to invoke an action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to query the status of an ongoing action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to cancel an ongoing action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to query the status of all ongoing actions on a Web Thing</li>
           </ol>
         </section>
-        <section>
-          <h4>Events</h4>
+        <section id="http-sub-protocol-events">
+          <h3>Events</h2>
           <ol>
-           <li>MUST define a way for a WoT client to get information about the most recent instance of a given event</li>
-           <li>SHOULD define a way for a WoT client to get a list of recent instances of a given event</li>
-           <li>MAY define a way to get a list of recent instances of all events</li>
+            <li>MUST define a way for a WoT Consumer to subscribe to an event on a Web Thing so that it gets notified whenever an event is emitted </li>
+            <li>MUST define a way for a WoT Consumer to unsubscribe from an event on a Web Thing so that it stops getting notified whenever an event is emitted</li>
+            <li>MUST define a way for a WoT Consumer to subscribe to all events on a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to unsubscribe from all events on a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to resume a dropped connection and catch up on missed events</li>
           </ol>
         </section>
-        <section>
-          <h4>Error Conditions</h4>
+        <section id="http-sub-protocol-errors">
+          <h3>Errors</h2>
           <ol>
-            <li>MUST define a way for a WoT client to be notified when a given operation on a WoT device was not completed as expected</li>
-          </ol>
-        </section>
-        <section>
-          <h4>Internationalisation</h4>
-          <ol>
-            <li>MAY define a way for a WoT client to express preference to a WoT server for the language in which to provide human-readable strings in a Thing Description</a>
-          </ol>
-        </section>
-        <section>
-          <h4>Caching</h4>
-          <ol>
-            <li>MAY define a way for a WoT server to notify a WoT client when the cache of a Thing Description should expire</li>
-            <li>MAY define a way for a WoT server to notify a WoT client when the cache of property, action and event data should expire</li>
+            <li>MUST define a standardised format for a sending error messages to a WoT Consumer when an operation is not successful</li>
+            <li>SHOULD define common error responses for all operations on a Web Thing</li>
           </ol>
         </section>
       </section>
-      <section>
-        <h3 id="websocket-sub-protocol">WebSocket Sub-protocol</h3>
-        <p>The WebSocket sub-protocol SHOULD define the [[WEBSOCKETS-PROTOCOL]] messages that a WoT client and WoT server should use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used. Messages SHOULD be serialised in [[JSON]] by default.</p>
-        <section>
-          <h4>Things</h4>
+      <section id="websocket-sub-protocol">
+        <h2>WebSocket Sub-Protocol</h2>
+        <p>The WebSocket sub-protocol SHOULD define the WebSocket [[websockets-protocol]] messages that a WoT Consumer and Web Thing would use to carry out the following set of operations, including the messages types, payloads, error conditions and how they should be used. Messages SHOULD be serialised in JSON [[JSON]].</p>
+        <section id="websocket-sub-protocol-mechanism">
+          <h3>Sub-Protocol Mechanism</h2>
           <ol>
-            <li>MUST define a way for a WoT client to open a WebSocket on a WoT device, using the <code>ws(s)://</code> URI scheme and webthing WebSocket sub-protocol</li>
-            <li>MUST define a way for a WoT client to carry out operations on multiple affordances of a web thing over a single WebSocket connection</li>
-            <li>MAY define a way for a WoT client to communicate with multiple web things over a single WebSocket connection.</li>
-            <li>MAY define a way for a WoT directory to send a list of web things it hosts to a WoT client</li>
-            <li>MAY define a way for a WoT client to add and remove web things from a WoT directory</li>
-            <li>MAY define a way for a WoT client to be notified when a web thing is added or removed from a WoT directory</li>
-            <li>MAY define a way for a WoT client to be notified when the Thing Description of a web thing is updated</li>
+            <li>MUST define a mechanism by which the Thing Description of a Web Thing can denote that the Web Thing uses the Web Thing Protocol's WebSocket sub-protocol</li>
+            <li>SHOULD describe the protocol handshake process for a WoT Consumer to request that a Web Thing use the Web Thing Protocol's WebSocket sub-protocol</li>
+            <li>SHOULD define a way for a single WebSocket endpoint to be shared by all interaction affordances of a Web Thing</li>
+            <li>SHOULD define a way for a single WebSocket endpoint to be shared by multiple Web Things</li>
           </ol>
         </section>
-        <section>
-          <h4>Properties</h4>
+        <section id="websocket-sub-protocol-properties">
+          <h3>Properties</h2>
           <ol>
-            <li>SHOULD provide a way for a WoT server to send the current values of all properties of a WoT device to a WoT client when a WebSocket is first opened</li>
-            <li>MUST provide a way for a WoT client to set the value of a property of a WoT device</li>
-            <li>MUST provide a way for a WoT server to notify a WoT client of the changed value of a property of a WoT device</li>
-            <li>MAY provide a way for a WoT client to set multiple properties of a WoT device in one message</li>
-            <li>MAY provide a way for a WoT server to notify a WoT client of the changed value of multiple properties in a single message</li>
+            <li>MUST define a way for a WoT Consumer to request a reading of the current value of a property of a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to write the value of a property of a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to request a reading of the values of all properties of a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to write the values of multiple properties of a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to request a reading of the values of multiple properties of a Web Thing at once</li>
+            <li>SHOULD define a way for a WoT Consumer to write the values of all properties of a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to observe a property of a Web Thing so that it gets notified when the value of the property changes</li>
+            <li>MUST define a way for a WoT Consumer to stop observing a property of a Web Thing so that it no longer gets notified when the value of the property changes</li>
+            <li>MUST define a way to observe all properties of a Web Thing at once</li>
+            <li>MUST define a way to stop observing all properties of a Web Thing at once</li>
+            <li>MUST define a way for a Web Thing to send a reading of a property value to a WoT Consumer</li>
+            <li>MUST define a way for a Web Thing to send readings of the values of multiple properties at once to a WoT Consumer</li>
+            <li>SHOULD define a way for a WoT Consumer to resume a dropped connection and catch up on missed property changes</li>
           </ol>
         </section>
-        <section>
-          <h4>Actions</h4>
+        <section id="websocket-sub-protocol-actions">
+          <h3>Actions</h2>
           <ol>
-            <li>MUST provide a way for a WoT client to invoke an action on a WoT device</li>
-            <li>MUST provide a way for a WoT server to notify a WoT client of the change in status of an action requested on a WoT device</li>
+            <li>MUST define a way for a WoT Consumer to invoke an action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to query the status of an ongoing action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to cancel an ongoing action on a Web Thing</li>
+            <li>MUST define a way for a WoT Consumer to query the status of all ongoing actions on a Web Thing
+            </li>
+            <li>MUST define a way for a Web Thing to send the status of an ongoing action to a WoT Consumer</li>
+            <li>MUST define a way for a Web Thing to send the status of all ongoing actions to a WoT Consumer at once</li>
           </ol>
         </section>
-        <section>
-          <h4>Events</h4>
+        <section id="websocket-sub-protocol-events">
+          <h3>Events</h2>
           <ol>
-            <li>MUST provide a way for a WoT client to subscribe to events of a given type from a WoT device</li>
-            <li>MUST provide a way for a WoT client to unsubscribe from events of a given type from a WoT device</li>
-            <li>MUST provide a way for a WoT server to notify a WoT client when an event is emitted by a WoT device, including an optional payload of event data</li>
+            <li>MUST define a way for a WoT Consumer to subscribe to an event on a Web Thing so that it gets notified whenever an event is emitted </li>
+            <li>MUST define a way for a WoT Consumer to unsubscribe from an event on a Web Thing so that it stops getting notified whenever an event is emitted</li>
+            <li>MUST define a way for a WoT Consumer to subscribe to all events on a Web Thing at once</li>
+            <li>MUST define a way for a WoT Consumer to unsubscribe from all events on a Web Thing at once</li>
+            <li>MUST define a way for a Web Thing to send an event to a WoT Consumer</li>
+            <li>SHOULD define a way for a WoT Consumer to resume a dropped connection and catch up on missed events</li>
           </ol>
         </section>
-        <section>
-          <h4>Error Conditions</h4>
+        <section id="websocket-sub-protocol-errors">
+          <h3>Errors</h2>
           <ol>
-            <li>MUST define a way for a WoT client to be notified when a given operation on a WoT device was not completed as expected</li>
+            <li>MUST define a standardised format for sending error messages to a WoT Consumer when an operation is not successful</li>
+            <li>SHOULD define common error responses for all operations on a Web Thing</li>
+          </ol>
+        </section>
+        <section id="websocket-sub-protocol-other-messages">
+          <h3>Other Messages</h2>
+          <ol>
+            <li>SHOULD define a way for a WoT Consumer to send a “ping” message to a Web Thing in order to keep a WebSocket connection open</li>
+            <li>SHOULD define a way for a Web Thing to send a “pong” response message to a WoT Consumer to confirm that a “ping” message was received</li>
           </ol>
         </section>
       </section>
-    </section>
-    <section id="conformance">
-    </section>
-    <section id="privacy-considerations">
-      <h1>Privacy Considerations</h1>
-      <p>The Web of Things has a range of applications, including where privacy is particularly important such as in the medical and connected home domains. The specification SHOULD document any assumptions, recommendations and potential threats.
-    </section>
-    <section id="security-considerations">
-      <h1>Security Considerations</h1>
-      <p>The specification will mainly rely on existing web security mechanisms such as TLS, OAuth and JSON Web Tokens. Any assumptions, recommendations and identified potential threats SHOULD be documented.</p>
-    </section>
-    <section id="accessibility-considerations">
-      <h1>Accessibility Considerations</h1>
-      <p>The specification SHOULD document any considerations for making the Web of Things work for all people, whatever their language, location or abilities.
+      <section id="discovery">
+        <h2>Discovery</h2>
+        <ol>
+          <li>SHOULD define a list of <a href="https://w3c.github.io/wot-discovery/#introduction-mech">discovery mechanisms</a> [[wot-discovery]] which Web Things may use and WoT Consumers must support</li>
+        </ol>
+      </section>
+      <section id="links">
+        <h2>Links</h2>
+        <ol>
+          <li>SHOULD define a list of <a href="https://w3c.github.io/wot-thing-description/#link">link relation types</a> [[wot-thing-description]] which Web Things may use and WoT Consumers must support</li>
+        </ol>
+      </section>
+      <section id="security">
+        <h2>Security</h2>
+        <ol>
+          <li>SHOULD define a list of <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">security schemes</a> [[wot-thing-description]] which conformant Web Things may use and all conformant WoT Consumers must support</li>
+          <li>MAY require that conformant Web Things and WoT Consumers support <a href="https://w3c.github.io/wot-discovery/#exploration-secboot">security bootstrapping</a> [[wot-discovery]]</li>
+          <li>MUST document any security considerations which are identified</li>
+        </ol>
+      </section>
+      <section id="privacy">
+        <h2>Privacy</h2>
+        <ol>
+          <li>MUST document any privacy considerations which are identified</li>
+        </ol>
+      </section>
+      <section id="accessibility">
+        <h2>Accessibility</h2>
+        <ol>
+          <li>MUST document any accessibility considerations which are identified</li>
+        </ol>
+      </section>
     </section>
   </body>
 </html>

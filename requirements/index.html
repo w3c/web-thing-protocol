@@ -17,11 +17,10 @@
         }],
         subtitle: "Use Cases & Requirements",
         gitHub: "w3c/web-thing-protocol",
-        shortName: "web-thing-protocol",
+        shortName: "web-thing-protocol-requirements",
+        group: "web-thing-protocol",
         xref: true,
-        wg: "Web Thing Protocol Community Group",
-        wgPublicList: "public-web-thing-protocol",
-        wgURI: "https://www.w3.org/community/web-thing-protocol/"
+        wgPublicList: "public-web-thing-protocol"
       };
     </script>
   </head>
@@ -32,7 +31,7 @@
     <section id='sotd'>
     </section>
     <section id="introduction">
-      <h2>Introduction</h2>
+      <h1>Introduction</h1>
       
       <p>The goal of the <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is to counter the fragmentation of the <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of Things</a> (IoT) using web technologies. By providing standardised metadata and other re-usable technological building blocks, W3C WoT enables easy integration across IoT platforms and application domains.</p>
       <p>The W3C WoT Thing Description [[wot-thing-description]] specification defines the first building block of the Web of Things, by defining an information model and JSON-based representation format for describing the capabilities of connected devices and the interfaces with which to communicate with them.</p>
@@ -47,104 +46,82 @@
      <p>In addition to the WoT Thing Description, the Web Thing Protocol Community Group should aim for the Web Thing Protocol specification to complement other deliverables in progress by the <a href="https://www.w3.org/WoT/WG/">WoT Working Group</a> where possible, including WoT Discovery [[wot-discovery]], WoT Binding Templates [[wot-binding-templates]] and WoT Profile [[wot-profile]]. It's possible some of the requirements below may be fulfilled by those specifications. The Web Thing Protocol specification itself, or subsections of it, are intended to eventually join a standards track at the W3C or another standards body such as the IETF.</p>
     </section>
     <section id="use-cases">
-      <h2>Use Cases</h2>
-      <section>
-        <h3>Consumers</h3>
-        <p>A Consumer is a software agent which monitors and controls a connected device on behalf of a user. This may include but is not limited to mobile applications, desktop applications, voice agents and mixed reality agents.</p>
-        <section>
-          <h4>Things</h4>
-          <ol>
-            <li>As a WoT client developer I want to get a list of devices hosted by a web thing directory so that the user can monitor and control them.</li>
-            <li>As a WoT client developer I want to get a list of web things representing devices in the physical proximity of the client so that the user can monitor and control them.</li>
-            <li>As a WoT client developer I want to get a list of web things connected to the same local network as the client so that the user can monitor and control them.</li>
-            <li>As a WoT client developer I want to get the Thing Description (metadata) for a device so that I know what operations can be performed on it and how to carry out those operations.</li>
-            <li>As a WoT client developer I want to discover what (sub-)protocols and file formats a device supports so that I know whether my client can communicate with it or not.</li>
-            <li>As a WoT client developer I want to tell a WoT device in what languages I would prefer human-readable strings to be provided in so that I can provide the user with text they can understand.</li>
-            <li>As a WoT client developer I want to authenticate with a device so that my client can be authorised to monitor and control it.</li>
-          </ol>
+      <h1>Use Cases</h1>
+      <p>Below are a selection of use cases of the Web Thing Protocol from a range of different application domains.</p>
+      <p>A larger set of use cases for the Web of Things in general can also be found in Web of Things (WoT): Use Cases and Requirements [[wot-usecases]].</p>
+      <section id="use-cases-smart-home">
+        <h3>Smart Home</h3>
+        <section id="use-cases-smart-home-devices">
+          <h4>Smart Home Devices</h4>
+          <p>As the manufacturer of a smart home device I want to know that any compliant smart home software application will be able to communicate with my device without device-specific customisation, so that I can maximise the size of the market for my product.</p>
+          <p>As a retailer of smart home devices I want to be able to tell my customers that a device will work with their existing smart home app, hub or cloud service so that I can sell more devices.</p>
+          <p>As a customer looking to buy a smart home device, I want to be sure that the device is compatible with my existing smart home app, hub or cloud service.</p>
         </section>
-        <section>
-          <h4>Properties</h4>
-          <ol>
-            <li>As a WoT client developer I want to read the property of a device or be notified when its value changes so I can report its state to the user or automatically carry out an operation based on its value.</li>
-            <li>As a WoT client developer I want to set the value of a property of a device so that I can change its physical state.</li>
-          </ol>
+        <section id="use-cases-smart-home-hubs">
+          <h4>Smart Home Hubs</h4>
+          <p>As the manufacturer of a smart home hub I want my hub to be compatible with as many devices as possible in order to maximise the size of the market for my product.</p>
+          <p>As the manufacturer of a smart home hub, I want to bridge a wide range of different smart home protocols to a single standardised interface so that they can be consumed by a single client software application.</p>
+          <p>As the user of a smart home hub, I want my hub to be compatible with as many devices as possible so that I'm not locked in to a single hardware vendor and can easily integrate devices from different vendors together in order to automate my home.</p>
         </section>
-        <section>
-          <h4>Actions</h4>
-          <ol>
-            <li>As a WoT client developer I want to invoke an action on a device which modifies its state in such a way that can't be achieved by simply setting the value of a property. E.g. To carry out a function which takes a period of time to complete or has a different outcome based on provided arguments or current state.</li>
-            <li>As a WoT client developer I want to get a list of instances of actions requested on a device so that I can find out their status</li>
-            <li>As a WoT client developer I want to get the status of a requested action so that I can report its status back to the user or otherwise act on the basis of its status.</li>
-            <li>As a WoT client developer I want to cancel an action request so that I can prevent the outcome of the action from occuring before it is complete.</li>
-          </ol>
+        <section id="use-cases-smart-home-cloud-services">
+          <h4>Smart Home Cloud Services</h4>
+          <p>As the developer of a smart home cloud service I want to be able to monitor and control a wide range of smart home devices from different vendors in order to maximise the size of the market for my service.</p>
+          <p>As a smart home user I want to have a choice of third party services to help monitor and automate my home so that I am not locked into a single service provider and can find the best value service for my needs.</p>
         </section>
-        <section>
-          <h4>Events</h4>
-          <ol>
-            <li>As a WoT client developer I want to be able to subscribe/unsubscribe to a particular type of event so I can choose which events I want to be notified of by a WoT device.</li>
-            <li>As a WoT client developer I want to be notified when an event is emitted by a device so that I can notify the user or react accordingly (e.g. if a safety limit is reached).</li>
-          </ol>
+        <section id="use-cases-smart-home-apps">
+          <h4>Smart Home Software Applications</h4>
+          <p>As the developer of an IoT software library, I want my library to work with a wide range of different IoT devices without needing per-device customisation so that I can maximise the audience for my software.</p>
+          <p>As the developer of a smart home mobile app I want to offer my users out-of-the-box interoperability with a wide range of smart home devices so that I can maximise the audience for my app.</p>
+          <p>As a user of a smart home mobile app I want to know that I will be able to monitor and control any conformant smart home device so that I don't need a different app per device or device-specific customisations.</p>
         </section>
       </section>
-      <section>
-        <h3>Things</h3>
-        <p>A WoT device or "web thing" is a virtual representation of a physical device on the web, which acts as a WoT server with which a WoT client can communicate. Examples might include an IP camera, a smart thermostat or an internet-connected robot.</p>
-        <section>
-          <h4>Things</h4>
-          <ol>
-            <li>As a WoT device developer I want to advertise the prescence of my device on a local network so that WoT clients can discover it</li>
-            <li>As a WoT device developer I want to advertise the prescence of my device to WoT clients in its physical proximity so that they can discover it</li>
-            <li>As a WoT device developer I want to report to WoT clients what (sub-)protocols and file formats my device supports so that they know whether they can communicate with the device</li>
-            <li>As a WoT device developer I want to know what languages a WoT client would prefer for a Thing Description so that I can provide human readable strings in the most appropriate language for the end user</li>
-            <li>As a WoT device developer I want to authenticate requests to my device so that only authorised clients can monitor and control it</li>
-          </ol>
+      <section id="use-cases-smart-buildings">
+        <h2>Smart Buildings</h2>
+        <section id="use-cases-smart-building-devices">
+          <h4>Smart Building Devices</h4>
+          <p>As the manufacturer of a smart building device I want to know that any compliant building management system will be able to communicate with my device without device-specific customisation, so that I can maximise the size of the market for my product.</p>
+          <p>As a facilities manager of a commercial building, I want to know that a given IoT device will seamlessly integrate with my existing building management system without device-specific customisation.</p>
         </section>
-        <section>
-          <h4>Properties</h4>
-          <ol>
-            <li>As a WoT device developer I want to be able to report the value of a property to a WoT client when the client requests its value or the value changes, so that the client can be kept up to date with the value of the property</li>
-            <li>As a WoT device developer I want to provide the ability for a WoT client to set the value of a property so that the client can affect a physical change in state of the device</li>
-          </ol>
+        <section id="use-cases-smart-building-hubs">
+          <h4>Smart Building Hubs</h4>
+          <p>As the manufacturer of a smart building hub for commercial buildings, I want my hub to be compatible with as many devices as possible in order to maximise the size of the market for my product.</p>
+          <p>As the manufacturer of a smart building hub for commercial buildings, I want to bridge a wide range of different building management systems to a single standardised interface that my smart building software can consume.</p>
+          <p>As a facilities manager of a commercial building I want to consolidate my multi-vendor building management system into a single standardised interface that I can use for command, control, automation and analytics for my building.</p>
         </section>
-        <section>
-          <h4>Actions</h4>
-          <ol>
-            <li>As a WoT device developer I want to change the physical state of the device in response to an action request from a WoT client which is more complex than simply setting the value of a property (e.g. an operation which takes a period of time to complete)</li>
-            <li>As a WoT device developer I want to provide a WoT client with a list of instances of requested actions on a device so that the client can find out their status</li>
-            <li>As a WoT device developer I want to be able to report the status of an action request to a WoT client when requested or when the status changes so that the client can be informed whether the action has been completed</li>
-            <li>As a WoT device developer I want to cancel a running action at the request of a WoT client so that an action can be stopped before it has completed</li>
-          </ol>
+        <section id="use-cases-smart-building-cloud-services">
+          <h4>Smart Building Cloud Services</h4>
+          <p>As the developer of a cloud service which provides digital twins of commercial buildings, I want to be able to consume data from a wide range of devices and building management systems in order to maximise the size of the market for my service.</p>
+          <p>As a facilities manager of a commercial building, I want to have a choice of third party services which can provide analytics for the data from my building management system so that I am not locked into a single service provider and can find the best value service for my needs.</p>
         </section>
-        <section>
-          <h4>Events</h4>
-          <ol>
-            <li>As a WoT device developer I want my WoT device to be informed when a WoT client wants to subscribe/unsubscribe to notifications of a particular type of event so that I only need to notify clients which have subscribed.</li>
-            <li>As a WoT device developer I want to be able to notify a WoT client when an event occurs so that the client can react accordingly (e.g. if a safety limit is reached).</li>
-          </ol>
+        <section id="use-cases-smart-building-apps">
+          <h4>Smart Building Software Applications</h4>
+          <p>As the developer of an IoT software library, I want my library to work with a wide range of different IoT devices without needing per-device customisation so that I can maximise the audience for my software.</p>
+          <p>As a facilities manager of a commercial building I want to monitor and control the HVAC, lighting, safety and security systems of my building all through a single desktop or tablet application, so that I don't have to piece together information from multiple separate systems in order to get a full picture of the operations of my building.</p>
         </section>
       </section>
-      <section>
-        <h3>Gateways & Directories</h3>
-        <p>A WoT gateway is hardware and/or software which bridges communications with a connected device from the Web Thing Protocol to another protocol, or acts as a proxy to bridge the Web Thing Protocol from one network to another. A WoT gateway may act as both a WoT client and WoT server (when acting as a proxy), or just as a WoT server (when briding other protocols to the Web of Things).</p>
-        <p>A WoT gateway may monitor and control WoT devices based on user commands issued via a WoT client, or automatically carry out operations on behalf of users based on changes in state or other criteria. Examples might include a smart home hub, the central computer system of a vehicle, or control software for a smart city.<p>
-        <p>A WoT directory is a service which provides a list of web things and links to their Thing Descriptions.</p>
-        <p>A WoT gateway may provide a directory of web things it hosts and may be hosted on-premises with devices (e.g. in the case of bridging a PAN protocol like Zigbee or Bluetooth to the Web of Things) or on a server on separate premises to devices (e.g. in the case of a cloud service bridging another IP-based protocol to the Web of Things).</p>
-        <section>
-          <h4>Things</h4>
-          <ol>
-            <li>As a WoT directory developer I want to provide a list of web things that my directory provides so that a WoT client knows where to get their Thing Descriptions.</li>
-            <li>As a WoT directory developer I want to provide a way for clients to add and remove web things from the directory so that the directory can be kept up to date.</li>
-            <li>As a WoT directory developer I want to notify WoT clients when a web thing is added or removed from the directory so that they can be kept up to date with the latest list of things.</li>
-            <li>As a WoT directory developer I want to notify WoT clients when the Thing Description of a web thing is updated so that they know when to retrieve a new version.</li>
-            <li>As a WoT gateway developer I want to bridge non-web IoT protocols (e.g. Zigbee, Z-Wave, Bluetooth, ONVIF or MQTT) to the Web Thing Protocol so that a WoT client can monitor and control them without needing to directly support all of those protocols.</li>
-            <li>As a WoT gateway developer I want to discover WoT devices on a local network so that my gateway can proxy them to another network.</li>
-          </ol>
-        </section>
+      <section id="use-cases-smart-cities">
+        <h2>Smart Cities</h2>
+        <p>As a technician working on a smart city project for a public body, I want to be able to consolidate data from a wide range of different public and private sources into a standardised format in order to create a real time digital twin of a whole city to be used for city planning.</p>
+      </section>
+      <section id="use-cases-manufacturing">
+        <h2>Manufacturing</h2>
+        <p>As a factory worker I want to be able to consume data from all of the devices on my factory floor in a single standardised format so that I can build a digital twin of the factory in order to model how it's running and identify optimisations.</p>
+      </section>
+      <section id="use-cases-energy">
+        <h2>Energy</h2>
+        <p>As a technician at a renewable energy company, I want to create digital twins of a range of different assets in order to monitor the performance and efficiency of my energy network in real time and carry out predictive maintenance.</p>
+      </section>
+      <section id="use-cases-transportation">
+        <h2>Transportation</h2>
+        <p>As an operations manager at a bus company, I want to monitor the location and condition of a range of different assets over the internet in order to monitor the efficiency of my bus network and carry out predictive maintenance.</p>
+      </section>
+      <section id="use-cases-agriculture">
+        <h2>Agriculture</h2>
+        <p>As a farmer I want to integrate a range of different sensors (e.g. temperature, light, soil moisture) and actuators (e.g. sprinklers and window openers) from different vendors in order to automate a greenhouse on my farm and maximise crop yields.</p>
       </section>
     </section>
     <section id="requirements">
-      <h2>Requirements</h2>
+      <h1>Requirements</h1>
       <section>
         <h3 id="http-sub-protocol">HTTP Sub-protocol</h3>
         <p>The HTTP sub-protocol SHOULD define the [[HTTP11]] requests and responses a WoT client and WoT server should use in order to carry out the the set of operations described below, including methods, headers, payloads and expected response codes. Resources SHOULD be identified and located using the <code>http(s)://</code> URI scheme and serialised in [[JSON]] by default.</p>
@@ -259,15 +236,15 @@
     <section id="conformance">
     </section>
     <section id="privacy-considerations">
-      <h2>Privacy Considerations</h2>
+      <h1>Privacy Considerations</h1>
       <p>The Web of Things has a range of applications, including where privacy is particularly important such as in the medical and connected home domains. The specification SHOULD document any assumptions, recommendations and potential threats.
     </section>
     <section id="security-considerations">
-      <h2>Security Considerations</h2>
+      <h1>Security Considerations</h1>
       <p>The specification will mainly rely on existing web security mechanisms such as TLS, OAuth and JSON Web Tokens. Any assumptions, recommendations and identified potential threats SHOULD be documented.</p>
     </section>
     <section id="accessibility-considerations">
-      <h2>Accessibility Considerations</h2>
+      <h1>Accessibility Considerations</h1>
       <p>The specification SHOULD document any considerations for making the Web of Things work for all people, whatever their language, location or abilities.
     </section>
   </body>

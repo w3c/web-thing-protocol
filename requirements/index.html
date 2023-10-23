@@ -36,7 +36,7 @@
       <p>The goal of the <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is to counter the fragmentation of the <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of Things</a> (IoT) using web technologies. By providing standardised metadata and other re-usable technological building blocks, W3C WoT enables easy integration across IoT platforms and application domains.</p>
       <p>The W3C WoT Thing Description [[wot-thing-description]] specification defines the first building block of the Web of Things, by defining an information model and JSON-based representation format for describing the capabilities of connected devices and the interfaces with which to communicate with them.</p>
       <p>The Thing Description specification is designed to be protocol-agnostic and flexible enough to describe a wide range of existing (&quot;brownfield&quot;) IoT devices, rather than specifying a fixed protocol or application programming interface (API) which all devices must implement. The downside of this open ended flexibility is that it makes ad-hoc interoperability on the Web of Things very difficult, because it's nearly impossible to create a single <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer"></a>WoT Consumer</a> which is guaranteed to be able to communicate with any <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing"></a>Web Thing</a> [[wot-architecture]] out of the box.</p>
-      <p>The WoT Thing Protocol specification will be designed to complement the WoT Thing Description specification [[wot-thing-description]] by defining a common sub-protocol for the Web of Things such that any WoT Consumer and Web Thing which implement the specification will be guaranteed to be able to communicate with each other other out of the box, without device-specific customisation.</p>
+      <p>The Web Thing Protocol specification will be designed to complement the WoT Thing Description specification [[wot-thing-description]] by defining a common sub-protocol for the Web of Things such that any WoT Consumer and Web Thing which implement the specification will be guaranteed to be able to communicate with each other other out of the box, without device-specific customisation.</p>
       <p>The Web Thing Protocol specification (or specifications) will define:</p>
       <ul>
         <li>An <a href="#http-sub-protocol">HTTP sub-protocol</a> (REST API) which defines a standard way to communicate with a Web Thing using the HTTP protocol [[HTTP11]]</li>
@@ -232,6 +232,7 @@
             <li>SHOULD describe the protocol handshake process for a WoT Consumer to request that a Web Thing use the Web Thing Protocol's WebSocket sub-protocol</li>
             <li>SHOULD define a way for a single WebSocket endpoint to be shared by all interaction affordances of a Web Thing</li>
             <li>SHOULD define a way for a single WebSocket endpoint to be shared by multiple Web Things</li>
+            <li>MAY define a way for a Web Thing to act as a WebSocket client rather than a WebSocket server in certain deployment models</li>
           </ol>
         </section>
         <section id="websocket-sub-protocol-properties">

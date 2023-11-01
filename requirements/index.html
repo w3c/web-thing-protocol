@@ -230,8 +230,8 @@
           <ol>
             <li>MUST define a mechanism by which the Thing Description of a Web Thing can denote that the Web Thing uses the Web Thing Protocol's WebSocket sub-protocol</li>
             <li>SHOULD describe the protocol handshake process for a WoT Consumer to request that a Web Thing use the Web Thing Protocol's WebSocket sub-protocol</li>
-            <li>SHOULD define a way for a single WebSocket endpoint to be shared by all interaction affordances of a Web Thing</li>
-            <li>SHOULD define a way for a single WebSocket endpoint to be shared by multiple Web Things</li>
+            <li>SHOULD define a way for a single WebSocket endpoint to be shared by all interaction affordances of a Web Thing (e.g. so that a Consumer can subscribe to multiple events from the same Thing without needing to open a separate socket for each)</li>
+            <li>SHOULD define a way for a single WebSocket endpoint to be shared by multiple Web Things (e.g. so that a Consumer can authenticate and communicate with multiple Things from the same origin, without needing to open a separate socket for each)</li>
             <li>MAY define a way for a Web Thing to act as a WebSocket client rather than a WebSocket server in certain deployment models</li>
           </ol>
         </section>

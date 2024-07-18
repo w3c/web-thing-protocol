@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Web Thing Protocol</title>
+  <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
+  <script class="remove">
+    // All config options at https://respec.org/docs/
+    var respecConfig = {
+      specStatus: "CG-DRAFT",
+      editors: [{
+        name: "Ben Francis",
+        company: "Krellian",
+        mailto: "ben@krellian.com",
+        companyURL: "https://krellian.com",
+        w3cid: "51527"
+      }],
+      github: "w3c/web-thing-protocol",
+      shortName: "web-thing-protocol",
+      xref: true,
+      group: "web-thing-protocol",
+      wgPublicList: "public-web-thing-protocol",
+      edDraftURI: "https://w3c.github.io/web-thing-protocol/",
+      latestVersion: "https://w3c.github.io/web-thing-protocol/"
+    };
+  </script>
+</head>
+
+<body>
+  <h1 id="title">Web Thing Protocol</h1>
+  <h2 id="subtitle">WebSocket Sub-protocol</h2>
+
+  <section id="abstract">
+    <p>This document defines a WebSocket sub-protocol called the Web Thing
+      Protocol, for monitoring and controlling connected devices over the
+      World Wide Web. The Web Thing Protocol is intended as a dedicated 
+      real-time protocol for the <a href="https://www.w3.org/WoT/">Web of 
+      Things</a>, to enable a WoT
+      <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer">Consumer</a>
+      to communicate with one or more WoT
+      <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing">Things</a>
+      over a WebSocket connection.
+    </p>
+  </section>
+
+  <section id="sotd">
+    <aside class="ed-note" title="Empty Sections">
+      Please note that this document is a work in progress and contains empty
+      sections. For an indication of what these sections may eventually contain,
+      please see this
+      <a href="https://docs.google.com/document/d/1KWv-aQfMgsqBFg0v4rVqzcVvzzisC7y4X4CMUYGc8rE/edit?usp=sharing">strawman
+        proposal</a>.
+    </aside>
+  </section>
+
+  <section id="introduction" class="informative">
+    <h2>Introduction</h2>
+    <p>This document defines a WebSocket [[WEBSOCKETS]] sub-protocol for
+      monitoring and controlling connected devices over the Web.
+    </p>
+    <p>The <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is a
+      collection of standardised technology building blocks that help provide
+      interoperability on the
+      <a href="https://en.wikipedia.org/wiki/Internet_of_things">Internet of
+        Things</a> (IoT). The WoT Thing Description specification
+      [[wot-thing-description11]] defines a metadata format for
+      <em>describing</em> the capabilities of &quot;Things&quot; (connected
+      devices) on the Web. The WoT Discovery specification [[wot-discovery]]
+      defines mechanisms for <em>discovering</em> Things on the Web. This
+      specification complements those building blocks by
+      defining a dedicated real-time protocol for <em>communicating</em> with Things over the
+      Web.
+    </p>
+    <p>WebSockets [[WEBSOCKETS]] provide a way to upgrade a
+      standard HTTP [[HTTP11]] request to a full-duplex, persistent, real-time
+      communication channel over a single TCP connection. This can be used to
+      create a versatile and efficient two-way channel with which a WoT
+      <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer">Consumer</a>
+      can communicate with one or more
+      <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing">Things</a>
+      [[wot-architecture11]] to carry out the full set of WoT
+      <a href="https://www.w3.org/TR/wot-thing-description/#table-well-known-operation-types">operations</a>.
+      However, since a WebSocket is essentially just a raw TCP socket with no
+      semantics of its own, a sub-protocol needs to be defined in order for a
+      Consumer and Thing to communicate.
+    </p>
+    <p>Whilst many other <a href="https://www.iana.org/assignments/websocket/websocket.xml#subprotocol-name">WebSocket
+        sub-protocols</a> exist, what makes the Web Thing Protocol unique
+      is that it is specifically designed around the Web of Things
+      <a href="https://www.w3.org/TR/wot-thing-description11/#sec-vocabulary-definition">information
+        model</a> and
+      <a href="https://www.w3.org/TR/wot-thing-description11/#table-well-known-operation-types">set
+        of operations</a> [[wot-thing-description11]], as well as being
+      targeted specifically at Web of Things use cases [[wot-usecases]]. It
+      can therefore be thought of as being native to the Web of Things.
+    </p>
+    <p>
+      The sub-protocol defines message payload formats for each of the
+      well-known
+      <a href="https://www.w3.org/TR/wot-thing-description11/#table-well-known-operation-types">
+        operation types</a> defined in the WoT
+      <a href="https://www.w3.org/TR/wot-architecture/#sec-interaction-model">
+        interaction model</a> [[wot-architecture11]], and other messages needed for
+      WebSocket communication.
+    </p>
+    <p>
+      This specification is intended to complement deliverables of the
+      <a href="https://www.w3.org/WoT/wg/">WoT Working Group</a>, including WoT
+      Architecture [[wot-architecture11]], WoT Thing Description
+      [[wot-thing-description11]], WoT Discovery [[wot-discovery]],
+      WoT Binding Templates [[wot-binding-templates]] and WoT Profile
+      [[wot-profile]]. It is intended to implement use cases and requirements
+      defined in the
+      <a
+        href="https://www.w3.org/community/reports/web-thing-protocol/CG-FINAL-web-thing-protocol-requirements-20231101/">Web
+        Thing Protocol Use Cases & Requirements</a> community report.
+    </p>
+    <p>Whilst this document is not on a standards track, the Web Thing Protocol
+      is intended to eventually join a standards track at the W3C or another
+      standards body such as the IETF.
+    </p>
+  </section>
+
+  <section id="conformance">
+  </section>
+
+  <section id="terminology">
+    <h2>Terminology</h2>
+    <p>Fundamental WoT terminology such as Thing or Web Thing, Consumer or WoT
+      Consumer, WoT Thing Description or Thing Description, Interaction Model,
+      Interaction Affordance, Property, Action and Event are defined in
+      the
+      <a href="https://www.w3.org/TR/wot-architecture/#terminology">Terminology</a>
+      section of the WoT Architecture specification [[wot-architecture11]].
+    </p>
+  </section>
+
+  <section id="websocket-connection">
+    <h2>WebSocket Connection</h2>
+    <section id="protocol-handshake">
+      <h3>Protocol Handshake</h3>
+    </section>
+    <section id="protocol-handshake">
+      <h3>WebSocket Re-use</h3>
+    </section>
+  </section>
+
+  <section id="websocket-messages">
+    <h2>WebSocket Messages</h2>
+    <section id="properties">
+      <h3>Properties</h3>
+    </section>
+    <section id="actions">
+      <h3>Actions</h3>
+    </section>
+    <section id="events">
+      <h3>Events</h3>
+    </section>
+    <section id="events">
+      <h3>Other Messages</h3>
+    </section>
+  </section>
+
+  <section id="example-thing-descriptions">
+    <h2>Example Thing Descriptions</h2>
+  </section>
+
+  <section id="privacy-considerations">
+    <h2>Privacy Considerations</h2>
+  </section>
+
+  <section id="security-considerations">
+    <h2>Security Considerations</h2>
+  </section>
+
+  <section id="accessibility-considerations">
+    <h2>Accessibility Considerations</h2>
+  </section>
+
+  <section id="iana-considerations">
+    <h2>IANA Considerations</h2>
+  </section>
+
+</body>
+
+</html>

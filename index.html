@@ -34,9 +34,9 @@
   <section id="abstract">
     <p>This document defines a WebSocket sub-protocol called the Web Thing
       Protocol, for monitoring and controlling connected devices over the
-      World Wide Web. The Web Thing Protocol is intended as a dedicated 
-      real-time protocol for the <a href="https://www.w3.org/WoT/">Web of 
-      Things</a>, to enable a WoT
+      World Wide Web. The Web Thing Protocol is intended as a dedicated
+      real-time protocol for the <a href="https://www.w3.org/WoT/">Web of
+        Things</a>, to enable a WoT
       <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer">Consumer</a>
       to communicate with one or more WoT
       <a href="https://www.w3.org/TR/wot-architecture/#dfn-web-thing">Things</a>
@@ -56,7 +56,7 @@
 
   <section id="introduction" class="informative">
     <h2>Introduction</h2>
-    <p>This document defines a WebSocket [[WEBSOCKETS]] sub-protocol for
+    <p>This document defines a WebSocket [[WEBSOCKETS-PROTOCOL]] sub-protocol for
       monitoring and controlling connected devices over the Web.
     </p>
     <p>The <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is a
@@ -72,7 +72,7 @@
       defining a dedicated real-time protocol for <em>communicating</em> with Things over the
       Web.
     </p>
-    <p>WebSockets [[WEBSOCKETS]] provide a way to upgrade a
+    <p>WebSockets [[WEBSOCKETS-PROTOCOL]] provide a way to upgrade a
       standard HTTP [[HTTP11]] request to a full-duplex, persistent, real-time
       communication channel over a single TCP connection. This can be used to
       create a versatile and efficient two-way channel with which a WoT
@@ -140,6 +140,59 @@
     <h2>WebSocket Connection</h2>
     <section id="protocol-handshake">
       <h3>Protocol Handshake</h3>
+      <p>In order to communicate with a <a href="https://www.w3.org/TR/wot-architecture11/#dfn-web-thing">Web Thing</a>,
+        a WoT <a href="https://www.w3.org/TR/wot-architecture11/#dfn-consumer">Consumer</a> [[wot-architecture11]] MUST
+        locate one or more WebSocket [[WEBSOCKETS-PROTOCOL]] endpoints provided by the Thing for a given set of <a
+          href="https://www.w3.org/TR/wot-thing-description/#interactionaffordance">interaction affordances</a>
+        [[wot-thing-description11]].</p>
+      <p>The URL of a WebSocket endpoint to be used for a given interaction MUST be obtained from a <a
+          href="https://www.w3.org/TR/wot-architecture11/#dfn-wot-thing-description">Thing Description</a>
+        [[wot-architecture11]] by locating a <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside
+        the corresponding <a
+          href="https://www.w3.org/TR/wot-thing-description/#interactionaffordance">InteractionAffordance</a> for which:
+      <ul>
+        <li>After being resolved against a <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-base--Thing"><code>base</code></a> URL
+          [[wot-thing-description11]] where applicable, the URI scheme [[RFC3986]] of the value of its <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-href--Form"><code>href</code></a> member
+          [[wot-thing-description11]] is <code>"ws"</code> or &<code>"wss"</code></li>
+        <li>Its <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-subprotocol--Form"><code>subprotocol</code></a>
+          member has a value of <code>"webthingprotocol"</code></li>
+      </ul>
+      </p>
+      <p>To open a WebSocket on a Thing, an HTTP <a
+          href="https://httpwg.org/specs/rfc9110.html#GET"><code>GET</code></a> request [[RFC9110]] MUST be upgraded to
+        a WebSocket connection using a standard WebSocket <a
+          href="https://www.rfc-editor.org/rfc/rfc6455#page-6">protocol handshake</a> [[WEBSOCKETS-PROTOCOL]],
+        specifying the "webthingprotocol" sub-protocol.
+      </p>
+      <pre class="example" title="WebSocket Protocol Handshake HTTP Request">
+        GET wss://mythingserver.com/things/robot
+        Host: mythingserver.com
+        Origin: https://mythingserver.com
+        Upgrade: websocket
+        Connection: Upgrade
+        Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+        Sec-WebSocket-Protocol: webthingprotocol
+        Sec-WebSocket-Version: 13
+      </pre>
+      <pre class="example" title="WebSocket Protocol Handshake HTTP Response">
+        HTTP/1.1 101 Switching Protocols
+        Upgrade: websocket
+        Connection: Upgrade
+        Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+        Sec-WebSocket-Protocol: webthingprotocol        
+      </pre>
+      <p class="ednote" title="Sub-protocol Name">
+        Sub-protocol name to be confirmed, see <a href="#iana-considerations">IANA Considerations</a>.
+      </p>
+      <p class="note">A WebSocket can be opened from a web page using the JavaScript WebSocket API [[WEBSOCKETS-API]]
+        which will take care of the handshake detailed above and allow messages to be sent and received.
+      </p>
+      <pre class="example" title="WebSocket Instantiation in JavaScript">
+        const socket = new WebSocket('wss://mywebthingserver/things/robot', 'webthingprotocol');
+      </pre>
     </section>
     <section id="protocol-handshake">
       <h3>WebSocket Re-use</h3>
@@ -180,6 +233,20 @@
 
   <section id="iana-considerations">
     <h2>IANA Considerations</h2>
+    <p>This specification proposes the registration of a sub-protocol in the IANA &quot;<a
+        href="https://www.iana.org/assignments/websocket/websocket.xml">WebSocket Subprotocol Name Registry</a>&quot;.
+      The name of the sub-protocol and the published URL of its definition are to be confirmed, but currently the name
+      &quot;webthingprotocol&quot; and this document are used as a placeholder and draft proposal.</p>
+    <dl>
+      <dt>Subprotocol Identifier</dt>
+      <dd>webthingprotocol</dd>
+
+      <dt>Subprotocol Common Name</dt>
+      <dd>Web Thing Protocol</dd>
+
+      <dt>Subprotocol Definition</dt>
+      <dd>This document.</dd>
+    </dl>
   </section>
 
 </body>

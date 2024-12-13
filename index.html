@@ -127,9 +127,9 @@
 
   <section id="terminology">
     <h2>Terminology</h2>
-    <p>Fundamental WoT terminology such as Thing or Web Thing, Consumer or WoT
-      Consumer, WoT Thing Description or Thing Description, Interaction Model,
-      Interaction Affordance, Property, Action and Event are defined in
+    <p>Fundamental WoT terminology such as <dfn>Thing</dfn> or <dfn>Web Thing</dfn>, <dfn>Consumer</dfn> or <dfn>WoT
+        Consumer</dfn>, WoT Thing Description or <dfn>Thing Description</dfn>, Interaction Model,
+      <dfn>Interaction Affordance</dfn>, Property, Action and Event are defined in
       the
       <a href="https://www.w3.org/TR/wot-architecture/#terminology">Terminology</a>
       section of the WoT Architecture specification [[wot-architecture11]].
@@ -140,16 +140,16 @@
     <h2>WebSocket Connection</h2>
     <section id="protocol-handshake">
       <h3>Protocol Handshake</h3>
-      <p>In order to communicate with a <a href="https://www.w3.org/TR/wot-architecture11/#dfn-web-thing">Web Thing</a>,
-        a WoT <a href="https://www.w3.org/TR/wot-architecture11/#dfn-consumer">Consumer</a> [[wot-architecture11]] MUST
-        locate one or more WebSocket [[WEBSOCKETS-PROTOCOL]] endpoints provided by the Thing for a given set of <a
-          href="https://www.w3.org/TR/wot-thing-description/#interactionaffordance">interaction affordances</a>
-        [[wot-thing-description11]].</p>
-      <p>The URL of a WebSocket endpoint to be used for a given interaction MUST be obtained from a <a
-          href="https://www.w3.org/TR/wot-architecture11/#dfn-wot-thing-description">Thing Description</a>
+      <p>In order to communicate with a <a>Web Thing</a>,
+        a WoT <a>Consumer</a> [[wot-architecture11]] MUST
+        locate one or more WebSocket [[WEBSOCKETS-PROTOCOL]] endpoints provided by the <a>Thing</a> for a given set of
+        <a>Interaction Affordances</a>
+        [[wot-thing-description11]].
+      </p>
+      <p>The URL of a WebSocket endpoint to be used for a given interaction MUST be obtained from a <a>Thing
+          Description</a>
         [[wot-architecture11]] by locating a <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside
-        the corresponding <a
-          href="https://www.w3.org/TR/wot-thing-description/#interactionaffordance">InteractionAffordance</a> for which:
+        the corresponding <a>Interaction Affordance</a> for which:
       <ul>
         <li>After being resolved against a <a
             href="https://www.w3.org/TR/wot-thing-description/#td-vocab-base--Thing"><code>base</code></a> URL
@@ -194,8 +194,22 @@
         const socket = new WebSocket('wss://mywebthingserver/things/robot', 'webthingprotocol');
       </pre>
     </section>
-    <section id="protocol-handshake">
+
+    <section id="websocket-reuse">
       <h3>WebSocket Re-use</h3>
+      <p>A single WebSocket [[WEBSOCKETS-PROTOCOL]] connection from a <a>WoT Consumer</a> MAY be shared between multiple
+        <a>Interaction
+          Affordances</a> of a <a>Thing</a>. A single WebSocket connection from a <a>WoT Consumer</a> MAY also be shared
+        between multiple <a>Things</a>.</p>
+      <p>Before opening a new WebSocket connection, a <a>WoT Consumer</a> SHOULD check whether it already has an open
+        connection to the same WebSocket endpoint URL.</p>
+      <p>If an existing connection to the same WebSocket endpoint URL exists, then that connection SHOULD be re-used
+        rather than opening an additional socket.</p>
+      <p>If an existing connection to the same WebSocket endpoint URL exists but is using a different set of credentials
+        for its given <a
+          href="https://www.w3.org/TR/wot-thing-description11/#securityscheme"><code>SecurityScheme</code></a>
+        [[wot-thing-description11]] (e.g. a different Bearer Token), then the <a>WoT Consumer</a> MUST NOT re-use the
+        connection.</p>
     </section>
   </section>
 

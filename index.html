@@ -129,7 +129,7 @@
     <h2>Terminology</h2>
     <p>Fundamental WoT terminology such as <dfn>Thing</dfn> or <dfn>Web Thing</dfn>, <dfn>Consumer</dfn> or <dfn>WoT
         Consumer</dfn>, WoT Thing Description or <dfn>Thing Description</dfn>, Interaction Model,
-      <dfn>Interaction Affordance</dfn>, Property, Action and Event are defined in
+      <dfn>Interaction Affordance</dfn>, <dfn>Property</dfn>, Action and Event are defined in
       the
       <a href="https://www.w3.org/TR/wot-architecture/#terminology">Terminology</a>
       section of the WoT Architecture specification [[wot-architecture11]].
@@ -200,7 +200,8 @@
       <p>A single WebSocket [[WEBSOCKETS-PROTOCOL]] connection from a <a>WoT Consumer</a> MAY be shared between multiple
         <a>Interaction
           Affordances</a> of a <a>Thing</a>. A single WebSocket connection from a <a>WoT Consumer</a> MAY also be shared
-        between multiple <a>Things</a>.</p>
+        between multiple <a>Things</a>.
+      </p>
       <p>Before opening a new WebSocket connection, a <a>WoT Consumer</a> SHOULD check whether it already has an open
         connection to the same WebSocket endpoint URL.</p>
       <p>If an existing connection to the same WebSocket endpoint URL exists, then that connection SHOULD be re-used
@@ -215,8 +216,218 @@
 
   <section id="websocket-messages">
     <h2>WebSocket Messages</h2>
+    <p>All messages MUST be a JSON <a href="https://www.rfc-editor.org/rfc/rfc8259#section-4">object</a> [[JSON]].</p>
+    <p>The top level JSON object MUST contain a <code>thingID</code> member with the value set to a unique identifier of
+      the <a>Web Thing</a> to which the message relates.
+      If the <a>Thing Description</a> of the <a>Web Thing</a> contains an <code>id</code> member then the value of that
+      <code>id</code> member MUST be used as the unique identifier assigned to <code>thingID</code>.
+      If the <a>Thing Description</a> of the <a>Web Thing</a> does not contain an <code>id</code> member then the URL
+      [[URL]] from which the <a>Thing Description</a> was retrieved MAY be used as the <code>thingID</code> value
+      instead. The value of the <code>thingID</code> member MUST be a valid URI [[URI]] serialised as a string.
+    </p>
+    <p>The top level JSON object MUST contain a <code>messageID</code> member with the value set to a unique identifier
+      for the current message in UUIDv4 format [[rfc9562]].</p>
+    <p>The top level JSON object MAY contain a <code>correlationID</code> member which provides a unique identifier in
+      UUIDv4 format [[rfc9562]] which is shared between messages corresponding to the same WoT operation (e.g. a
+      property read request and response, or an event subscription request and event notification).</p>
+
+    <table class="def">
+      <caption>Common members of all messages</caption>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Type</th>
+          <th>Assignment</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>thingID</code></td>
+          <td>string</td>
+          <td>Mandatory</td>
+          <td>The ID (URI) of the <a>Thing</a> to which the <a>Property</a> belongs.</td>
+        </tr>
+        <tr>
+          <td><code>messageID</code></td>
+          <td>string</td>
+          <td>Mandatory</td>
+          <td>A unique identifier (UUID) for the current message.</td>
+        </tr>
+        <tr>
+          <td><code>messageType</code></td>
+          <td>string</td>
+          <td>Mandatory</td>
+          <td>A string which denotes the type of message, with a value from the <a href="#message-types-table">WebSocket
+              message types</a> table below.</td>
+        </tr>
+        <tr>
+          <td><code>correlationID</code></td>
+          <td>string</td>
+          <td>Optional</td>
+          <td>A unique identifer (UUID) which is shared between messages corresponding to the same operation, e.g. a
+            request and a response.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>The top level JSON object MUST contain a <code>messageType</code> member, with its value set to one of the
+      message type strings from the following table:</p>
+    <table id="message-types-table" class="def">
+      <caption>WebSocket message types</caption>
+      <thead>
+        <tr>
+          <th>Message type</th>
+          <th>Description</th>
+          <th>Entity</th>
+          <th>Direction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="#readProperty"><code>readProperty</code></a></td>
+          <td>Request a property reading from a Thing</td>
+          <td>PropertyAffordance</td>
+          <td>Consumer ➡ Thing</td>
+        </tr>
+        <tr>
+          <td><a href="#propertyReading"><code>propertyReading</code></a></td>
+          <td>A property reading from a Thing</td>
+          <td>PropertyAffordance</td>
+          <td>Thing ➡ Consumer</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>All date and time values MUST use the <code>date-time</code> format
+      defined in [[RFC3339]].</span>
+    </p>
+    <pre class="example" title="Example timestamp">
+      <code>2025-01-15T12:08:00.42Z</code>
+    </pre>
+    <p class="note">
+      In order to reduce ambiguity, RFC 3339 only permits an hour with a value
+      between 00 and 23 (not 24), and time zones expressed as a numerical
+      offset relative to UTC. The suffix "Z" when applied to a time denotes a
+      UTC offset of 00:00.
+    </p>
     <section id="properties">
       <h3>Properties</h3>
+      <p>The following sections define WebSocket message payload formats for reading, writing and observing
+        <a>Properties</a> of <a>Things</a>.
+      </p>
+      <section id="readProperty">
+        <h4><code>readProperty</code></h4>
+        <p>To request a property reading from a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
+            href="#websocket-messages">message</a> to the <a>Thing</a>
+          which contains the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>readProperty</code> message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"readProperty"</td>
+              <td>A string which denotes that this message is requesting a <code>readproperty</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> to read, as per its key in the <code>properties</code> member of
+                the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="Read property operation (Consumer to Thing)">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "c370da58-69ae-4e83-bb5a-ac6cfb2fed54",
+            "messageType": "readProperty",
+            "name": "on",
+            "correlationID": "5afb752f-8be0-4a3c-8108-1327a6009cbd"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a <code>readProperty</code> message from a <a>Consumer</a>, then upon
+          successfully reading the value of the corresponding property it MUST send a <a
+            href="propertyReading"><code>propertyReading</code></a> message in response, containing its current value.
+        </p>
+      </section>
+      <section id="propertyReading">
+        <h4><code>propertyReading</code></h4>
+        <p>To notify a <a>Consumer</a> of the value of a <a>Property</a>, a <a>Thing</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Consumer</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>propertyReading</code> message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"propertyReading"</td>
+              <td>A string which denotes that this message is notifying a <a>Consumer</a> of the value of a
+                <a>Property</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> being read, as per its key in the <code>properties</code> member of
+                the
+                <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td>any</td>
+              <td>Mandatory</td>
+              <td>The current value of the <a>Property</a> being read, with a format conforming to the data schema of
+                the
+                corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the property reading took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>If a <code>propertyReading</code> message is sent in response to a <a
+            href="#readProperty"><code>readProperty</code></a>, <code>readAllProperties</code>,
+          <code>observeProperty</code> or <code>observeAllProperties</code> message which contained a
+          <code>correlatonID</code> member, then the response message SHOULD also include a <code>correlationID</code>
+          member with the same value.
+        </p>
+        <pre class="example" title="Property reading message (Thing to Consumer)">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "79057736-3e0e-4dc3-b139-a33051901ee2",
+            "messageType": "propertyReading",
+            "name": "on",
+            "value": true,
+            "timestamp": "2024-01-13T23:20:50.52Z",
+            "correlationID": "5afb752f-8be0-4a3c-8108-1327a6009cbd"
+          }
+        </pre>
+      </section>
     </section>
     <section id="actions">
       <h3>Actions</h3>

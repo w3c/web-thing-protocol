@@ -291,6 +291,12 @@
           <td>Consumer ➡ Thing</td>
         </tr>
         <tr>
+          <td><a href="#writeProperty"><code>writeProperty</code></a></td>
+          <td>Set the value of a property</td>
+          <td>PropertyAffordance</td>
+          <td>Consumer ➡ Thing</td>
+        </tr>
+        <tr>
           <td><a href="#propertyReading"><code>propertyReading</code></a></td>
           <td>A property reading from a Thing</td>
           <td>PropertyAffordance</td>
@@ -347,7 +353,7 @@
             </tr>
           </tbody>
         </table>
-        <pre class="example" title="Read property operation (Consumer to Thing)">
+        <pre class="example" title="Read property message (Consumer to Thing)">
           {
             "thingID": "https://mythingserver.com/things/mylamp1",
             "messageID": "c370da58-69ae-4e83-bb5a-ac6cfb2fed54",
@@ -361,6 +367,67 @@
             href="propertyReading"><code>propertyReading</code></a> message in response, containing its current value.
         </p>
       </section>
+
+      <section id="writeProperty">
+        <h4><code>writeProperty</code></h4>
+        <p>To set the value of a <a>Property</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
+            href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>writeProperty</code> message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"writeProperty"</td>
+              <td>A string which denotes that this message is requesting a <code>writeproperty</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> whose value should be set, as per its key in the
+                <code>properties</code> member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td>any</td>
+              <td>Mandatory</td>
+              <td>The desired new value of the <a>Property</a>, with a format conforming to the data schema of the
+                corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="Write property message (Consumer to Thing)">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "adbefb2c-9c10-4a9e-b2d5-840a58ab667e",
+            "messageType": "writeProperty",
+            "name": "on",
+            "value": true,
+            "correlationID": "b737e900-2b34-4315-bf9e-9eec1a0406c0"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a <code>writeProperty</code> message from a <a>Consumer</a>, then upon
+          successfully writing the value of the corresponding <a>Property</a> it SHOULD send a <a
+            href="propertyReading"><code>propertyReading</code></a> message in response, containing its updated value.
+        </p>
+        <p class="note" title="Write-only Properties">In some cases it may not be possible for an underlying
+          implementation to confirm that a value has been written. The <code>writeOnly</code> member of a
+          PropertyAffordance being set to <code>true</code> may hint that this is the case. For this reason, a
+          <a>Consumer</a> should not necessarily assume that a <code>writeproperty</code> operation is unsuccessful if
+          no <code>propertyReading</code> message is received in response.
+        </p>
+      </section>
+
       <section id="propertyReading">
         <h4><code>propertyReading</code></h4>
         <p>To notify a <a>Consumer</a> of the value of a <a>Property</a>, a <a>Thing</a> MUST send a
@@ -411,10 +478,10 @@
           </tbody>
         </table>
         <p>If a <code>propertyReading</code> message is sent in response to a <a
-            href="#readProperty"><code>readProperty</code></a>, <code>readAllProperties</code>,
-          <code>observeProperty</code> or <code>observeAllProperties</code> message which contained a
-          <code>correlatonID</code> member, then the response message SHOULD also include a <code>correlationID</code>
-          member with the same value.
+            href="#readProperty"><code>readProperty</code></a>, <a href="#writeProperty"><code>writeProperty</code></a>,
+          <code>readAllProperties</code>, <code>observeProperty</code> or <code>observeAllProperties</code> message
+          which contained a <code>correlatonID</code> member, then the response message SHOULD also include a
+          <code>correlationID</code> member with the same value.
         </p>
         <pre class="example" title="Property reading message (Thing to Consumer)">
           {

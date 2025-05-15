@@ -338,11 +338,11 @@
       <tbody>
         <tr>
           <td><a href="#readproperty"><code>readproperty</code></a></td>
-          <td>request, response</td>
+          <td><a href="#readproperty-request">request</a>, <a href="#readproperty-response">response</a></td>
         </tr>
         <tr>
           <td><a href="#writeproperty"><code>writeproperty</code></a></td>
-          <td>request, response</td>
+          <td><a href="#writeproperty-request">request</a>, <a href="#writeproperty-response">response</a></td>
         </tr>
       </tbody>
     </table>
@@ -365,13 +365,10 @@
       offset relative to UTC. The suffix "Z" when applied to a time denotes a
       UTC offset of 00:00.
     </p>
-    <section id="properties">
-      <h3>Properties</h3>
-      <p>The following sections define WebSocket message payload formats for reading, writing and observing
-        <a>Properties</a> of <a>Things</a>.
-      </p>
-      <section id="readproperty">
-        <h4><code>readproperty</code></h4>
+    <section id="readproperty">
+      <h3><code>readproperty</code></h3>
+      <section id="readproperty-request">
+        <h4>Request</h4>
         <p>To request a property reading from a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
             href="#websocket-messages">message</a> to the <a>Thing</a>
           which contains the following members:</p>
@@ -422,6 +419,9 @@
           <code>request</code> and <code>operation</code> set to <code>readproperty</code> it MUST
           attempt to read the value of the <a>Property</a> with the given <code>name</code>.
         </p>
+      </section>
+      <section id="readproperty-response">
+        <h4>Response</h4>
         <p>Upon successfully reading the value of the requested <a>Property</a>, the Thing MUST send a message to the
           requesting <code>Consumer</code> containing the following members:</p>
         <table class="def">
@@ -487,9 +487,12 @@
           }
         </pre>
       </section>
+    </section>
 
-      <section id="writeproperty">
-        <h4><code>writeproperty</code></h4>
+    <section id="writeproperty">
+      <h3><code>writeproperty</code></h3>
+      <section id="writeproperty-request">
+        <h4>Request</h4>
         <p>To set the value of a <a>Property</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
             href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:</p>
         <table class="def">
@@ -543,6 +546,10 @@
             "correlationID": "f6cf46a8-9c96-437e-8b53-925b7679a990"
           }
         </pre>
+      </section>
+
+      <section id="writeproperty-response">
+        <h4>Response</h4>
         <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
           <code>request</code> and <code>operation</code> set to <code>writeproperty</code> it MUST
           attempt to set the <a>Property</a> with the name provided in the <code>name</code> member to
@@ -621,15 +628,6 @@
           <code>value</code> member.
         </p>
       </section>
-    </section>
-    <section id="actions">
-      <h3>Actions</h3>
-    </section>
-    <section id="events">
-      <h3>Events</h3>
-    </section>
-    <section id="events">
-      <h3>Other Messages</h3>
     </section>
   </section>
 

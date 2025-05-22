@@ -348,6 +348,10 @@
           <td><a href="#readallproperties"><code>readallproperties</code></a></td>
           <td><a href="#readallproperties-request">request</a>, <a href="#readallproperties-response">response</a></td>
         </tr>
+        <tr>
+          <td><a href="#readmultipleproperties"><code>readmultipleproperties</code></a></td>
+          <td><a href="#readmultipleproperties-request">request</a>, <a href="#readmultipleproperties-response">response</a></td>
+        </tr>
       </tbody>
     </table>
 
@@ -748,6 +752,124 @@
             },
             "timestamp": "2025-05-22T17:15:35.636Z",
             "correlationID": "c08075a4-d53c-4f51-b251-a6b6922c2b1f"
+          }
+        </pre>
+      </section>
+    </section>
+
+    <section id="readmultipleproperties">
+      <h3><code>readmultipleproperties</code></h3>
+      <section id="readmultipleproperties-request">
+        <h4>Request</h4>
+        <p>To request a reading of multiple readable <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>readmultipleproperties</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"readmultipleproperties"</td>
+              <td>A string which denotes that this message relates to a <code>readmultipleproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>names</code></td>
+              <td>array</td>
+              <td>Mandatory</td>
+              <td>An array of strings specifying the names of the <a>Properties</a> to read, as per their keys in the
+                <code>properties</code> member of the <a>Thing Description</a>.
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="readmultipleproperties request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "dacaea0e-43c2-4fc0-bd66-5a807ca52324",
+            "messageType": "request",
+            "operation": "readmultipleproperties",
+            "names": ["on", "level"],
+            "correlationID": "c0503f71-288f-4460-b308-c4cc0009cd89"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>readmultipleproperties</code> it MUST
+          attempt to read the value of all the <a>Properties</a> specified in the <code>names</code> member of the
+          message.
+        </p>
+      </section>
+      <section id="readmultipleproperties-response">
+        <h4>Response</h4>
+        <p>Upon successfully reading the values of the specified <a>Properties</a>, the Thing MUST send a message to the
+          requesting <a>Consumer</a> containing the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>readmultipleproperties</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"readmultipleproperties"</td>
+              <td>A string which denotes that this message relates to a <code>readmultipleproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>values</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>The values of the read <a>Properties</a> contained in an object keyed by <a>Property</a> name, with
+                the value of each <a>Property</a> conforming to the data schema of the corresponding PropertyAffordance
+                in the <a>Thing Description</a>.</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the property readings took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="readmultipleproperties response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "695a2626-be5f-4f91-8719-105abc52aa0f",
+            "messageType": "response",
+            "operation": "readmultipleproperties",
+            "values": {
+              "on": true,
+              "level": 50
+            },
+            "timestamp": "2025-05-22T18:04:33.531Z",
+            "correlationID": "c0503f71-288f-4460-b308-c4cc0009cd89"
           }
         </pre>
       </section>

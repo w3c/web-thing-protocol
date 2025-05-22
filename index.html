@@ -752,6 +752,143 @@
         </pre>
       </section>
     </section>
+
+    <section id="error-responses">
+      <h3>Error Responses</h3>
+      <p>If a <a>Thing</a> experiences an error when attempting to carry out an operation requested by a
+        <a>Consumer</a>,
+        it MUST send a response message to the <a>Consumer</a> containing the following members:
+      </p>
+      <table class="def">
+        <caption>Members of an error response message</caption>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Type</th>
+            <th>Assignment</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>messageType</code></td>
+            <td>string</td>
+            <td>"response"</td>
+            <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>error</code></td>
+            <td>object</td>
+            <td>Mandatory</td>
+            <td>An object conforming to the Problem Details Format [[RFC9457]].</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre class="example" title="Example error response message">
+        <code>
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "79057736-3e0e-4dc3-b139-a33051901ee2",
+            "messageType": "response",
+            "operation": "readproperty",
+            "name": "on",
+            "error": {
+              "status": "404",
+              "type": "https://w3c.github.io/web-thing-protocol/errors#not-found",
+              "title": "Not Found"
+              "detail": "No property found with the name 'on'"
+            }
+            "timestamp": "2024-01-13T23:20:50.52Z",
+            "correlationID": "5afb752f-8be0-4a3c-8108-1327a6009cbd"
+          }
+        </code>
+      </pre>
+      <p>If the error experienced could be described by one of the common error types described in the following table
+        then that error type SHOULD be used:</p>
+      <table class="def">
+        <caption>Common error types</caption>
+        <thead>
+          <tr>
+            <th><code>status</code></th>
+            <th><code>type</code></th>
+            <th><code>title</code></th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>400</td>
+            <td>https://w3c.github.io/web-thing-protocol/errors#400</td>
+            <td>Bad Request</td>
+            <td>The request message was invalid (e.g. is missing mandatory members or contains an unknown operation
+              type).
+            </td>
+          </tr>
+          <tr>
+            <td>403</td>
+            <td>https://w3c.github.io/web-thing-protocol/errors#403</td>
+            <td>Forbidden</td>
+            <td>The requesting Consumer is not have permission to carry out the requested operation.
+            </td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>https://w3c.github.io/web-thing-protocol/errors#404</td>
+            <td>Not Found</td>
+            <td>The interaction affordance referenced in the request message can not be found (e.g. no <a>Property</a>
+              with the given <code>name</code> exists).
+            </td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>https://w3c.github.io/web-thing-protocol/errors#500</td>
+            <td>Internal Server Error</td>
+            <td>The <a>Thing</a> experienced an unexpected condition which prevented it from fulfilling the requested
+              operation.
+            </td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>https://w3c.github.io/web-thing-protocol/errors#503</td>
+            <td>Service Unavailable</td>
+            <td>The <a>Thing</a> or interaction affordance is currently not able to fulfil the requested operation (e.g.
+              because it is overloaded or undergoing a firmware update).
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="ednote" title="Error type URLs">
+        The URLs given for error types in the table above are placeholders and will be replaced in the final version of
+        this specification.
+      </p>
+      <p>The <code>error</code> member of an error response message MAY contain a <code>detail</code> member with its
+        value set to a string containing additional human-readable information about the specific instance of the error.
+      </p>
+      <p>A <a>Thing</a> MAY use its own error types where one of the common error types above does not sufficiently
+        explain the error, as long as the <code>error</code> member of the response message conforms to the Problem
+        Details Format [[RFC9457]].</p>
+      <pre class="example" title="Example custom error response message">
+        <code>
+          {
+            "thingID": "https://mythingserver.com/things/teapot",
+            "messageID": "07de640d-1b10-4857-b1ae-0c29d62acedc",
+            "messageType": "response",
+            "operation": "invokeaction",
+            "name": "brewCoffee",
+            "error": {
+              "status": "418",
+              "type": "https://mythingserver.com/errors#418",
+              "title": "I'm a teapot"
+              "detail": "This device can not brew coffee because it is a teapot"
+            }
+            "timestamp": "2025-05-22T07:21:50.53Z",
+            "correlationID": "61aa2164-b1ef-4585-aa3f-626a7f4a185f"
+          }
+        </code>
+      </pre>
+    </section>
+
   </section>
 
   <section id="example-thing-descriptions">

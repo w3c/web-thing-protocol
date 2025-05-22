@@ -337,8 +337,12 @@
       </thead>
       <tbody>
         <tr>
-          <td><code>readproperty</code></td>
-          <td>request, response</td>
+          <td><a href="#readproperty"><code>readproperty</code></a></td>
+          <td><a href="#readproperty-request">request</a>, <a href="#readproperty-response">response</a></td>
+        </tr>
+        <tr>
+          <td><a href="#writeproperty"><code>writeproperty</code></a></td>
+          <td><a href="#writeproperty-request">request</a>, <a href="#writeproperty-response">response</a></td>
         </tr>
       </tbody>
     </table>
@@ -361,13 +365,10 @@
       offset relative to UTC. The suffix "Z" when applied to a time denotes a
       UTC offset of 00:00.
     </p>
-    <section id="properties">
-      <h3>Properties</h3>
-      <p>The following sections define WebSocket message payload formats for reading, writing and observing
-        <a>Properties</a> of <a>Things</a>.
-      </p>
-      <section id="readproperty">
-        <h4><code>readproperty</code></h4>
+    <section id="readproperty">
+      <h3><code>readproperty</code></h3>
+      <section id="readproperty-request">
+        <h4>Request</h4>
         <p>To request a property reading from a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
             href="#websocket-messages">message</a> to the <a>Thing</a>
           which contains the following members:</p>
@@ -418,6 +419,9 @@
           <code>request</code> and <code>operation</code> set to <code>readproperty</code> it MUST
           attempt to read the value of the <a>Property</a> with the given <code>name</code>.
         </p>
+      </section>
+      <section id="readproperty-response">
+        <h4>Response</h4>
         <p>Upon successfully reading the value of the requested <a>Property</a>, the Thing MUST send a message to the
           requesting <code>Consumer</code> containing the following members:</p>
         <table class="def">
@@ -458,9 +462,8 @@
               <td><code>value</code></td>
               <td>any</td>
               <td>Mandatory</td>
-              <td>The current value of the <a>Property</a> being read, with a format conforming to the data schema of
-                the
-                corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+              <td>The current value of the <a>Property</a> being read, with a type and structure conforming to the data
+                schema of the corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
             </tr>
             <tr>
               <td><code>timestamp</code></td>
@@ -484,14 +487,153 @@
         </pre>
       </section>
     </section>
-    <section id="actions">
-      <h3>Actions</h3>
-    </section>
-    <section id="events">
-      <h3>Events</h3>
-    </section>
-    <section id="events">
-      <h3>Other Messages</h3>
+
+    <section id="writeproperty">
+      <h3><code>writeproperty</code></h3>
+      <section id="writeproperty-request">
+        <h4>Request</h4>
+        <p>To set the value of a <a>Property</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
+            href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>writeproperty</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writeproperty"</td>
+              <td>A string which denotes that this message relates to a <code>writeproperty</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> whose value should be set, as per its key in the
+                <code>properties</code> member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td>any</td>
+              <td>Mandatory</td>
+              <td>The desired new value of the <a>Property</a>, with a type and structure conforming to the data schema
+                of the corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writeproperty request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "97d22676-6d45-4435-aef5-dd87467a0c44",
+            "messageType": "response",
+            "operation": "writeproperty",
+            "name": "on",
+            "value": true,
+            "correlationID": "f6cf46a8-9c96-437e-8b53-925b7679a990"
+          }
+        </pre>
+      </section>
+
+      <section id="writeproperty-response">
+        <h4>Response</h4>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>writeproperty</code> it MUST
+          attempt to set the <a>Property</a> with the name provided in the <code>name</code> member to
+          the value provided in the <code>value</code> member.
+        </p>
+        <p>Upon successfully submitting the value of the requested <a>Property</a>, the Thing MUST send a message to the
+          requesting <code>Consumer</code> containing the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>writeproperty</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writeproperty"</td>
+              <td>A string which denotes that this message relates to a <code>writeproperty</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> being written, as per its key in the <code>properties</code> member of
+                the
+                <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td>any</td>
+              <td>Optional</td>
+              <td>The value which has been successfully assigned to the <a>Property</a> being written, with a type and
+                structure conforming to the data schema of the corresponding PropertyAffordance in the <a>Thing
+                  Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the property write took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writeproperty response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "db25fe4f-bee8-43a7-8ff0-3a1ff6e620b0",
+            "messageType": "response",
+            "operation": "writeproperty",
+            "name": "on",
+            "value": true,
+            "timestamp": "2024-01-13T23:20:50.52Z",
+            "correlationID": "f6cf46a8-9c96-437e-8b53-925b7679a990"
+          }
+        </pre>
+        <p>If the <a>Thing</a> can confirm that the requested value has been set successfully then the response message
+          to a <code>writeproperty</code> request SHOULD contain a <code>value</code> member with its value set to the
+          value which has been successfully set.
+        </p>
+        <p>If the <a>Thing</a> can not confirm that the requested value has been set successfully (e.g. in the case of a
+          write-only property or a device that is temporarily asleep so the write has been queued) then
+          the response message to a <code>writeproperty</code> request MUST NOT contain a
+          <code>value</code> member.
+        </p>
+        <p>If a Consumer attempts to set the value of a numerical <a>Property</a> to a value which conforms to the
+          <a>Property</a>'s data schema but to a level of precision the Thing does not support, (e.g. 3.14159), then the
+          <a>Thing</a> MAY respond with the actual value set (e.g. 3.14).
+        </p>
+        </p>
+      </section>
     </section>
   </section>
 

@@ -462,9 +462,8 @@
               <td><code>value</code></td>
               <td>any</td>
               <td>Mandatory</td>
-              <td>The current value of the <a>Property</a> being read, with a format conforming to the data schema of
-                the
-                corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+              <td>The current value of the <a>Property</a> being read, with a type and structure conforming to the data
+                schema of the corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
             </tr>
             <tr>
               <td><code>timestamp</code></td>
@@ -530,8 +529,8 @@
               <td><code>value</code></td>
               <td>any</td>
               <td>Mandatory</td>
-              <td>The desired new value of the <a>Property</a>, with a format conforming to the data schema of the
-                corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+              <td>The desired new value of the <a>Property</a>, with a type and structure conforming to the data schema
+                of the corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
             </tr>
           </tbody>
         </table>
@@ -595,8 +594,9 @@
               <td><code>value</code></td>
               <td>any</td>
               <td>Optional</td>
-              <td>The value which has been successfully assigned to the <a>Property</a> being written, with a format
-                conforming to the data schema of the corresponding PropertyAffordance in the <a>Thing Description</a>.
+              <td>The value which has been successfully assigned to the <a>Property</a> being written, with a type and
+                structure conforming to the data schema of the corresponding PropertyAffordance in the <a>Thing
+                  Description</a>.
               </td>
             </tr>
             <tr>
@@ -624,8 +624,14 @@
           value which has been successfully set.
         </p>
         <p>If the <a>Thing</a> can not confirm that the requested value has been set successfully (e.g. in the case of a
-          write-only property) then the response message to a <code>writeproperty</code> request MUST NOT contain a
+          write-only property or a device that is temporarily asleep so the write has been queued) then
+          the response message to a <code>writeproperty</code> request MUST NOT contain a
           <code>value</code> member.
+        </p>
+        <p>If a Consumer attempts to set the value of a numerical <a>Property</a> to a value which conforms to the
+          <a>Property</a>'s data schema but to a level of precision the Thing does not support, (e.g. 3.14159), then the
+          <a>Thing</a> MAY respond with the actual value set (e.g. 3.14).
+        </p>
         </p>
       </section>
     </section>

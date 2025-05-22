@@ -351,7 +351,7 @@
       UUIDv4 format [[rfc9562]] which is shared between messages corresponding to the same WoT operation (e.g. a
       property read request and response, or an event subscription request and event notification). If a request message
       contains a <code>correlatonID</code> member then any response and notification messages which correspond to the
-      same operation SHOULD also include a <code>correlationID</code> member with the same value.</p>
+      same operation MUST also include a <code>correlationID</code> member with the same value.</p>
 
     <p>All date and time values MUST use the <code>date-time</code> format
       defined in [[RFC3339]].</span>

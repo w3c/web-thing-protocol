@@ -350,7 +350,8 @@
         </tr>
         <tr>
           <td><a href="#readmultipleproperties"><code>readmultipleproperties</code></a></td>
-          <td><a href="#readmultipleproperties-request">request</a>, <a href="#readmultipleproperties-response">response</a></td>
+          <td><a href="#readmultipleproperties-request">request</a>, <a
+              href="#readmultipleproperties-response">response</a></td>
         </tr>
       </tbody>
     </table>
@@ -761,7 +762,8 @@
       <h3><code>readmultipleproperties</code></h3>
       <section id="readmultipleproperties-request">
         <h4>Request</h4>
-        <p>To request a reading of multiple readable <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST send a
+        <p>To request a reading of multiple readable <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST
+          send a
           <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
         </p>
         <table class="def">
@@ -873,10 +875,67 @@
           }
         </pre>
       </section>
+      <section id="readmultipleproperties-error-responses">
+        <h4>Error Responses</h4>
+        <p>If a <a>Thing</a> receives a <code>readmultipleproperties</code> request message from a <a>Consumer</a> with
+          a
+          <code>names</code> member which is empty, contains an invalid <a>Property</a> name, or the name of a
+          <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-writeOnly--DataSchema"><code>writeOnly</code></a>
+          [[wot-thing-description11]] <a>Property</a>, then it MUST send an <a href="#error-response">error response</a>
+          to
+          the <a>Consumer</a> with <code>status</code> set to <code>400</code>.
+        </p>
+        <pre class="example" title="Example readmultipleproperties Bad Request error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "72e6f397-8ae9-4882-ac7d-303a953527a5",
+              "messageType": "response",
+              "operation": "readmultipleproperties",
+              "names": ["on", "volume"],
+              "error": {
+                "status": "400",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#400",
+                "title": "Bad Request"
+                "detail": "No property found with the name 'volume'"
+              }
+              "timestamp": "2025-05-22T18:04:33.531Z",
+              "correlationID": "c0503f71-288f-4460-b308-c4cc0009cd89"
+            }
+          </code>
+        </pre>
+        <p>If a <a>Thing</a> receives a <code>readmultipleproperties</code> request message from a <a>Consumer</a> with
+          a
+          <code>names</code> member containing valid <a>Property</a> names but the reading of at least one of the
+          properties
+          unexpectedly fails, then it MUST send an <a href="#error-response">error response</a> to
+          the <a>Consumer</a> with <code>status</code> set to <code>500</code>.
+        </p>
+        <pre class="example" title="Example readmultipleproperties Internal Server Error error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "cf0240ca-e21c-49b8-bca4-e27002525ea1",
+              "messageType": "response",
+              "operation": "readmultipleproperties",
+              "names": ["on", "level"],
+              "error": {
+                "status": "500",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+                "title": "Internal Server Error"
+                "detail": "Reading the 'level' property unexpectedly failed"
+              }
+              "timestamp": "2025-05-22T18:04:33.531Z",
+              "correlationID": "c0503f71-288f-4460-b308-c4cc0009cd89"
+            }
+          </code>
+        </pre>
+      </section>
     </section>
 
-    <section id="error-responses">
-      <h3>Error Responses</h3>
+    <section id="error-response">
+      <h3>Error Response</h3>
       <p>If a <a>Thing</a> experiences an error when attempting to carry out an operation requested by a
         <a>Consumer</a>,
         it MUST send a response message to the <a>Consumer</a> containing the following members:
@@ -917,7 +976,7 @@
             "name": "on",
             "error": {
               "status": "404",
-              "type": "https://w3c.github.io/web-thing-protocol/errors#not-found",
+              "type": "https://w3c.github.io/web-thing-protocol/errors#404",
               "title": "Not Found"
               "detail": "No property found with the name 'on'"
             }

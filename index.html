@@ -756,6 +756,32 @@
           }
         </pre>
       </section>
+      <section id="readallproperties-error-response">
+        <h4>Error Response</h4>
+        <p>If a <a>Thing</a> receives a <code>readallproperties</code> request message from a <a>Consumer</a>
+          but the reading of at least one of the properties unexpectedly fails, then it MUST send an 
+          <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to 
+          <code>500</code>.
+        </p>
+        <pre class="example" title="Example readallproperties Internal Server Error error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "1876e481-5fc2-4b39-93b4-1f434f7b6a47",
+              "messageType": "response",
+              "operation": "readallproperties",
+              "error": {
+                "status": "500",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+                "title": "Internal Server Error"
+                "detail": "Reading the 'level' property unexpectedly failed"
+              }
+              "timestamp": "2025-05-22T17:15:36.636Z",
+              "correlationID": "c08075a4-d53c-4f51-b251-a6b6922c2b1f"
+            }
+          </code>
+        </pre>
+      </section>
     </section>
 
     <section id="readmultipleproperties">
@@ -875,8 +901,8 @@
           }
         </pre>
       </section>
-      <section id="readmultipleproperties-error-responses">
-        <h4>Error Responses</h4>
+      <section id="readmultipleproperties-error-response">
+        <h4>Error Response</h4>
         <p>If a <a>Thing</a> receives a <code>readmultipleproperties</code> request message from a <a>Consumer</a> with
           a
           <code>names</code> member which is empty, contains an invalid <a>Property</a> name, or the name of a

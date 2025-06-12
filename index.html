@@ -645,8 +645,8 @@
       <h3><code>readallproperties</code></h3>
       <section id="readallproperties-request">
         <h4>Request</h4>
-        <p>To request a reading of all of a <a>Thing</a>'s <a>Properties</a> at once, a <a>Consumer</a> MUST send a <a
-            href="#websocket-messages">message</a> to the <a>Thing</a>
+        <p>To request a reading of all of a <a>Thing</a>'s readable <a>Properties</a> at once, a <a>Consumer</a> MUST
+          send a <a href="#websocket-messages">message</a> to the <a>Thing</a>
           which contains the following members:</p>
         <table class="def">
           <caption>Members of a <code>readallproperties</code> request message</caption>
@@ -684,12 +684,17 @@
         </pre>
         <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
           <code>request</code> and <code>operation</code> set to <code>readallproperties</code> it MUST
-          attempt to read the value of all of its <a>Properties</a>.
+          attempt to read the value of all of its readable <a>Properties</a> (i.e. all
+          <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">Property Affordances</a> where
+          <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-writeOnly--DataSchema"><code>writeOnly</code></a>
+          [[wot-thing-description11]] is not set to <code>true</code>).
         </p>
       </section>
       <section id="readallproperties-response">
         <h4>Response</h4>
-        <p>Upon successfully reading the value of all of its <a>Properties</a>, the Thing MUST send a message to the requesting <a>Consumer</a> containing the following members:</p>
+        <p>Upon successfully reading the value of all of its readable <a>Properties</a>, the Thing MUST send a message
+          to the requesting <a>Consumer</a> containing the following members:</p>
         <table class="def">
           <caption>Members of a <code>readallproperties</code> response message</caption>
           <thead>

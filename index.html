@@ -354,6 +354,12 @@
               href="#readmultipleproperties-response">response</a></td>
         </tr>
         <tr>
+          <td><a href="#writeallproperties"><code>writeallproperties</code></a></td>
+          <td><a href="#writeallproperties-request">request</a>,
+            <a href="#writeallproperties-response">response</a>
+          </td>
+        </tr>
+        <tr>
           <td><a href="#observeproperty"><code>observeproperty</code></a></td>
           <td><a href="#observeproperty-request">request</a>,
             <a href="#observeproperty-response">response</a>,
@@ -789,6 +795,10 @@
             }
           </code>
         </pre>
+        <p>If a <code>readallproperties</code> operation only partially fails (i.e. some <a>Properties</a> can be
+          read but others can not), a <a>Thing</a> MAY include the successfully read values in the error
+          response, in a <code>values</code> member keyed by <a>Property</a> name.
+        </p>
       </section>
     </section>
 
@@ -927,7 +937,6 @@
               "messageID": "72e6f397-8ae9-4882-ac7d-303a953527a5",
               "messageType": "response",
               "operation": "readmultipleproperties",
-              "names": ["on", "volume"],
               "error": {
                 "status": "400",
                 "type": "https://w3c.github.io/web-thing-protocol/errors#400",
@@ -953,7 +962,6 @@
               "messageID": "cf0240ca-e21c-49b8-bca4-e27002525ea1",
               "messageType": "response",
               "operation": "readmultipleproperties",
-              "names": ["on", "level"],
               "error": {
                 "status": "500",
                 "type": "https://w3c.github.io/web-thing-protocol/errors#500",
@@ -965,6 +973,194 @@
             }
           </code>
         </pre>
+        <p>If a <code>readmultipleproperties</code> operation only partially fails (i.e. some <a>Properties</a> can be
+          read but others can not), a <a>Thing</a> MAY include the successfully read values in the error
+          response, in a <code>values</code> member keyed by <a>Property</a> name.
+        </p>
+      </section>
+    </section>
+
+    <section id="writeallproperties">
+      <h3><code>writeallproperties</code></h3>
+      <section id="writeallproperties-request">
+        <h4>Request</h4>
+        <p>To set the value of all <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST
+          send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>writeallproperties</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writeallproperties"</td>
+              <td>A string which denotes that this message relates to a <code>writeallproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>values</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An object keyed by <a>Property</a> name, containing the desired value of each <a>Property</a>, with a
+                type and structure conforming to the data schema of each corresponding PropertyAffordance in the
+                <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writeallproperties request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "60c33fc4-ed99-446e-a2e3-f3b5be82c34b",
+            "messageType": "request",
+            "operation": "writeallproperties",
+            "values": {
+              "on": true,
+              "level": 75
+            },
+            "correlationID": "551aaa52-ff95-4fb5-a657-2b5f430d47ff"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>writeallproperties</code> it MUST
+          attempt to write the values of all writeable <a>Properties</a> using the values specified in the
+          <code>values</code> member of the message.
+        </p>
+      </section>
+      <section id="writeallproperties-response">
+        <h4>Response</h4>
+        <p>Upon successfully writing the values of all writeable <a>Properties</a>, the Thing MUST send a message to the
+          requesting <a>Consumer</a> containing the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>writeallproperties</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writeallproperties"</td>
+              <td>A string which denotes that this message relates to a <code>writeallproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>values</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An object keyed by <a>Property</a> name, containing the values which have been successfully assigned
+                to writeable <a>Properties</a>, with the type and structure of each value conforming to the data schema
+                in its corresponding PropertyAffordance in the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the property readings took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writeallproperties response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "74022347-72c2-4fa1-9e34-1a662bdff85e",
+            "messageType": "response",
+            "operation": "writeallproperties",
+            "values": {
+              "on": true,
+              "level": 75
+            },
+            "timestamp": "2025-08-13T17:11:00.531Z",
+            "correlationID": "551aaa52-ff95-4fb5-a657-2b5f430d47ff"
+          }
+        </pre>
+      </section>
+      <section id="writeallproperties-error-response">
+        <h4>Error Response</h4>
+        <p>If a <a>Thing</a> receives a <code>writeallproperties</code> request message from a <a>Consumer</a> which
+          does not contain values for all writeable properties, contains an invalid <a>Property</a> name, contains the
+          name
+          of a <a
+            href="https://www.w3.org/TR/wot-thing-description/#td-vocab-readOnly--DataSchema"><code>readOnly</code></a>
+          [[wot-thing-description11]] <a>Property</a>, or contains a value which does not conform to the data schema of
+          the
+          corresponding PropertyAffordance then it MUST send an <a href="#error-response">error response</a>
+          to the <a>Consumer</a> with <code>status</code> set to <code>400</code>.
+        </p>
+        <pre class="example" title="Example writeallproperties Bad Request error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "6dcfce6a-b0cd-48e7-992a-b96d5cb2b872",
+              "messageType": "response",
+              "operation": "writeallproperties",
+              "error": {
+                "status": "400",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#400",
+                "title": "Bad Request"
+                "detail": "No property found with the name 'volume'"
+              }
+              "timestamp": "2025-08-13T18:31:43.531Z",
+              "correlationID": "551aaa52-ff95-4fb5-a657-2b5f430d47ff"
+            }
+          </code>
+        </pre>
+        <p>If a <a>Thing</a> receives a <code>writeallproperties</code> request message from a <a>Consumer</a> with
+          a <code>values</code> member containing valid names and values for all writeable <a>Properties</a>, but the
+          writing of at least one of the properties unexpectedly fails, then it MUST send an
+          <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to
+          <code>500</code>.
+        </p>
+        <pre class="example" title="Example writeallproperties Internal Server Error error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "35caf0d3-05f6-4a15-8ddf-a765b5280b06",
+              "messageType": "response",
+              "operation": "writeallproperties",
+              "error": {
+                "status": "500",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+                "title": "Internal Server Error"
+                "detail": "Writing the 'level' property unexpectedly failed"
+              }
+              "timestamp": "2025-08-13T19:04:36.426Z",
+              "correlationID": "551aaa52-ff95-4fb5-a657-2b5f430d47ff"
+            }
+          </code>
+        </pre>
+        <p>If a <code>writeallproperties</code> operation only partially fails (i.e. some <a>Properties</a> are
+          written successfully but others are not), a <a>Thing</a> MUST include the successfully written values
+          in the error response, in a <code>values</code> member keyed by <a>Property</a> name.
+        </p>
       </section>
     </section>
 

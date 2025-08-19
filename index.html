@@ -360,6 +360,12 @@
           </td>
         </tr>
         <tr>
+          <td><a href="#writemultipleproperties"><code>writemultipleproperties</code></a></td>
+          <td><a href="#writemultipleproperties-request">request</a>,
+            <a href="#writemultipleproperties-response">response</a>
+          </td>
+        </tr>
+        <tr>
           <td><a href="#observeproperty"><code>observeproperty</code></a></td>
           <td><a href="#observeproperty-request">request</a>,
             <a href="#observeproperty-response">response</a>,
@@ -1161,6 +1167,191 @@
           written successfully but others are not), a <a>Thing</a> MUST include the successfully written values
           in the error response, in a <code>values</code> member keyed by <a>Property</a> name.
         </p>
+      </section>
+    </section>
+
+    <section id="writemultipleproperties">
+      <h3><code>writemultipleproperties</code></h3>
+      <section id="writemultipleproperties-request">
+        <h4>Request</h4>
+        <p>To set the value of multiple <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST
+          send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>writemultipleproperties</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writemultipleproperties"</td>
+              <td>A string which denotes that this message relates to a <code>writemultipleproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>values</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An object keyed by <a>Property</a> name, containing the desired value of each <a>Property</a>, with a
+                type and structure conforming to the data schema of each corresponding PropertyAffordance in the
+                <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writemultipleproperties request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "02c576a2-5adf-4924-b2c8-2222396a3d5c",
+            "messageType": "request",
+            "operation": "writemultipleproperties",
+            "values": {
+              "on": false,
+              "level": 25
+            },
+            "correlationID": "e851583f-e152-4cad-9bb3-7bd3b24f8525"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>writemultipleproperties</code> it MUST
+          attempt to write the values of the <a>Properties</a> specified in the <code>values</code> member of
+          the message.
+        </p>
+      </section>
+      <section id="writemultipleproperties-response">
+        <h4>Response</h4>
+        <p>Upon successfully writing the values of the specified <a>Properties</a>, the Thing MUST send a message to the
+          requesting <a>Consumer</a> containing the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>writemultipleproperties</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"writemultipleproperties"</td>
+              <td>A string which denotes that this message relates to a <code>writemultipleproperties</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>values</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An object keyed by <a>Property</a> name, containing the values which have been successfully assigned
+                to <a>Properties</a>, with the type and structure of each value conforming to the data schema
+                in its corresponding PropertyAffordance in the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the property readings took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="writemultipleproperties response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "9c5d6eaf-4624-4464-8cc0-09472443ae82",
+            "messageType": "response",
+            "operation": "writemultipleproperties",
+            "values": {
+              "on": false,
+              "level": 25
+            },
+            "timestamp": "2025-08-17T18:35:00.246Z",
+            "correlationID": "e851583f-e152-4cad-9bb3-7bd3b24f8525"
+          }
+        </pre>
+      </section>
+      <section id="writemultipleproperties-error-response">
+        <h4>Error Response</h4>
+        <p>If a <a>Thing</a> receives a <code>writemultipleproperties</code> request message from a <a>Consumer</a> with
+          a <code>values</code> member which is empty, contains an invalid <a>Property</a> name, contains the name of a
+          <a href="https://www.w3.org/TR/wot-thing-description/#td-vocab-readOnly--DataSchema"><code>readOnly</code></a>
+          [[wot-thing-description11]] <a>Property</a>, or contains a value which does not conform to the data schema of
+          the corresponding PropertyAffordance then it MUST send an <a href="#error-response">error response</a>
+          to the <a>Consumer</a> with <code>status</code> set to <code>400</code>.
+        </p>
+        <pre class="example" title="Example writemultipleproperties Bad Request error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "b0f9f6a3-3558-4680-8b3d-4c017c669433",
+              "messageType": "response",
+              "operation": "writemultipleproperties",
+              "error": {
+                "status": "400",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#400",
+                "title": "Bad Request"
+                "detail": "No property found with the name 'volume'"
+              }
+              "timestamp": "2025-08-19T18:38:35.613Z",
+              "correlationID": "e851583f-e152-4cad-9bb3-7bd3b24f8525"
+            }
+          </code>
+        </pre>
+        <p>If a <a>Thing</a> receives a <code>writemultipleproperties</code> request message from a <a>Consumer</a> with
+          a <code>values</code> member containing valid names and values of writeable <a>Properties</a>, but the
+          writing of at least one of the properties unexpectedly fails, then it MUST send an
+          <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to
+          <code>500</code>.
+        </p>
+        <p>If a <code>writemultipleproperties</code> operation only partially fails (i.e. some <a>Properties</a> are
+          written
+          successfully but others are not), a <a>Thing</a> MUST include the successfully written values in the error
+          response, in a <code>values</code> member keyed by <a>Property</a> name.
+        </p>
+        <pre class="example" title="Example writemultipleproperties Internal Server Error error response message">
+          <code>
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "8620b30a-03db-4332-a139-53bef96e4e47",
+              "messageType": "response",
+              "operation": "writemultipleproperties",
+              "error": {
+                "status": "500",
+                "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+                "title": "Internal Server Error"
+                "detail": "Writing the 'level' property unexpectedly failed"
+              },
+              "values": {
+                "on": "true"
+              },
+              "timestamp": "2025-08-19T18:40:35.360Z",
+              "correlationID": "e851583f-e152-4cad-9bb3-7bd3b24f8525"
+            }
+          </code>
+        </pre>
       </section>
     </section>
 

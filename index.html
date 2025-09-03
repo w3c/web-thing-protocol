@@ -385,6 +385,12 @@
             <a href="#observeallproperties-notification">notification</a>...
           </td>
         </tr>
+        <tr>
+          <td><a href="#unobserveallproperties"><code>unobserveallproperties</code></a></td>
+          <td><a href="#unobserveallproperties-request">request</a>,
+            <a href="#unobserveallproperties-response">response</a>
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -1853,6 +1859,106 @@
           a Thing should only ever send one notification message per WebSocket connection for each change in
           property value. Notification messages always use the <code>correllationID</code> of the currently
           active observation subscription (which may have replaced a previous subscription).
+        </p>
+      </section>
+    </section>
+
+    <section id="unobserveallproperties">
+      <h3><code>unobserveallproperties</code></h3>
+      <section id="unobserveallproperties-request">
+        <h4>Request</h4>
+        <p>To stop observing all <a>Properties</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>unobserveallproperties</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unobserveallproperties"</td>
+              <td>A string which denotes that this message relates to an <code>unobserveallproperties</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unobserveallproperties request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "38794cc1-ff97-494c-b662-7fcf951802a7",
+            "messageType": "request",
+            "operation": "unobserveallproperties",
+            "correlationID": "51f2692b-b707-4097-9077-e313761406aa"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>unobserveallproperties</code> it MUST
+          attempt to remove observation subscriptions from all <a>Properties</a> of the <a>Thing</a>.
+        </p>
+        <p class="note" title="unobserveallproperties is a batch operation">
+          The <code>unobserveallproperties</code> operation can be thought of as a batch operation which removes
+          all individual observation subscriptions that have been registered with a Thing over a given WebSocket
+          connection, regardless of whether those observation subscriptions were registered using an
+          <code>observeproperty</code> operation or an <code>observeallproperties</code> operation.
+        </p>
+      </section>
+      <section id="unobserveallproperties-response">
+        <h4>Response</h4>
+        <p>Upon successfully removing observation subscriptions from all <a>Properties</a>, the <a>Thing</a> MUST
+          send a message to the requesting <a>Consumer</a> containing the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>unobserveallproperties</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unobserveallproperties"</td>
+              <td>A string which denotes that this message relates to an <code>unobserveallproperties</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unobserveallproperties response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "ec6ad624-74fe-402e-a009-114b779d1bb0",
+            "messageType": "response",
+            "operation": "unobserveallproperties",
+            "correlationID": "51f2692b-b707-4097-9077-e313761406aa"
+          }
+        </pre>
+        <p>If a <a>Thing</a> receives an <code>unobserveallproperties</code> request but the <a>Thing</a> does not have
+          any active observation subscriptions over the current WebSocket connection, then it SHOULD still send a
+          success response since the intended outcome has been achieved.
         </p>
       </section>
     </section>

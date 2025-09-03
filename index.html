@@ -373,6 +373,10 @@
             <a href="#observeproperty-notification">notification</a>...
           </td>
         </tr>
+        <tr>
+          <td><a href="#unobserveproperty"><code>unobserveproperty</code></a></td>
+          <td><a href="#unobserveproperty-request">request</a>, <a href="#unobserveproperty-response">response</a></td>
+        </tr>
       </tbody>
     </table>
 
@@ -1550,6 +1554,126 @@
       </section>
     </section>
 
+    <section id="unobserveproperty">
+      <h3><code>unobserveproperty</code></h3>
+      <section id="unobserveproperty-request">
+        <h4>Request</h4>
+        <p>To stop observing a <a>Property</a>, a <a>Consumer</a> MUST send a <a href="#websocket-messages">message</a>
+          to the
+          <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>unobserveproperty</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unobserveproperty"</td>
+              <td>A string which denotes that this message relates to an <code>unobserveproperty</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> to stop observing, as per its key in the <code>properties</code>
+                member
+                of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unobserveproperty request message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "85afa9c1-b5d1-479a-9a80-ce272b156dff",
+          "messageType": "request",
+          "operation": "unobserveproperty",
+          "name": "level",
+          "correlationID": "6180212a-8b28-49fa-9bfc-89c8c43ce887"
+        }
+      </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>unobserveproperty</code> it MUST
+          attempt to remove any observation subscription to the <a>Property</a> with the given <code>name</code>.
+        </p>
+        <p class="note" title="Interaction between unobserveproperty and observeallproperties">
+          If an <code>unobserveproperty</code> request removes an observation subscription that was previously
+          registered by an <code>observeallproperties</code> operation then that does not impact active observation
+          subscriptions for other Properties that may have been registered by the same operation.
+        </p>
+      </section>
+      <section id="unobserveproperty-response">
+        <h4>Response</h4>
+        <p>Upon successfully removing an observation subscription to the requested <a>Property</a>, the Thing MUST
+          send a message to the requesting <code>Consumer</code> containing the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>unobserveproperty</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unobserveproperty"</td>
+              <td>A string which denotes that this message relates to an <code>unobserveproperty</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> no longer being observed, as per its key in the
+                <code>properties</code> member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unobserveproperty response message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "2e6a9454-ac50-4c8a-9c1e-4380c5a05963",
+          "messageType": "response",
+          "operation": "unobserveproperty",
+          "name": "level",
+          "correlationID": "6180212a-8b28-49fa-9bfc-89c8c43ce887"
+        }
+        </pre>
+        <p>If a <a>Thing</a> receives an <code>unobserveproperty</code> request for a <a>Property</a>, but that
+          <a>Property</a> does not have any active observation subscriptions over the current WebSocket connection, then
+          it SHOULD still send a success response since the intended outcome has been achieved.
+        </p>
+      </section>
+    </section>
+
     <section id="error-response">
       <h3>Error Response</h3>
       <p>If a <a>Thing</a> experiences an error when attempting to carry out an operation requested by a
@@ -1649,18 +1773,21 @@
             <td>503</td>
             <td>https://w3c.github.io/web-thing-protocol/errors#503</td>
             <td>Service Unavailable</td>
-            <td>The <a>Thing</a> or interaction affordance is currently not able to fulfil the requested operation (e.g.
+            <td>The <a>Thing</a> or interaction affordance is currently not able to fulfil the requested operation
+              (e.g.
               because it is overloaded or undergoing a firmware update).
             </td>
           </tr>
         </tbody>
       </table>
       <p class="ednote" title="Error type URLs">
-        The URLs given for error types in the table above are placeholders and will be replaced in the final version of
+        The URLs given for error types in the table above are placeholders and will be replaced in the final version
+        of
         this specification.
       </p>
       <p>The <code>error</code> member of an error response message MAY contain a <code>detail</code> member with its
-        value set to a string containing additional human-readable information about the specific instance of the error.
+        value set to a string containing additional human-readable information about the specific instance of the
+        error.
       </p>
       <p>A <a>Thing</a> MAY use its own error types where one of the common error types above does not sufficiently
         explain the error, as long as the <code>error</code> member of the response message conforms to the Problem

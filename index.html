@@ -353,6 +353,14 @@
           <td><a href="#readmultipleproperties-request">request</a>, <a
               href="#readmultipleproperties-response">response</a></td>
         </tr>
+        <tr>
+          <td><a href="#observeproperty"><code>observeproperty</code></a></td>
+          <td><a href="#observeproperty-request">request</a>,
+            <a href="#observeproperty-response">response</a>,
+            <a href="#observeproperty-notification">notification</a>,
+            <a href="#observeproperty-notification">notification</a>...
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -759,8 +767,8 @@
       <section id="readallproperties-error-response">
         <h4>Error Response</h4>
         <p>If a <a>Thing</a> receives a <code>readallproperties</code> request message from a <a>Consumer</a>
-          but the reading of at least one of the properties unexpectedly fails, then it MUST send an 
-          <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to 
+          but the reading of at least one of the properties unexpectedly fails, then it MUST send an
+          <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to
           <code>500</code>.
         </p>
         <pre class="example" title="Example readallproperties Internal Server Error error response message">
@@ -957,6 +965,201 @@
             }
           </code>
         </pre>
+      </section>
+    </section>
+
+    <section id="observeproperty">
+      <h3><code>observeproperty</code></h3>
+      <section id="observeproperty-request">
+        <h4>Request</h4>
+        <p>To observe a <a>Property</a>, a <a>Consumer</a> MUST send a <a href="#websocket-messages">message</a> to the
+          <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>observeproperty</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"observeproperty"</td>
+              <td>A string which denotes that this message relates to an <code>observeproperty</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> to be observed, as per its key in the <code>properties</code> member
+                of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="observeproperty request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "f160098e-8c71-4025-9cb8-49fa038f5076",
+            "messageType": "request",
+            "operation": "observeproperty",
+            "name": "level",
+            "correlationID": "3b380f3c-4fb8-4dc0-8ef2-ef2c2b528931"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>observeproperty</code> it MUST
+          attempt to register an observation subscription to the <a>Property</a> with the given <code>name</code>.
+        </p>
+        <p>If a <a>Thing</a> receives an <code>observeproperty</code> request for a <a>Property</a> which already has
+          an active observation subscription over the same WebSocket connection, the <a>Thing</a> MUST
+          replace the existing observation subscription with a new one, using the <code>correllationID</code> of the
+          last <code>observeproperty</code> request received (i.e. last subscription wins).
+        </p>
+        <p class="note" title="Interaction between observeproperty and observeallproperties">
+          If an <code>observeproperty</code> request replaces an observation subscription that was previously registered
+          by an <code>observeallproperties</code> operation then that does not impact active observation subscriptions
+          for other Properties, which should continue to be registered using their current <code>correllationID</code>.
+          Conversely, an <code>observeallproperties</code> request may replace an observation subscription previously
+          registered by an <code>observeproperty</code> operation over the same WebSocket connection, which would impact
+          any active observation subscriptions for other Properties on the same connection.
+        </p>
+      </section>
+      <section id="observeproperty-response">
+        <h4>Response</h4>
+        <p>Upon successfully registering an observation subscription to the requested <a>Property</a>, the Thing MUST
+          send a message to the requesting <code>Consumer</code> containing the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>observeproperty</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"observeproperty"</td>
+              <td>A string which denotes that this message relates to an <code>observeproperty</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> being observed, as per its key in the <code>properties</code> member
+                of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="observeproperty response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "4df7faaf-6099-4766-a615-cb49883edfd4",
+            "messageType": "response",
+            "operation": "observeproperty",
+            "name": "level",
+            "correlationID": "3b380f3c-4fb8-4dc0-8ef2-ef2c2b528931"
+          }
+        </pre>
+      </section>
+      <section id="observeproperty-notification">
+        <h4>Notification</h4>
+        <p>Whilst a property observation subscription is registered, whenever a change in the value of the observed
+          <a>Property</a> occurs, the <a>Thing</a> MUST send a message to the observing <a>Consumer</a>
+          containing the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>observeproperty</code> notification message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"notification"</td>
+              <td>A string which denotes that this message is a notification sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"observeproperty"</td>
+              <td>A string which denotes that this message relates to an <code>observeproperty</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Property</a> being observed, as per its key in the <code>properties</code> member
+                of the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>value</code></td>
+              <td>any</td>
+              <td>Mandatory</td>
+              <td>The current value of the <a>Property</a> being observed, with a type and structure conforming to the
+                data
+                schema of the corresponding PropertyAffordance in the <a>Thing Description</a>.</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the change in value took place.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="observeproperty notification message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "c9cce575-1923-441b-88cb-e58d4f7e615f",
+            "messageType": "notification",
+            "operation": "observeproperty",
+            "name": "level",
+            "value": 42,
+            "timestamp": "2025-08-20T11:54:25.535Z",
+            "correlationID": "3b380f3c-4fb8-4dc0-8ef2-ef2c2b528931"
+          }
+        </pre>
+        <p class="note" title="One notification per property change per connection">
+          Because a duplicate observation subscription replaces a previous subscription to the same Property,
+          a Thing should only ever send one notification message per WebSocket connection for each change in
+          property value. Notification messages always use the <code>correllationID</code> of the currently
+          active observation subscription (which may have replaced a previous subscription).
+        </p>
       </section>
     </section>
 

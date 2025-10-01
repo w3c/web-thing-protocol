@@ -2026,7 +2026,7 @@
             "input": {
               "level": 100,
               "duration": 5
-            }
+            },
             "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
           }
         </pre>
@@ -2060,9 +2060,10 @@
           For synchronous Actions a Thing includes the <code>output</code> of the Action directly in the response
           to an <code>invokeaction</code> request, and therefore does not respond to that request until the Action is
           complete.
-          For asynchronous Actions a Thing responds immediately to an <code>invokeaction</code> request with a unique
-          <code>actionID</code>, which can then be used to query or cancel the Action instance using a separate
-          <code>queryaction</code> or <code>cancelaction</code> operation respectively.
+          For asynchronous Actions a Thing responds immediately to an <code>invokeaction</code> request with a
+          <code>status</code> member containing a unique <code>actionID</code>, which can then be used to query or
+          cancel the Action instance using a separate <code>queryaction</code> or <code>cancelaction</code> operation
+          respectively.
         </p>
         <section id="invokeaction-synchronous-response">
           <h5>Synchronous Action Response</h5>
@@ -2171,17 +2172,52 @@
                 </td>
               </tr>
               <tr>
+                <td><code>status</code></td>
+                <td>object</td>
+                <td>Mandatory</td>
+                <td>An <a href="#action-status-object"><code>ActionStatus</code></a> object representing the current
+                  status of the ongoing action.</td>
+              </tr>
+              <tr>
                 <td><code>timestamp</code></td>
                 <td>string</td>
                 <td>Optional</td>
                 <td>A timestamp in date-time format [[RFC3339]] set to the time the action request was accepted.</td>
               </tr>
+            </tbody>
+          </table>
+          <table id="action-status-object" class="def">
+            <caption>Members of an <code>ActionStatus</code> object</caption>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Assignment</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
               <tr>
                 <td><code>actionID</code></td>
                 <td>string</td>
                 <td>Mandatory</td>
                 <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance,
                   for use when querying or cancelling it.</td>
+              </tr>
+              <tr>
+                <td><code>state</code></td>
+                <td>string </td>
+                <td>Mandatory</td>
+                <td>A string representing the current state of the ongoing action. Set to either <code>pending</code> or
+                  <code>running</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>timeRequested</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A timestamp in date-time format [[RFC3339]] set to the time at which the Thing received the request
+                  to execute the Action.</td>
               </tr>
             </tbody>
           </table>
@@ -2192,8 +2228,12 @@
               "messageType": "response",
               "operation": "invokeaction",
               "name": "fade",
-              "timestamp": "2025-09-03T18:14:50.641Z",
-              "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+              "status": {
+                "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+                "state": "pending",
+                "timeRequested": "2025-09-03T18:14:55.641Z"
+              },
+              "timestamp": "2025-09-03T18:14:56.642Z",
               "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
             }
           </pre>

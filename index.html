@@ -397,6 +397,11 @@
           </td>
         </tr>
         <tr>
+          <td><a href="#queryaction"><code>queryaction</code></a></td>
+          <td><a href="#queryaction-request">request</a>, <a href="#queryaction-response">response</a>
+          </td>
+        </tr>
+        <tr>
           <td><a href="#subscribeevent"><code>subscribeevent</code></a></td>
           <td><a href="#subscribeevent-request">request</a>,
             <a href="#subscribeevent-response">response</a>,
@@ -420,7 +425,6 @@
           <td><a href="#unsubscribeallevents"><code>unsubscribeallevents</code></a></td>
           <td><a href="#unsubscribeallevents-request">request</a>,
             <a href="#unsubscribeallevents-response">response</a>
-          </td>
         </tr>
       </tbody>
     </table>
@@ -2207,48 +2211,15 @@
                 <td>object</td>
                 <td>Mandatory</td>
                 <td>An <a href="#action-status-object"><code>ActionStatus</code></a> object representing the current
-                  status of the ongoing action.</td>
+                  status of the ongoing action, with its <code>state</code> member set to <code>pending</code> or
+                  <code>running</code>.
+                </td>
               </tr>
               <tr>
                 <td><code>timestamp</code></td>
                 <td>string</td>
                 <td>Optional</td>
                 <td>A timestamp in date-time format [[RFC3339]] set to the time the action request was accepted.</td>
-              </tr>
-            </tbody>
-          </table>
-          <table id="action-status-object" class="def">
-            <caption>Members of an <code>ActionStatus</code> object</caption>
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Type</th>
-                <th>Assignment</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>actionID</code></td>
-                <td>string</td>
-                <td>Mandatory</td>
-                <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance,
-                  for use when querying or cancelling it.</td>
-              </tr>
-              <tr>
-                <td><code>state</code></td>
-                <td>string </td>
-                <td>Mandatory</td>
-                <td>A string representing the current state of the ongoing action. Set to either <code>pending</code> or
-                  <code>running</code>.
-                </td>
-              </tr>
-              <tr>
-                <td><code>timeRequested</code></td>
-                <td>string</td>
-                <td>Optional</td>
-                <td>A timestamp in date-time format [[RFC3339]] set to the time at which the Thing received the request
-                  to execute the Action.</td>
               </tr>
             </tbody>
           </table>
@@ -2297,6 +2268,241 @@
           <a href="#invokeaction-asynchronous-response">response</a> has already been sent. If a Thing
           encounters an error when executing an asynchronous Action after the initial response has been sent
           then the error should be reported via a <code>queryaction</code> operation instead.
+        </p>
+      </section>
+    </section>
+
+    <section id="queryaction">
+      <h3><code>queryaction</code></h3>
+      <section id="queryaction-request">
+        <h4>Request</h4>
+        <p>To query the status of an ongoing asynchronous <a>Action</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>queryaction</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"queryaction"</td>
+              <td>A string which denotes that this message relates to an <code>queryaction</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>actionID</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance being
+                queried, as provided in the corresponding <code>invokeaction</code> response.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="queryaction request message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "f9dc3a42-188e-47f3-a0ed-cd3c3fb93207",
+          "messageType": "request",
+          "operation": "queryaction",
+          "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+          "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+        }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>queryaction</code> it MUST
+          attempt to query the status of the <a>Action</a> instance with the <code>actionID</code> provided in the
+          message.
+        </p>
+      </section>
+      <section id="queryaction-response">
+        <h4>Response</h4>
+        <p>Upon successfully querying the status of an asynchronous <a>Action</a> instance, the <a>Thing</a> MUST send a
+          message to the requesting <a>Consumer</a> containing the following members:
+
+        <table class="def">
+          <caption>Members of an <code>queryaction</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"queryaction"</td>
+              <td>A string which denotes that this message relates to a <code>queryaction</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Action</a> that was queried, as per its key in the <code>actions</code> member of
+                the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>status</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An <a href="#action-status-object"><code>ActionStatus</code></a> object representing the current
+                status of the <a>Action</a> instance.</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the action status was reported.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>If the queried <a>Action</a> instance is currently pending (the action request has been accepted but
+          execution
+          has not yet started) then the <a>Thing</a> MUST respond with <code>state</code> set to <code>pending</code>.
+        </p>
+        <pre class="example" title="queryaction response message (pending)">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "84df00ce-dbe0-41fa-acf5-cdadcefd414e",
+          "messageType": "response",
+          "operation": "queryaction",
+          "name": "fade",
+          "status": {
+            "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+            "state": "pending",
+            "timeRequested": "2025-09-09T17:34:50.361Z",
+          },
+          "timestamp": "2025-09-09T17:34:51.531Z",
+          "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+        }
+        </pre>
+        <p>If the queried <a>Action</a> instance is currently running (execution has started but not finished) then the
+          <a>Thing</a> MUST respond with <code>state</code> set to <code>running</code>.
+        </p>
+        <pre class="example" title="queryaction response message (running)">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "b35e2161-2e66-4d91-9f4f-43cd05b36c32",
+          "messageType": "response",
+          "operation": "queryaction",
+          "name": "fade",
+          "status": {
+            "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+            "state": "running",
+            "timeRequested": "2025-09-09T17:34:50.361Z",
+          },
+          "timestamp": "2025-09-09T17:34:52.564Z",
+          "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+        }
+        </pre>
+        <p>If the queried <a>Action</a> instance has completed successfully (execution has finished and the output,
+          if any, is available) then the <a>Thing</a> MUST respond with <code>state</code> set to
+          <code>completed</code>,
+          and <code>output</code> set to the output of the <a>Action</a>, if any, with a type and structure conforming
+          to the data schema specified in the <code>output</code> member of the corresponding ActionAffordance in the
+          <a>Thing Description</a>.
+        </p>
+        <pre class="example" title="queryaction response message (completed)">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "a350c37e-b241-4848-9e3f-c6f21ce3f93c",
+          "messageType": "response",
+          "operation": "queryaction",
+          "name": "fade",
+          "status": {
+            "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+            "state": "completed",
+            "timeRequested": "2025-09-09T17:34:50.361Z",
+            "timeEnded": "2025-09-09T17:34:57.642Z",
+            "output": true,
+          },
+          "timestamp": "2025-09-09T17:34:58.564Z",
+          "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+        }
+        </pre>
+        <p>If the queried <a>Action</a> instance failed to execute then the <a>Thing</a> MUST respond with a
+          <code>status</code> containing an <code>error</code> member with its value set to an object conforming to the
+          Problem Details Format [[RFC9457]], including an error code appropriate for the type of error encountered.
+        </p>
+        <pre class="example" title="queryaction response message (failed)">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "120d4e13-01b3-450d-9223-fd2a8abcc20f",
+          "messageType": "response",
+          "operation": "queryaction",
+          "name": "fade",
+          "status": {
+            "state": "failed",
+            "timeRequested": "2025-09-09T17:34:50.361Z",
+            "timeEnded": "2025-09-09T17:34:51.531Z",
+            "error": {
+              "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+              "status": 500,
+              "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+              "title": "Internal Server Error",
+              "detail": "The Thing was unable to complete the requested 'fade' action"
+            }
+          },
+          "timestamp": "2025-09-09T17:34:58.564Z",
+          "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+        }
+        </pre>
+        <p>A <a>Thing</a> MUST only send one response message for each <code>queryaction</code> request.</p>
+      </section>
+      <section id="queryaction-error-response">
+        <h4>Error Response</h4>
+        <p>If the <a>Thing</a> fails to query the status of the specified <a>Action</a> instance (e.g. because no
+          <a>Action</a> with the provided <code>actionID</code> exists), then the <a>Thing</a> MUST send an
+          <a href="#error-response">error response</a> to the <a>Consumer</a> with an error code appropriate for the
+          type of error encountered.
+        </p>
+        <pre class="example" title="queryaction error response">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "00d8803c-9eed-4097-b6a7-6ba83c7197f4",
+            "messageType": "response",
+            "operation": "queryaction",
+            "error": {
+              "status": 404,
+              "type": "https://w3c.github.io/web-thing-protocol/errors#404",
+              "title": "Not Found"
+              "detail": "No action instance with the specified actionID could be found"
+            }
+            "timestamp": "2025-09-09T17:34:58.564Z",
+            "correlationID": "f6293376-5ddb-43ef-ba21-aa34ceb48a58"
+          }
+        </pre>
+        <p class="note" title="Query error vs. action execution error">
+          If the Thing experiences an error querying an Action then the <code>error</code> member is included at the top
+          level of the <code>queryaction</code> response message. If the Thing experiences an error executing
+          the Action then the error member is included in the <code>status</code> member of the response message.
+          This helps to differentiate between an error querying the Action status vs. an error executing the Action.
         </p>
       </section>
     </section>
@@ -2899,6 +3105,79 @@
           success response since the intended outcome has been achieved.
         </p>
       </section>
+    </section>
+
+    <section id="action-status-object">
+      <h3>ActionStatus object</h3>
+      <p>An ActionStatus object is used to represent the status of an <a>Action</a> instance in
+        <code>invokeaction</code>, <code>queryaction</code> and <code>queryallactions</code> operations
+        and contains the following members:
+      </p>
+      <table class="def">
+        <caption>Members of an <code>ActionStatus</code> object</caption>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Type</th>
+            <th>Assignment</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>actionID</code></td>
+            <td>string</td>
+            <td>Mandatory</td>
+            <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance,
+              for use when querying or cancelling it.</td>
+          </tr>
+          <tr>
+            <td><code>state</code></td>
+            <td>string </td>
+            <td>Mandatory</td>
+            <td>A string representing the current state of the action. Set to either <code>pending</code>,
+              <code>running</code>, <code>completed</code> or <code>failed</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>output</code></td>
+            <td>object</td>
+            <td>Optional</td>
+            <td>The output (if any) of the <a>Action</a> invoked, with a type and structure conforming to the data
+              schema specified in the <code>output</code> member of the corresponding ActionAffordance in the
+              <a>Thing Description</a>.
+            </td>
+          </tr>
+          <tr>
+            <td><code>error</code></td>
+            <td>object</td>
+            <td>Optional</td>
+            <td>An object conforming to the Problem Details Format [[RFC3339]].</td>
+          </tr>
+          <tr>
+            <td><code>timeRequested</code></td>
+            <td>string</td>
+            <td>Optional</td>
+            <td>A timestamp in date-time format [[RFC3339]] set to the time at which the <a>Thing</a> received the
+              request to execute the <a>Action</a>.</td>
+          </tr>
+          <tr>
+            <td><code>timeEnded</code></td>
+            <td>string</td>
+            <td>Optional</td>
+            <td>A timestamp in date-time format [[RFC3339]] set to the time at which the <a>Thing</a> successfully
+              completed executing the <a>Action</a>, or faield to execute the <a>Action</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note" title="Retention of ActionStatus objects">
+        It is assumed that once an action is completed the Thing will store its ActionStatus object so that its status
+        may later be queried with a <code>queryaction</code> or <code>queryallactions</code> operation. It is not
+        expected that ActionStatus objects should be retained indefinitely, they may be stored in volatile memory and/or
+        periodically pruned. The length of time for which to retain ActionStatus objects is expected to be
+        implementation-specific and may depend on application-specific requirements or resource constraints. It is
+        recommended that at least the last instance of a completed action status should be stored.
+      </p>
     </section>
 
     <section id="error-response">

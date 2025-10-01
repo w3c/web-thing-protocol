@@ -2064,6 +2064,9 @@
           <code>status</code> member containing a unique <code>actionID</code>, which can then be used to query or
           cancel the Action instance using a separate <code>queryaction</code> or <code>cancelaction</code> operation
           respectively.
+          If a Consumer sends an <code>invokeaction</code> request for an Action whose ActionAffordance has a
+          <code>synchronous</code> member set to <code>false</code>, it should therefore expect to receive a response
+          containing a <code>status</code> member rather than an <code>output</code> member.
         </p>
         <section id="invokeaction-synchronous-response">
           <h5>Synchronous Action Response</h5>

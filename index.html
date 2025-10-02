@@ -809,7 +809,7 @@
               "messageType": "response",
               "operation": "readallproperties",
               "error": {
-                "status": "500",
+                "status": 500,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#500",
                 "title": "Internal Server Error"
                 "detail": "Reading the 'level' property unexpectedly failed"
@@ -962,7 +962,7 @@
               "messageType": "response",
               "operation": "readmultipleproperties",
               "error": {
-                "status": "400",
+                "status": 400,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#400",
                 "title": "Bad Request"
                 "detail": "No property found with the name 'volume'"
@@ -987,7 +987,7 @@
               "messageType": "response",
               "operation": "readmultipleproperties",
               "error": {
-                "status": "500",
+                "status": 500,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#500",
                 "title": "Internal Server Error"
                 "detail": "Reading the 'level' property unexpectedly failed"
@@ -1147,7 +1147,7 @@
               "messageType": "response",
               "operation": "writeallproperties",
               "error": {
-                "status": "400",
+                "status": 400,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#400",
                 "title": "Bad Request"
                 "detail": "No property found with the name 'volume'"
@@ -1171,7 +1171,7 @@
               "messageType": "response",
               "operation": "writeallproperties",
               "error": {
-                "status": "500",
+                "status": 500,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#500",
                 "title": "Internal Server Error"
                 "detail": "Writing the 'level' property unexpectedly failed"
@@ -1328,7 +1328,7 @@
               "messageType": "response",
               "operation": "writemultipleproperties",
               "error": {
-                "status": "400",
+                "status": 400,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#400",
                 "title": "Bad Request"
                 "detail": "No property found with the name 'volume'"
@@ -1357,7 +1357,7 @@
               "messageType": "response",
               "operation": "writemultipleproperties",
               "error": {
-                "status": "500",
+                "status": 500,
                 "type": "https://w3c.github.io/web-thing-protocol/errors#500",
                 "title": "Internal Server Error"
                 "detail": "Writing the 'level' property unexpectedly failed"
@@ -2004,7 +2004,7 @@
             "operation": "readproperty",
             "name": "on",
             "error": {
-              "status": "404",
+              "status": 404,
               "type": "https://w3c.github.io/web-thing-protocol/errors#404",
               "title": "Not Found"
               "detail": "No property found with the name 'on'"
@@ -2090,7 +2090,7 @@
             "operation": "invokeaction",
             "name": "brewCoffee",
             "error": {
-              "status": "418",
+              "status": 418,
               "type": "https://mythingserver.com/errors#418",
               "title": "I'm a teapot"
               "detail": "This device can not brew coffee because it is a teapot"

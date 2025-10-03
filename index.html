@@ -129,7 +129,7 @@
     <h2>Terminology</h2>
     <p>Fundamental WoT terminology such as <dfn>Thing</dfn> or <dfn>Web Thing</dfn>, <dfn>Consumer</dfn> or <dfn>WoT
         Consumer</dfn>, WoT Thing Description or <dfn>Thing Description</dfn>, Interaction Model,
-      <dfn>Interaction Affordance</dfn>, <dfn>Property</dfn>, Action and Event are defined in
+      <dfn>Interaction Affordance</dfn>, <dfn>Property</dfn>, <dfn>Action</dfn> and Event are defined in
       the
       <a href="https://www.w3.org/TR/wot-architecture/#terminology">Terminology</a>
       section of the WoT Architecture specification [[wot-architecture11]].
@@ -389,6 +389,11 @@
           <td><a href="#unobserveallproperties"><code>unobserveallproperties</code></a></td>
           <td><a href="#unobserveallproperties-request">request</a>,
             <a href="#unobserveallproperties-response">response</a>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="#invokeaction"><code>invokeaction</code></a></td>
+          <td><a href="#invokeaction-request">request</a>, <a href="#invokeaction-response">response</a>
           </td>
         </tr>
       </tbody>
@@ -1963,6 +1968,311 @@
       </section>
     </section>
 
+    <section id="invokeaction">
+      <h3><code>invokeaction</code></h3>
+      <section id="invokeaction-request">
+        <h4>Request</h4>
+        <p>To invoke an <a>Action</a> on a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
+            href="#websocket-messages">message</a> to the <a>Thing</a>
+          which contains the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>invokeaction</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"invokeaction"</td>
+              <td>A string which denotes that this message relates to an <code>invokeaction</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Action</a> to invoke, as per its key in the <code>actions</code> member of
+                the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>input</code></td>
+              <td>any</td>
+              <td>Optional</td>
+              <td>An input to the <a>Action</a>, with a type and structure conforming to the data schema defined in the
+                <code>input</code> member of the corresponding ActionAffordance in the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="invokeaction request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "ff29aac5-062a-4583-9044-be2d45d6ad57",
+            "messageType": "request",
+            "operation": "invokeaction",
+            "name": "fade",
+            "input": {
+              "level": 100,
+              "duration": 5
+            },
+            "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>invokeaction</code> it MUST
+          attempt to invoke the <a>Action</a> with the given <code>name</code>, using the provided <code>input</code>
+          (if any).
+        </p>
+      </section>
+      <section id="invokeaction-response">
+        <h4>Response</h4>
+        <p>If a <a>Thing</a> receives an <code>invokeaction</code> request for a synchronous <a>Action</a>
+          (an <a>Action</a> who's ActionAffordance in the <a>Thing</a>'s <a>Thing Description</a> has a
+          <code>synchronous</code> member set to <code>true</code>),
+          then upon successful completion of the <a>Action</a> the <a>Thing</a> MUST send a
+          <a href="#invokeaction-synchronous-response">synchronous action response</a>.
+        </p>
+        <p>If a <a>Thing</a> receives an <code>invokeaction</code> request for an asynchronous <a>Action</a>
+          (an <a>Action</a> who's ActionAffordance in the <a>Thing</a>'s <a>Thing Description</a> has a
+          <code>synchronous</code> member set to <code>false</code>),
+          then upon acceptance of the <code>invokeaction</code> request the <a>Thing</a> MUST send an
+          <a href="#invokeaction-asynchronous-response">asynchronous action response</a>.
+        </p>
+        <p>If the ActionAffordance describing an <a>Action</a> in a <a>Thing Description</a> does not have a
+          <code>synchronous</code> member, then when the <a>Thing</a> receives
+          an <code>invokeaction</code> request for that <a>Action</a> it MAY respond with either a
+          <a href="#invokeaction-synchronous-response">synchronous action response</a> or an
+          <a href="#invokeaction-asynchronous-response">asynchronous action response</a>.
+        </p>
+        <p class="note" title="Synchronous vs. asynchronous actions">
+          For synchronous Actions a Thing includes the <code>output</code> of the Action directly in the response
+          to an <code>invokeaction</code> request, and therefore does not respond to that request until the Action is
+          complete.
+          For asynchronous Actions a Thing responds immediately to an <code>invokeaction</code> request with a
+          <code>status</code> member containing a unique <code>actionID</code>, which can then be used to query or
+          cancel the Action instance using a separate <code>queryaction</code> or <code>cancelaction</code> operation
+          respectively.
+          If a Consumer sends an <code>invokeaction</code> request for an Action whose ActionAffordance has a
+          <code>synchronous</code> member set to <code>false</code>, it should therefore expect to receive a response
+          containing a <code>status</code> member rather than an <code>output</code> member.
+        </p>
+        <section id="invokeaction-synchronous-response">
+          <h5>Synchronous Action Response</h5>
+          <p>Upon successful completion of a synchronous <a>Action</a>, the <a>Thing</a> MUST send a message to the
+            requesting <code>Consumer</code> containing the following members:</p>
+          <table class="def">
+            <caption>Members of an <code>invokeaction</code> synchronous response message</caption>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Assignment</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>messageType</code></td>
+                <td>string</td>
+                <td>"response"</td>
+                <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                  <a>Consumer</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>operation</code></td>
+                <td>string</td>
+                <td>"invokeaction"</td>
+                <td>A string which denotes that this message relates to an <code>invokeaction</code> operation.
+                </td>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td>string</td>
+                <td>Mandatory</td>
+                <td>The name of the <a>Action</a> that was invoked, as per its key in the <code>actions</code> member of
+                  the <a>Thing Description</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>output</code></td>
+                <td>any</td>
+                <td>Optional</td>
+                <td>The output (if any) of the <a>Action</a> invoked, with a type and structure conforming to the data
+                  schema specified in the <code>output</code> member of the corresponding ActionAffordance in the
+                  <a>Thing Description</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>timestamp</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A timestamp in date-time format [[RFC3339]] set to the time the action was completed.</td>
+              </tr>
+            </tbody>
+          </table>
+          <pre class="example" title="invokeaction synchronous response message">
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "e47c3727-d68b-4284-a2cc-5883d8fa43a4",
+              "messageType": "response",
+              "operation": "invokeaction",
+              "name": "fade",
+              "output": true,
+              "timestamp": "2025-09-03T18:14:55.641Z",
+              "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
+            }
+          </pre>
+        </section>
+        <section id="invokeaction-asynchronous-response">
+          <h5>Asynchronous Action Response</h5>
+          <p>Once a <a>Thing</a> has accepted an <code>invokeaction</code> request for an asynchronous <a>Action</a>
+            it MUST send a message to the requesting <code>Consumer</code> containing the following members:</p>
+          <table class="def">
+            <caption>Members of an <code>invokeaction</code> asynchronous response message</caption>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Assignment</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>messageType</code></td>
+                <td>string</td>
+                <td>"response"</td>
+                <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                  <a>Consumer</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>operation</code></td>
+                <td>string</td>
+                <td>"invokeaction"</td>
+                <td>A string which denotes that this message relates to an <code>invokeaction</code> operation.
+                </td>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td>string</td>
+                <td>Mandatory</td>
+                <td>The name of the <a>Action</a> that was invoked, as per its key in the <code>actions</code> member of
+                  the <a>Thing Description</a>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>status</code></td>
+                <td>object</td>
+                <td>Mandatory</td>
+                <td>An <a href="#action-status-object"><code>ActionStatus</code></a> object representing the current
+                  status of the ongoing action.</td>
+              </tr>
+              <tr>
+                <td><code>timestamp</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A timestamp in date-time format [[RFC3339]] set to the time the action request was accepted.</td>
+              </tr>
+            </tbody>
+          </table>
+          <table id="action-status-object" class="def">
+            <caption>Members of an <code>ActionStatus</code> object</caption>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Assignment</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>actionID</code></td>
+                <td>string</td>
+                <td>Mandatory</td>
+                <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance,
+                  for use when querying or cancelling it.</td>
+              </tr>
+              <tr>
+                <td><code>state</code></td>
+                <td>string </td>
+                <td>Mandatory</td>
+                <td>A string representing the current state of the ongoing action. Set to either <code>pending</code> or
+                  <code>running</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>timeRequested</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A timestamp in date-time format [[RFC3339]] set to the time at which the Thing received the request
+                  to execute the Action.</td>
+              </tr>
+            </tbody>
+          </table>
+          <pre class="example" title="invokeaction asynchronous response message">
+            {
+              "thingID": "https://mythingserver.com/things/mylamp1",
+              "messageID": "a0058872-fe8f-4655-b43e-4e57bdcb8942",
+              "messageType": "response",
+              "operation": "invokeaction",
+              "name": "fade",
+              "status": {
+                "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+                "state": "pending",
+                "timeRequested": "2025-09-03T18:14:55.641Z"
+              },
+              "timestamp": "2025-09-03T18:14:56.642Z",
+              "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
+            }
+          </pre>
+        </section>
+      </section>
+      <section id="invokeaction-error-response">
+        <h4>Error Response</h4>
+        <p>If the <a>Thing</a> fails to complete the requested <a>Action</a>, and has not already sent a response,
+          it MUST send an <a href="#error-response">error response</a> message to the requesting <a>Consumer</a>
+          with an error code appropriate for the type of error encountered.
+        </p>
+        <pre class="example" title="invokeaction error response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "5478d805-bb72-432d-8c84-f05b114eeaba",
+            "messageType": "response",
+            "operation": "invokeaction",
+            "error": {
+              "status": "500",
+              "type": "https://w3c.github.io/web-thing-protocol/errors#500",
+              "title": "Internal Server Error"
+              "detail": "The Thing was unable to complete the requested 'fade' action"
+            }
+            "timestamp": "2025-09-03T18:14:55.641Z",
+            "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
+          }
+        </pre>
+        <p class="note" title="Asynchronous action errors">
+          A Thing should not send an error response to an asynchronous Action request if an initial
+          <a href="#invokeaction-asynchronous-response">response</a> has already been sent. If a Thing
+          encounters an error when executing an asynchronous Action after the initial response has been sent
+          then the error should be reported via a <code>queryaction</code> operation instead.
+        </p>
+      </section>
+    </section>
+
     <section id="error-response">
       <h3>Error Response</h3>
       <p>If a <a>Thing</a> experiences an error when attempting to carry out an operation requested by a
@@ -1992,6 +2302,12 @@
             <td>object</td>
             <td>Mandatory</td>
             <td>An object conforming to the Problem Details Format [[RFC9457]].</td>
+          </tr>
+          <tr>
+            <td><code>timestamp</code></td>
+            <td>string</td>
+            <td>Optional</td>
+            <td>A timestamp in date-time format [[RFC3339]] set to the time the error occurred.</td>
           </tr>
         </tbody>
       </table>

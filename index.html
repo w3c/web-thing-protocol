@@ -406,6 +406,11 @@
           <td><a href="#cancelaction-request">request</a>, <a href="#cancelaction-response">response</a>
           </td>
         </tr>
+        <tr>
+          <td><a href="#queryallactions"><code>queryallactions</code></a></td>
+          <td><a href="#queryallactions-request">request</a>, <a href="#queryallactions-response">response</a>
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -1416,7 +1421,7 @@
               <td><code>operation</code></td>
               <td>string</td>
               <td>"observeproperty"</td>
-              <td>A string which denotes that this message relates to an <code>observeproperty</code> operation.</td>
+              <td>A string which denotes that this message relates to a <code>observeproperty</code> operation.</td>
             </tr>
             <tr>
               <td><code>name</code></td>
@@ -2258,7 +2263,7 @@
           <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
         </p>
         <table class="def">
-          <caption>Members of an <code>queryaction</code> request message</caption>
+          <caption>Members of a <code>queryaction</code> request message</caption>
           <thead>
             <tr>
               <th>Member</th>
@@ -2278,7 +2283,7 @@
               <td><code>operation</code></td>
               <td>string</td>
               <td>"queryaction"</td>
-              <td>A string which denotes that this message relates to an <code>queryaction</code> operation.</td>
+              <td>A string which denotes that this message relates to a <code>queryaction</code> operation.</td>
             </tr>
             <tr>
               <td><code>actionID</code></td>
@@ -2312,7 +2317,7 @@
           message to the requesting <a>Consumer</a> containing the following members:
 
         <table class="def">
-          <caption>Members of an <code>queryaction</code> response message</caption>
+          <caption>Members of a <code>queryaction</code> response message</caption>
           <thead>
             <tr>
               <th>Member</th>
@@ -2513,7 +2518,7 @@
               <td><code>operation</code></td>
               <td>string</td>
               <td>"cancelaction"</td>
-              <td>A string which denotes that this message relates to an <code>cancelaction</code> operation.</td>
+              <td>A string which denotes that this message relates to a <code>cancelaction</code> operation.</td>
             </tr>
             <tr>
               <td><code>actionID</code></td>
@@ -2602,6 +2607,147 @@
       </section>
     </section>
 
+    <section id="queryallactions">
+      <h3><code>queryallactions</code></h3>
+      <section id="queryallactions-request">
+        <h4>Request</h4>
+        <p>To query the status of all ongoing asynchronous <a>Actions</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>queryallactions</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"queryallactions"</td>
+              <td>A string which denotes that this message relates to a <code>queryallactions</code> operation.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="queryallactions request message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "1af62634-4eca-49cb-b448-95110619ee00",
+          "messageType": "request",
+          "operation": "queryallactions",
+          "correlationID": "4c1c0ebc-775f-4b17-8f0f-e25c415f033d"
+        }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>queryallactions</code> it MUST
+          attempt to query the status of all ongoing and recently completed <a>Action</a> instances the Consumer
+          has permission to access across all Action affordances of the <a>Thing</a>.
+        </p>
+      </section>
+      <section id="queryallactions-response">
+        <h4>Response</h4>
+        <p>Upon successfully querying the status of all asynchronous <a>Actions</a>, the <a>Thing</a> MUST send a
+          message to the requesting <a>Consumer</a> containing the following members:
+        <table class="def">
+          <caption>Members of a <code>queryallactions</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"queryallactions"</td>
+              <td>A string which denotes that this message relates to a <code>queryallactions</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>statuses</code></td>
+              <td>object</td>
+              <td>Mandatory</td>
+              <td>An object, keyed by <a>Action</a> name, with the value of each member being an array of
+                <a href="#action-status-object"><code>ActionStatus</code></a> objects, enumerating a list of the
+                statuses of ongoing and recently completed <a>Action</a> instances for that <a>Action</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the action statuses were reported.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Each array in the <code>statuses</code> object MUST be sorted in reverse chronological order by
+          the time action instances were requested, such that the most recently requested action instance appears
+          first.</p>
+        <pre class="example" title="queryallactions response message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "65cc48cd-7bf9-4e08-8b5a-91443704b0c7",
+          "messageType": "response",
+          "operation": "queryallactions",
+          "statuses": {
+            "fade": [
+              {
+                "actionID": "d95100b9-decc-4b11-81b8-81870597ebeb",
+                "timeRequested": "2025-09-09T17:38:13.631Z",
+                "status": "pending"
+              },
+              {
+                "actionID": "66546f79-84bd-4ac9-b728-bb4168a17330",
+                "timeRequested": "2025-09-09T17:36:00.363Z",
+                "status": "running"
+              },
+              {
+                "actionID": "c1e116a4-7832-4338-a72c-330c871b991a",
+                "status": "completed",
+                "timeRequested": "2025-09-09T17:34:50.361Z",
+                "timeEnded": "2025-09-09T17:34:55.361Z",
+                "output": true,
+              }
+            ],
+            "disco": []
+          },
+          "correlationID": "4c1c0ebc-775f-4b17-8f0f-e25c415f033d"
+        }
+        </pre>
+        <p class="note" title="Retention of ActionStatus objects">
+          When an Action instance is cancelled with a <code>cancelaction</code> operation, its ActionStatus object is
+          deleted and need not be retained. For all other <a>Action</a> instances it is assumed that once an action is
+          completed the Thing will store its ActionStatus object so that its status
+          may later be queried with a <code>queryaction</code> or <code>queryallactions</code> operation. It is not
+          expected that ActionStatus objects should be retained indefinitely, they may be stored in volatile memory
+          and/or periodically pruned. The length of time for which to retain ActionStatus objects is expected to be
+          implementation-specific and may depend on application-specific requirements or resource constraints. It is
+          recommended that at least the last instance of a completed action status should be stored.
+        </p>
+      </section>
+    </section>
+
     <section id="action-status-object">
       <h3>ActionStatus object</h3>
       <p>An ActionStatus object is used to represent the status of an <a>Action</a> instance in
@@ -2665,14 +2811,6 @@
           </tr>
         </tbody>
       </table>
-      <p class="note" title="Retention of ActionStatus objects">
-        It is assumed that once an action is completed the Thing will store its ActionStatus object so that its status
-        may later be queried with a <code>queryaction</code> or <code>queryallactions</code> operation. It is not
-        expected that ActionStatus objects should be retained indefinitely, they may be stored in volatile memory and/or
-        periodically pruned. The length of time for which to retain ActionStatus objects is expected to be
-        implementation-specific and may depend on application-specific requirements or resource constraints. It is
-        recommended that at least the last instance of a completed action status should be stored.
-      </p>
     </section>
 
     <section id="error-response">

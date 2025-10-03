@@ -402,6 +402,11 @@
           </td>
         </tr>
         <tr>
+          <td><a href="#cancelaction"><code>cancelaction</code></a></td>
+          <td><a href="#cancelaction-request">request</a>, <a href="#cancelaction-response">response</a>
+          </td>
+        </tr>
+        <tr>
           <td><a href="#subscribeevent"><code>subscribeevent</code></a></td>
           <td><a href="#subscribeevent-request">request</a>,
             <a href="#subscribeevent-response">response</a>,
@@ -2504,6 +2509,123 @@
           the Action then the error member is included in the <code>status</code> member of the response message.
           This helps to differentiate between an error querying the Action status vs. an error executing the Action.
         </p>
+      </section>
+    </section>
+
+    <section id="cancelaction">
+      <h3><code>cancelaction</code></h3>
+      <section id="cancelaction-request">
+        <h4>Request</h4>
+        <p>To cancel an ongoing asynchronous <a>Action</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>cancelaction</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"cancelaction"</td>
+              <td>A string which denotes that this message relates to an <code>cancelaction</code> operation.</td>
+            </tr>
+            <tr>
+              <td><code>actionID</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance being
+                cancelled, as provided in the corresponding <code>invokeaction</code> response.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="cancelaction request message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "4672b11e-dc55-465b-a991-0d8de2295fa3",
+          "messageType": "request",
+          "operation": "cancelaction",
+          "actionID": "c1e116a4-7832-4338-a72c-330c871b991a",
+          "correlationID": "03a3cf77-2afc-42a3-bae7-463046dbc736"
+        }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>cancelaction</code> it MUST
+          attempt to cancel the <a>Action</a> instance with the <code>actionID</code> provided in the
+          message.
+        </p>
+      </section>
+      <section id="cancelaction-response">
+        <h4>Response</h4>
+        <p>Upon successfully cancelling the an asynchronous <a>Action</a> instance, the <a>Thing</a> MUST send a
+          message to the requesting <a>Consumer</a> containing the following members:
+
+        <table class="def">
+          <caption>Members of a <code>cancelaction</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"cancelaction"</td>
+              <td>A string which denotes that this message relates to a <code>cancelaction</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>actionID</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>A unique identifier in UUIDv4 format [[rfc9562]] which identifies the individual action instance that
+                was cancelled, as provided in the corresponding <code>invokeaction</code> response.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time the action was cancelled.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="cancelaction response message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "58433430-cb92-4212-b3e8-aff22e8cb977",
+          "messageType": "response",
+          "operation": "cancelaction",
+          "actionID": "c1e116a4-7832-4338-a72c-330c871b991a",
+          "correlationID": "03a3cf77-2afc-42a3-bae7-463046dbc736"
+          "timestamp": "2025-10-03T12:01:53.351Z",
+        }
+        </pre>
       </section>
     </section>
 

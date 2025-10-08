@@ -416,6 +416,12 @@
             <a href="#subscribeallevents-notification">notification</a>...
           </td>
         </tr>
+        <tr>
+          <td><a href="#unsubscribeallevents"><code>unsubscribeallevents</code></a></td>
+          <td><a href="#unsubscribeallevents-request">request</a>,
+            <a href="#unsubscribeallevents-response">response</a>
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -1933,7 +1939,8 @@
         </pre>
         <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
           <code>request</code> and <code>operation</code> set to <code>unobserveallproperties</code> it MUST
-          attempt to remove observation subscriptions from all <a>Properties</a> of the <a>Thing</a>.
+          attempt to remove observation subscriptions from all <a>Properties</a> of the <a>Thing</a> over the
+          current WebSocket connection.
         </p>
         <p class="note" title="unobserveallproperties is a batch operation">
           The <code>unobserveallproperties</code> operation can be thought of as a batch operation which removes
@@ -2788,7 +2795,108 @@
           Because a duplicate event subscription replaces a previous subscription to the same Event,
           a Thing should only ever send one notification message per WebSocket connection for each instance of an
           event. Notification messages always use the <code>correllationID</code> of the currently
-          active observation subscription (which may have replaced a previous subscription).
+          active subscription (which may have replaced a previous subscription).
+        </p>
+      </section>
+    </section>
+
+    <section id="unsubscribeallevents">
+      <h3><code>unsubscribeallevents</code></h3>
+      <section id="unsubscribeallevents-request">
+        <h4>Request</h4>
+        <p>To cancel subscriptions to all <a>Events</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>unsubscribeallevents</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unsubscribeallevents"</td>
+              <td>A string which denotes that this message relates to an <code>unsubscribeallevents</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unsubscribeallevents request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "061c34de-4b93-4afe-9d18-f9646bddb568",
+            "messageType": "request",
+            "operation": "unsubscribeallevents",
+            "correlationID": "e28fd02b-4d30-44c4-9517-2948737b22f3"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>unsubscribeallevents</code> it MUST
+          attempt to cancel subscriptions to all <a>Events</a> of the <a>Thing</a> over the current WebSocket
+          connection.
+        </p>
+        <p class="note" title="unsubscribeallevents is a batch operation">
+          The <code>unsubscribeallevents</code> operation can be thought of as a batch operation which cancels
+          all individual event subscriptions that have been registered with a Thing over a given WebSocket
+          connection, regardless of whether those subscriptions were registered using a
+          <code>subscribeevent</code> operation or a <code>subscribeallevents</code> operation.
+        </p>
+      </section>
+      <section id="unsubscribeallevents-response">
+        <h4>Response</h4>
+        <p>Upon successfully cancelling subscriptions from all <a>Events</a>, the <a>Thing</a> MUST
+          send a message to the requesting <a>Consumer</a> containing the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>unsubscribeallevents</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unsubscribeallevents"</td>
+              <td>A string which denotes that this message relates to an <code>unsubscribeallevents</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unsubscribeallevents response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "3ba79d05-d546-4687-9662-0b85b5f52092",
+            "messageType": "response",
+            "operation": "unsubscribeallevents",
+            "correlationID": "e28fd02b-4d30-44c4-9517-2948737b22f3"
+          }
+        </pre>
+        <p>If a <a>Thing</a> receives an <code>unsubscribeallevents</code> request but the <a>Thing</a> does not have
+          any active event subscriptions over the current WebSocket connection, then it SHOULD still send a
+          success response since the intended outcome has been achieved.
         </p>
       </section>
     </section>

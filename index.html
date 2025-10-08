@@ -404,6 +404,10 @@
             <a href="#subscribeevent-notification">notification</a>...
           </td>
         </tr>
+        <tr>
+          <td><a href="#unsubscribeevent"><code>unsubscribeevent</code></a></td>
+          <td><a href="#unsubscribeevent-request">request</a>, <a href="#unsubscribeevent-response">response</a></td>
+        </tr>
       </tbody>
     </table>
 
@@ -1636,7 +1640,8 @@
       </pre>
         <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
           <code>request</code> and <code>operation</code> set to <code>unobserveproperty</code> it MUST
-          attempt to remove any observation subscription to the <a>Property</a> with the given <code>name</code>.
+          attempt to remove any observation subscription to the <a>Property</a> with the given <code>name</code>
+          over the current WebSocket connection.
         </p>
         <p class="note" title="Interaction between unobserveproperty and observeallproperties">
           If an <code>unobserveproperty</code> request removes an observation subscription that was previously
@@ -2349,6 +2354,11 @@
           registered by a <code>subscribeevent</code> operation over the same WebSocket connection, which would impact
           any active subscriptions for other Events on the same connection.
         </p>
+        <p class="note" title="subscription data schema">
+          An EventAffordance in a Thing Description can include a <code>subscription</code> member which defines 
+          a data schema for the payload needed to register an event subscription. That data schema is not needed for 
+          this sub-protocol because the sub-protocol itself defines the subscription payload format.
+        </p>
       </section>
       <section id="subscribeevent-response">
         <h4>Response</h4>
@@ -2472,6 +2482,130 @@
           a Thing should only ever send one notification message per WebSocket connection for each instance of
           an event. Notification messages always use the <code>correllationID</code> of the currently
           active subscription (which may have replaced a previous subscription).
+        </p>
+      </section>
+    </section>
+
+    <section id="unsubscribeevent">
+      <h3><code>unsubscribeevent</code></h3>
+      <section id="unsubscribeevent-request">
+        <h4>Request</h4>
+        <p>To cancel a subscription to an <a>Event</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of an <code>unsubscribeevent</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unsubscribeevent"</td>
+              <td>A string which denotes that this message relates to an <code>unsubscribeevent</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Event</a> to unsubscribe from, as per its key in the <code>events</code>
+                member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unsubscribeevent request message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "9378f35b-c6d8-46de-a0a1-5929110dffcb",
+          "messageType": "request",
+          "operation": "unsubscribeevent",
+          "name": "overheated",
+          "correlationID": "78e8ebe0-f315-48c7-ba6b-1dbc6531b538"
+        }
+      </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>unsubscribeevent</code> it MUST
+          attempt to cancel any subscriptions to the <a>Event</a> with the given <code>name</code> over the
+          current WebSocket connection.
+        </p>
+        <p class="note" title="Interaction between unsubscribeevent and subscribeallevents">
+          If an <code>unsubscribeevent</code> request cancels a subscription that was previously
+          registered by a <code>subscribeallevents</code> operation then that does not impact active
+          subscriptions for other Events that may have been registered by the same operation.
+        </p>
+        <p class="note" title="cancellation data schema">
+          An EventAffordance in a Thing Description can include a <code>cancellation</code> member which defines 
+          a data schema for the payload needed to cancel an event subscription. That data schema is not needed for this 
+          sub-protocol because the sub-protocol itself defines the payload format.
+        </p>
+      </section>
+      <section id="unsubscribeevent-response">
+        <h4>Response</h4>
+        <p>Upon successfully cancelling a subscription to an <a>Event</a>, the Thing MUST
+          send a message to the requesting <code>Consumer</code> containing the following members:</p>
+        <table class="def">
+          <caption>Members of an <code>unsubscribeevent</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"unsubscribeevent"</td>
+              <td>A string which denotes that this message relates to an <code>unsubscribeevent</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Event</a> that is no longer subscribed to, as per its key in the
+                <code>events</code> member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="unsubscribeevent response message">
+        {
+          "thingID": "https://mythingserver.com/things/mylamp1",
+          "messageID": "915de7d6-5704-4475-bda3-3d99e34ad1eb",
+          "messageType": "response",
+          "operation": "unsubscribeevent",
+          "name": "overheated",
+          "correlationID": "78e8ebe0-f315-48c7-ba6b-1dbc6531b538"
+        }
+        </pre>
+        <p>If a <a>Thing</a> receives an <code>unsubscribeevent</code> request for an <a>Event</a>, but that
+          <a>Event</a> does not have any active subscriptions over the current WebSocket connection, then
+          it SHOULD still send a success response since the intended outcome has been achieved.
         </p>
       </section>
     </section>

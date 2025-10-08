@@ -408,6 +408,14 @@
           <td><a href="#unsubscribeevent"><code>unsubscribeevent</code></a></td>
           <td><a href="#unsubscribeevent-request">request</a>, <a href="#unsubscribeevent-response">response</a></td>
         </tr>
+        <tr>
+          <td><a href="#subscribeallevents"><code>subscribeallevents</code></a></td>
+          <td><a href="#subscribeallevents-request">request</a>,
+            <a href="#subscribeallevents-response">response</a>,
+            <a href="#subscribeallevents-notification">notification</a>,
+            <a href="#subscribeallevents-notification">notification</a>...
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -1868,7 +1876,7 @@
             "operation": "observeallproperties",
             "name": "level",
             "value": 42,
-            "timestamp": "2025-09-03T12:24:64.532Z",
+            "timestamp": "2025-09-03T12:24:54.532Z",
             "correlationID": "e8948c71-b460-46f8-b4e5-f93b04c6e67b"
           }
         </pre>
@@ -2144,7 +2152,7 @@
               "operation": "invokeaction",
               "name": "fade",
               "output": true,
-              "timestamp": "2025-09-03T18:14:55.641Z",
+              "timestamp": "2025-09-03T18:14:55.541Z",
               "correlationID": "50d5f441-cb07-4513-80b4-cd062cddc1e0"
             }
           </pre>
@@ -2445,7 +2453,7 @@
               <td><code>name</code></td>
               <td>string</td>
               <td>Mandatory</td>
-              <td>The name of the <a>Event</a> that was subscribed to, as per its key in the <code>events</code> member
+              <td>The name of the <a>Event</a> that occurred, as per its key in the <code>events</code> member
                 of the <a>Thing Description</a>.
               </td>
             </tr>
@@ -2606,6 +2614,181 @@
         <p>If a <a>Thing</a> receives an <code>unsubscribeevent</code> request for an <a>Event</a>, but that
           <a>Event</a> does not have any active subscriptions over the current WebSocket connection, then
           it SHOULD still send a success response since the intended outcome has been achieved.
+        </p>
+      </section>
+    </section>
+
+    <section id="subscribeallevents">
+      <h3><code>subscribeallevents</code></h3>
+      <section id="subscribeallevents-request">
+        <h4>Request</h4>
+        <p>To subscribe to all <a>Events</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
+          <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>subscribeallevents</code> request message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"request"</td>
+              <td>A string which denotes that this message is a request sent from a Consumer to a Thing.</td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"subscribeallevents"</td>
+              <td>A string which denotes that this message relates to a <code>subscribeallevents</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="subscribeallevents request message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "f3363a15-1193-435c-9351-b8c2708280b3",
+            "messageType": "request",
+            "operation": "subscribeallevents",
+            "correlationID": "65972ee4-d26a-4eb3-a7e2-7f2bc797401f"
+          }
+        </pre>
+        <p>When a <a>Thing</a> receives a message from a <a>Consumer</a> with <code>messageType</code> set to
+          <code>request</code> and <code>operation</code> set to <code>subscribeallevents</code> it MUST
+          attempt to register a subscription for each <a>Event</a> of the <a>Thing</a>.
+        </p>
+        <p>If a <a>Thing</a> receives a <code>subscribeallevents</code> request and there are already active
+          <a>Event</a> subscriptions on the same WebSocket connection, the <a>Thing</a> MUST replace
+          the existing subscriptions with new ones, using the <code>correllationID</code> of the
+          <code>subscribeallevents</code> request received (i.e. last subscription wins).
+        </p>
+        <p class="note" title="subscribeallevents is a batch operation">
+          The <code>subscribeallevents</code> operation can be thought of as a batch operation which adds individual
+          subscriptions to each Event. Those subscriptions may later be individually replaced
+          by new subscriptions using <code>subscribeevent</code> operations, or individually cancelled
+          using <code>unsubscribeevent</code> operations.
+        </p>
+      </section>
+      <section id="subscribeallevents-response">
+        <h4>Response</h4>
+        <p>Upon successfully registering a subscription to all <a>Events</a>, the Thing MUST
+          send a message to the requesting <code>Consumer</code> containing the following members:</p>
+        <table class="def">
+          <caption>Members of a <code>subscribeallevents</code> response message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"response"</td>
+              <td>A string which denotes that this message is a response sent from a <a>Thing</a> to a <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"subscribeallevents"</td>
+              <td>A string which denotes that this message relates to a <code>subscribeallevents</code> operation.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="subscribeallevents response message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "eca78220-2ba2-411d-940d-905bfbef49b4",
+            "messageType": "response",
+            "operation": "subscribeallevents",
+            "correlationID": "65972ee4-d26a-4eb3-a7e2-7f2bc797401f"
+          }
+        </pre>
+      </section>
+      <section id="subscribeallevents-notification">
+        <h4>Notification</h4>
+        <p>Whilst a subscription to all <a>Events</a> is registered, whenever an event occurs, the <a>Thing</a> MUST
+          send a message to the observing <a>Consumer</a> containing the following members:
+        </p>
+        <table class="def">
+          <caption>Members of a <code>subscribeallevents</code> notification message</caption>
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Type</th>
+              <th>Assignment</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>messageType</code></td>
+              <td>string</td>
+              <td>"notification"</td>
+              <td>A string which denotes that this message is a notification sent from a <a>Thing</a> to a
+                <a>Consumer</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>operation</code></td>
+              <td>string</td>
+              <td>"subscribeallevents"</td>
+              <td>A string which denotes that this message relates to a <code>subscribeallevents</code> operation.
+              </td>
+            </tr>
+            <tr>
+              <td><code>name</code></td>
+              <td>string</td>
+              <td>Mandatory</td>
+              <td>The name of the <a>Event</a> that occurred, as per its key in the <code>events</code>
+                member of the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>data</code></td>
+              <td>any</td>
+              <td>Optional</td>
+              <td>The Event payload, if any, with a type and structure conforming to the data schema defined in the
+                <code>data</code> member of the corresponding EventAffordance in the <a>Thing Description</a>.
+              </td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>string</td>
+              <td>Optional</td>
+              <td>A timestamp in date-time format [[RFC3339]] set to the time at which the event occurred.</td>
+            </tr>
+          </tbody>
+        </table>
+        <pre class="example" title="subscribeallevents notification message">
+          {
+            "thingID": "https://mythingserver.com/things/mylamp1",
+            "messageID": "808c5b62-4207-4755-ac2b-5f8c66594547",
+            "messageType": "notification",
+            "operation": "subscribeallevents",
+            "name": "overheated",
+            "value": 90,
+            "timestamp": "2025-10-08T11:59:32.325Z",
+            "correlationID": "65972ee4-d26a-4eb3-a7e2-7f2bc797401f"
+          }
+        </pre>
+        <p class="note" title="One notification per event per connection">
+          Because a duplicate event subscription replaces a previous subscription to the same Event,
+          a Thing should only ever send one notification message per WebSocket connection for each instance of an
+          event. Notification messages always use the <code>correllationID</code> of the currently
+          active observation subscription (which may have replaced a previous subscription).
         </p>
       </section>
     </section>

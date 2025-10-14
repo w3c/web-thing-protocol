@@ -3896,6 +3896,38 @@
 
   <section id="security-considerations">
     <h2>Security Considerations</h2>
+    <p>It is RECOMMENDED that, where necessary, authentication takes place using a standard HTTP
+      <a href="https://www.w3.org/TR/wot-thing-description/#sec-security-vocabulary-definition">security scheme</a>
+      [[wot-thing-description11]] during the initial <a href="#protocol-handshake">protocol handshake</a> when opening a
+      WebSocket connection, e.g. by including a Bearer token in an HTTP <code>Authentication</code> header in the
+      initial GET request. Once a WebSocket connection is open, all messages sent from the <a>Consumer</a>
+      to the <a>Thing</a> can therefore be considered authenticated using the credentials provided during that
+      handshake.
+    </p>
+    <p>
+      It is RECOMMENDED that security credentials should be provided in an HTTP header rather than the WebSocket
+      endpoint URL wherever possible, because URLs may be intercepted or logged by intermediate proxies.
+    </p>
+    <p class="note" title="WebSocket authentication">
+      The JavaScript WebSocket API [[websockets-api]] does not provide a mechanism to specify arbitrary HTTP headers, so
+      when using this API providing an authentication token in a query string in the URL may be unavoidable.
+    </p>
+    <p>
+      It is RECOMMENDED that TLS encryption [[TLS]] is used in conjunction with the <code>wss</code> URI scheme
+      [[WEBSOCKETS-PROTOCOL]] to encrypt all messages sent between a <a>Consumer</a> and a <a>Thing</a> whilst in
+      transit, so that messages may not be intercepted using a man-in-the-middle attack.
+    </p>
+    <p>The secure storage of any data transmitted using this sub-protocol is beyond the scope of this specification.</p>
+    <p>
+      The security considerations of the
+      <a href="https://www.w3.org/TR/wot-architecture/#sec-security-considerations">WoT Architecture</a>
+      [[wot-architecture11]] and
+      <a href="https://www.w3.org/TR/wot-thing-description/#sec-security-consideration">WoT Thing Description</a>
+      [[wot-thing-description11]] specifications SHOULD be taken into account.
+    </p>
+    <p class="note" title="WoT Security and Privacy Guidelines">
+      Please also see WoT Security and Privacy Guidelines [[wot-security]] for implementation advice.
+    </p>
   </section>
 
   <section id="accessibility-considerations">

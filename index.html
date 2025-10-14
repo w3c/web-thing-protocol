@@ -3593,6 +3593,30 @@
 
   <section id="privacy-considerations">
     <h2>Privacy Considerations</h2>
+    <p>
+      It is RECOMMENDED that, where necessary, private information should be protected by <a>Things</a> requiring 
+      <a>Consumers</a> to authenticate when opening a WebSocket connection, and through the use of
+      encryption to protect messages whilst they are in transit (see <a href="#security-considerations">Security
+        Considerations</a> section below).
+    </p>
+    <p class="note" title="Permissions model">
+      Multiple <a>Consumers</a> may connect to the same <a>Thing</a>, which could
+      result in private information from one user being shared with another. It is beyond the scope of this
+      specification to define a permissions model for access to individual interaction affordances, operations and
+      data payloads, since this is expected to be implementation specific. For example, it is up to an implementor to
+      of a <a>Thing</a> to decide whether an <a>Action</a> instance invoked by one user can be queried by another user,
+      or whether certain operations are limited based on credentials provided when opening a WebSocket connection.
+    </p>
+    <p>
+      The privacy considerations of the
+      <a href="https://www.w3.org/TR/wot-architecture/#sec-privacy-considerations">WoT Architecture</a>
+      [[wot-architecture11]] and
+      <a href="https://www.w3.org/TR/wot-thing-description/#sec-privacy-consideration">WoT Thing Description</a>
+      [[wot-thing-description11]] specifications SHOULD be taken into account.
+    </p>
+    <p class="note" title="WoT Security and Privacy Guidelines">
+      Please also see WoT Security and Privacy Guidelines [[wot-security]] for implementation advice.
+    </p>
   </section>
 
   <section id="security-considerations">

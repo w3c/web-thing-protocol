@@ -25,6 +25,12 @@
       latestVersion: "https://w3c.github.io/web-thing-protocol/"
     };
   </script>
+  <style>
+    figure {
+      max-width: 450px;
+      margin: 0 auto !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -134,6 +140,71 @@
       <a href="https://www.w3.org/TR/wot-architecture/#terminology">Terminology</a>
       section of the WoT Architecture specification [[wot-architecture11]].
     </p>
+  </section>
+
+  <section id="deployment-models" class="informative">
+    <h1>Deployment Models</h1>
+    <p>The Web Thing Protocol is intended to operate within three key deployment models depending on whether a Web Thing
+      is hosted by a connected device, by an on-premises Web of Things gateway, or an off-premises Web of Things cloud
+      service.</p>
+    <p>These three deployment models are common across a range of different application domains.</p>
+    <p>For a broader discussion of deployment models for the Web of Things in general, see <a
+        href="https://w3c.github.io/wot-architecture/#sec-common-deployment-patterns">Common Deployment Patterns</a> in
+      Web of Things (WoT) Architecture 1.1 [[wot-architecture11]].</p>
+    <section id="deployment-model-direct">
+      <h2>Direct</h2>
+      <p>The direct deployment model is when a Consumer communicates directly with an IoT device using the Web Thing
+        Protocol.</p>
+      <figure>
+        <img src="images/direct_deployment_model.png"
+          alt="A diagram showing a WoT Consumer directly communicating with a collection of connected devices using the Web Thing Protocol." />
+        <figcaption>Direct deployment model</figcaption>
+      </figure>
+      <p>In this deployment model, the IoT device itself must act as an HTTP and WebSockets server which serves its own
+        Thing Description and can maintain a WebSocket connection with a Consumer.</p>
+    </section>
+    <section id="deployment-model-gateway">
+      <h2>Gateway</h2>
+      <p>The gateway deployment model is when a Consumer communicates with a connected device via a gateway on the same
+        premises as the device, which bridges another protocol to the Web Thing Protocol.</p>
+      <figure>
+        <img src="images/gateway_deployment_model.png"
+          alt="A diagram showing a WoT Consumer communicating with a collection of Web Things via a Web of Things gateway using the Web Thing Protocol." />
+        <figcaption>Gateway deployment model</figcaption>
+      </figure>
+      <p>In this deployment model, a gateway acts as an HTTP and WebSockets server which exposes a Web Thing for a
+        connected device and translates WebSocket messages into messages of the device's native protocol (e.g. Zigbee,
+        Z-Wave, Matter, Modbus or BACnet) over a local area network (LAN) or personal area network (PAN).</p>
+      <p>A gateway can also act as a Consumer which consumes Web Things using the direct deployment model, and can be
+        used to proxy a Web Thing from one network to another.</p>
+      <figure>
+        <img src="images/gateway_deployment_model2.png"
+          alt="A diagram showing a WoT Consumer communicating with a Web of Things gateway using the Web Thing protocol and the gateway also communicating with a collection of connected devices using the Web Thing Protocol." />
+        <figcaption>Gateway deployment model with gateway also acting as a Consumer</figcaption>
+      </figure>
+    </section>
+    <section id="deployment-model-cloud">
+      <h2>Cloud</h2>
+      <p>The cloud deployment model is when a Consumer communicates with an IoT device via cloud service on the
+        internet, which communicates with the device using some other protocol on the back end.</p>
+    </section>
+    <figure>
+      <img src="images/cloud_deployment_model.png"
+        alt="A diagram showing a WoT Consumer communicating with a collection of connected devices via cloud service using the Web Thing Protocol." />
+      <figcaption>Cloud deployment model</figcaption>
+    </figure>
+    <p>In this deployment model, a cloud service hosted in a data centre acts as an HTTP and WebSockets server which
+      exposes a Web Thing for an IoT device and translates WebSocket messages into messages using another IoT protocol
+      (e.g. AMQP or MQTT).</p>
+    <p>The cloud deployment model differs from the gateway deployment model in that the Web Thing is hosted on different
+      premises to the IoT device it represents and communicates with the device over the internet.</p>
+    <p>A cloud service can also act as a Consumer which consumes Web Things that use the direct or gateway deployment
+      model, and can be used to proxy a Web Thing from one origin to another.</p>
+    <figure>
+      <img src="images/cloud_deployment_model2.png"
+        alt="A diagram showing a WoT Consumer communicating with a Web of Things cloud service using the Web Thing protocol and the cloud service also communicating with a collection of connected devices and a Web of Things Gateway using the Web Thing Protocol." />
+      <figcaption>Cloud deployment model with cloud service also acting as a Consumer</figcaption>
+    </figure>
   </section>
 
   <section id="websocket-connection">

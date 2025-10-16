@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>Web Thing Protocol</title>
   <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove" defer></script>
   <script class="remove">
@@ -150,6 +150,7 @@
           Description</a>
         [[wot-architecture11]] by locating a <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside
         the corresponding <a>Interaction Affordance</a> for which:
+      </p>
       <ul>
         <li>After being resolved against a <a
             href="https://www.w3.org/TR/wot-thing-description/#td-vocab-base--Thing"><code>base</code></a> URL
@@ -160,7 +161,6 @@
             href="https://www.w3.org/TR/wot-thing-description/#td-vocab-subprotocol--Form"><code>subprotocol</code></a>
           member has a value of <code>"webthingprotocol"</code></li>
       </ul>
-      </p>
       <p>To open a WebSocket on a Thing, an HTTP <a
           href="https://httpwg.org/specs/rfc9110.html#GET"><code>GET</code></a> request [[RFC9110]] MUST be upgraded to
         a WebSocket connection using a standard WebSocket <a
@@ -309,7 +309,7 @@
               action or subscribe to an event)</td>
           </tr>
           <tr>
-            <td><code>response</code></a></td>
+            <td><code>response</code></td>
             <td>Thing ➡ Consumer</td>
             <td>A message sent from a Thing to a Consumer in response to a request (e.g. to respond with a property
               reading, provide the final response to an action or confirm a subscription to an event)</td>
@@ -332,7 +332,7 @@
         same operation MUST also include a <code>correlationID</code> member with the same value.</p>
 
       <p>All date and time values MUST use the <code>date-time</code> format
-        defined in [[RFC3339]].</span>
+        defined in [[RFC3339]].
       </p>
       <pre class="example" title="Example timestamp">
         <code>2025-01-15T12:08:00.42Z</code>
@@ -744,7 +744,6 @@
             <a>Property</a>'s data schema but to a level of precision the Thing does not support, (e.g. 3.14159), then
             the
             <a>Thing</a> MAY respond with the actual value set (e.g. 3.14).
-          </p>
           </p>
         </section>
       </section>

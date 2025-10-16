@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="450"
+   height="350"
+   viewBox="0 0 119.0625 92.604167"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect118" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect119" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect120" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect114" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect115" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect116" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect117" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect120-3" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect153" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect155" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect156" />
+    <rect
+       x="231.34747"
+       y="32.533859"
+       width="424.54584"
+       height="81.182663"
+       id="rect154" />
+  </defs>
+  <g
+     id="layer1"
+     transform="translate(-83.608332,-48.154157)">
+    <g
+       id="g176"
+       transform="translate(-103.41854,-386.43184)">
+      <rect
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.264583;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect172"
+         width="119.0625"
+         height="92.604164"
+         x="187.02687"
+         y="434.586" />
+      <g
+         id="g175"
+         transform="translate(3.584682,-10.273209)">
+        <g
+           id="g156-6"
+           transform="translate(137.51734,83.134654)">
+          <path
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+             d="m 91.242417,416.02223 v -5.06"
+             id="path45-2" />
+          <text
+             xml:space="preserve"
+             transform="matrix(0.26458333,0,0,0.26458333,-26.172896,394.36481)"
+             id="text56-9"
+             style="font-style:normal;font-weight:normal;font-size:12px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect120-3);display:inline;fill:#000000;fill-opacity:1;stroke:none"
+             x="22.763672"
+             y="0"><tspan
+               x="413.97461"
+               y="43.165792"
+               id="tspan2"><tspan
+                 style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+                 id="tspan1">Web Thing
+</tspan></tspan><tspan
+               x="420.19434"
+               y="58.181192"
+               id="tspan4"><tspan
+                 style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+                 id="tspan3">Protocol</tspan></tspan></text>
+          <path
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+             d="M 91.308563,401.81032 V 397.9238"
+             id="path132-1" />
+        </g>
+        <text
+           xml:space="preserve"
+           transform="matrix(0.26458333,0,0,0.26458333,169.05634,480.378)"
+           id="text140"
+           style="font-style:normal;font-weight:normal;font-size:12px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect153);display:inline;fill:#1a1a1a;fill-opacity:1;stroke:none"
+           x="22.763672"
+           y="0"><tspan
+             x="400.53027"
+             y="43.165792"
+             id="tspan6"><tspan
+               style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+               id="tspan5">WoT Consumer</tspan></tspan></text>
+        <path
+           style="fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="M 245.78486,499.30931 235.64203,481.05822"
+           id="path142" />
+        <path
+           style="display:inline;fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="M 262.74387,499.30931 242.181,480.99396"
+           id="path143" />
+        <path
+           style="fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="m 194.90779,499.30931 19.871,-18.25109"
+           id="path144" />
+        <path
+           style="fill:#cccccc;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+           d="m 211.86681,499.30931 9.80748,-18.25109"
+           id="path145" />
+        <text
+           xml:space="preserve"
+           transform="matrix(0.26458333,0,0,0.26458333,111.4389,506.83193)"
+           id="text145"
+           style="font-style:normal;font-weight:normal;font-size:12px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect155);display:inline;fill:#000000;fill-opacity:1;stroke:none"
+           x="22.763672"
+           y="0"><tspan
+             x="390.55469"
+             y="43.165792"
+             id="tspan8"><tspan
+               style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+               id="tspan7">Connected Devices</tspan></tspan></text>
+        <path
+           id="path146"
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           d="m 213.46663,464.17218 c -0.0815,0.004 -0.16371,0.0163 -0.24547,0.0382 -0.65403,0.17525 -1.02787,0.88578 -0.83819,1.5937 l 2.00091,7.46776 h -1.85983 c -0.7329,0 -1.32292,0.59003 -1.32292,1.32292 v 5.14025 c 0,0.7329 0.59002,1.32344 1.32292,1.32344 h 32.60371 c 0.7329,0 1.32292,-0.59054 1.32292,-1.32344 v -5.14025 c 0,-0.73289 -0.59002,-1.32292 -1.32292,-1.32292 h -1.86035 l 2.00091,-7.46776 c 0.18968,-0.70792 -0.18416,-1.41845 -0.83819,-1.5937 -0.65404,-0.17525 -1.33322,0.25326 -1.52291,0.96118 l -2.17041,8.10028 h -23.82233 l -2.16989,-8.10028 c -0.16598,-0.61943 -0.7072,-1.02507 -1.27796,-0.99942 z" />
+        <text
+           xml:space="preserve"
+           transform="matrix(0.26458333,0,0,0.26458333,111.44585,466.5961)"
+           id="text147"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12px;line-height:1.25;font-family:'Open Sans';-inkscape-font-specification:'Open Sans';white-space:pre;shape-inside:url(#rect156);display:inline;fill:#000000;fill-opacity:1;stroke:none"
+           x="22.763672"
+           y="0"><tspan
+             x="405.34668"
+             y="43.165792"
+             id="tspan10"><tspan
+               style="text-align:center;text-anchor:middle"
+               id="tspan9">WoT Gateway</tspan></tspan></text>
+        <g
+           id="g148"
+           transform="translate(195.37343,88.341657)">
+          <rect
+             style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+             id="rect147"
+             width="18.669626"
+             height="11.86103"
+             x="380.18021"
+             y="-97.040642"
+             ry="1.3229167"
+             rx="1.3229165"
+             transform="rotate(90)" />
+          <rect
+             style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+             id="rect148"
+             width="14.487571"
+             height="9.2826719"
+             x="381.77167"
+             y="-95.751465"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g161">
+          <text
+             xml:space="preserve"
+             transform="matrix(0.26458333,0,0,0.26458333,147.33716,464.77961)"
+             id="text141"
+             style="font-style:normal;font-weight:normal;font-size:12px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect154);display:inline;fill:#000000;fill-opacity:1;stroke:none"
+             x="22.763672"
+             y="0"><tspan
+               x="413.97461"
+               y="43.165792"
+               id="tspan12"><tspan
+                 style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+                 id="tspan11">Web Thing
+</tspan></tspan><tspan
+               x="420.19434"
+               y="58.181192"
+               id="tspan14"><tspan
+                 style="font-family:'Open Sans';-inkscape-font-specification:'Open Sans';text-align:center;text-anchor:middle"
+                 id="tspan13">Protocol</tspan></tspan></text>
+          <path
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+             d="m 280.55571,477.03269 -6.68774,-0.0355"
+             id="path148" />
+          <path
+             style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1"
+             d="m 256.42074,477.03269 -9.97006,0.13224"
+             id="path149" />
+        </g>
+        <circle
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           id="circle149"
+           cx="194.90703"
+           cy="505.77115"
+           r="6.614583" />
+        <circle
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           id="circle150"
+           cx="211.86604"
+           cy="505.77115"
+           r="6.614583" />
+        <circle
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           id="circle151"
+           cx="228.82509"
+           cy="505.77115"
+           r="6.614583" />
+        <circle
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           id="circle152"
+           cx="245.78413"
+           cy="505.77115"
+           r="6.614583" />
+        <circle
+           style="fill:none;stroke:#000000;stroke-width:0.264583;stroke-dasharray:none;stroke-opacity:1;paint-order:fill markers stroke;stop-color:#000000"
+           id="circle153"
+           cx="262.74313"
+           cy="505.77115"
+           r="6.614583" />
+      </g>
+    </g>
+  </g>
+</svg>

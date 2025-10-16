@@ -3587,8 +3587,143 @@
 
   </section>
 
-  <section id="example-thing-descriptions">
-    <h2>Example Thing Descriptions</h2>
+  <section id="example-thing-description" class="informative">
+    <h2>Example Thing Description</h2>
+    <p>Below is an example <a>Thing Description</a> of the <a>Thing</a> that is used in most examples
+      throughout this specification.</p>
+    <pre class="example" title="Example Thing Description">
+      {
+        "@context": [
+          "https://www.w3.org/2022/wot/td/v1.1"
+        ],
+        "id": "https://myweblamp.io",
+        "base": "wss://myweblamp.io/",
+        "title": "My Lamp",
+        "description": "A web connected lamp",
+        "securityDefinitions": {
+          "oauth2": {
+            "scheme": "oauth2",
+            "flow": "code",
+            "authorization": "https://myweblamp.io/oauth/authorize",
+            "token": "https://myweblamp.io/oauth/token"
+          }
+        },
+        "security": "oauth2",
+        "properties": {
+          "on": {
+            "type": "boolean",
+            "title": "On/Off",
+            "description": "Whether the lamp is turned on",
+            "forms": [
+              {
+                "href": "/",
+                "op": [
+                  "readproperty",
+                  "writeproperty",
+                  "observeproperty",
+                  "unobserveproperty"
+                ],
+                "subprotocol": "webthingprotocol"
+              }
+            ]
+          },
+          "level": {
+            "type": "integer",
+            "title": "Brightness",
+            "description": "The level of light from 0-100",
+            "unit": "percent",
+            "minimum": 0,
+            "maximum": 100,
+            "forms": [
+              {
+                "href": "/",
+                "op": [
+                  "readproperty",
+                  "writeproperty",
+                  "observeproperty",
+                  "unobserveproperty"
+                ],
+                "subprotocol": "webthingprotocol"
+              }
+            ]
+          }
+        },
+        "actions": {
+          "fade": {
+            "title": "Fade",
+            "description": "Fade the lamp to a given level",
+            "input": {
+              "type": "object",
+              "properties": {
+                "level": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "unit": "percent"
+                },
+                "duration": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "unit": "milliseconds"
+                }
+              }
+            },
+            "output": {
+              "type": "boolean"
+            },
+            "forms": [
+              {
+                "href": "/",
+                "op": [
+                  "invokeaction",
+                  "queryaction",
+                  "cancelaction"
+                ],
+                "subprotocol": "webthingprotocol"
+              }
+            ]
+          }
+        },
+        "events": {
+          "overheated": {
+            "title": "Overheated",
+            "data": {
+              "type": "number",
+              "unit": "degree celsius"
+            },
+            "description": "The lamp has exceeded its safe operating temperature",
+            "forms": [
+              {
+                "href": "/",
+                "op": [
+                  "subscribeevent",
+                  "unsubscribeevent"
+                ],
+                "subprotocol": "webthingprotocol"
+              }
+            ]
+          }
+        },
+        "forms": [
+          {
+            "op": [
+              "readallproperties",
+              "readmultipleproperties",
+              "writeallproperties",
+              "writemultipleproperties",
+              "observeallproperties",
+              "unobserveallproperties",
+              "queryallactions",
+              "subscribeallevents",
+              "unsubscribeallevents"
+            ],
+            "href": "/",
+            "subprotocol": "webthingprotocol"
+          }
+        ]
+      }
+
+    </pre>
   </section>
 
   <section id="privacy-considerations">

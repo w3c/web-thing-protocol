@@ -3918,6 +3918,13 @@
       transit, so that messages may not be intercepted using a man-in-the-middle attack.
     </p>
     <p>The secure storage of any data transmitted using this sub-protocol is beyond the scope of this specification.</p>
+    <p>The WebSocket protocol does not support backpressure, so if messages arrive faster than the application can
+      process them then there is a risk it may either fill up the device's memory by buffering those messages, become
+      unresponsive due to 100% CPU usage, or both. In order to mitigate the risk of DDoS attacks it is RECOMMENDED to
+      implement throttling or rate limiting for the rate at which messages are received over a WebSocket connection.
+      A mechanism for negotiating rate limiting between a <a>Thing</a> and a <a>Consumer</a> is currently beyond the 
+      scope of this specification.
+    </p>
     <p>
       The security considerations of the
       <a href="https://www.w3.org/TR/wot-architecture/#sec-security-considerations">WoT Architecture</a>

@@ -1563,6 +1563,16 @@
                   of the <a>Thing Description</a>.
                 </td>
               </tr>
+              <tr>
+                <td><code>lastNotificationID</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A unique identifier in UUIDv4 format [[rfc9562]] set to the value of the <code>messageID</code>
+                  member of the last <code>observeproperty</code> or <code>observeallproperties</code> notification
+                  message received for this <a>Property</a>, so that the <a>Consumer</a> can catch up with any missed
+                  notifications since the last subscription, if possible.
+                </td>
+              </tr>
             </tbody>
           </table>
           <pre class="example" title="observeproperty request message">
@@ -1572,6 +1582,7 @@
               "messageType": "request",
               "operation": "observeproperty",
               "name": "level",
+              "lastNotificationID": "5d09d466-3ee6-49e2-a4af-fe50c4d86b96",
               "correlationID": "3b380f3c-4fb8-4dc0-8ef2-ef2c2b528931"
             }
           </pre>
@@ -1646,6 +1657,23 @@
               "correlationID": "3b380f3c-4fb8-4dc0-8ef2-ef2c2b528931"
             }
           </pre>
+          <p>If the <a>Consumer</a> provided a <code>lastNotificationID</code> in its request and the <a>Thing</a> has
+            a stored record of past changes in the value of the <a>Property</a>, then the <a>Thing</a> MAY send a
+            <a href="#observeproperty-notification">notification message</a> to the <a>Consumer</a> for each change in
+            value of the <a>Property</a> since the last notification message the <a>Consumer</a> received. If the
+            <a>Thing</a> has no stored record of past changes in the value of the <a>Property</a>, or does not have a
+            record of a message with the given UUID, then it MAY ignore the <code>lastNotificationID</code> provided.
+          </p>
+          <p class="note" title="Catching up on missed property change notifications">
+            In the event that a connection between a Consumer and a Thing drops unexpectedly, upon initiating a new
+            connection to the Thing, a Consumer can use the <code>lastNotificationID</code> member of an
+            <code>observeproperty</code> request to signal to a Thing that it would like to catch up on missed property
+            change notifications that would have been sent since the notification message identified by that UUID.
+            The Thing is not required to send these messages and may not have a complete set of changes still in
+            storage, so the Consumer should not assume that it has caught up on all missed notifications. If the number
+            of missed property changes is very large, the Thing may choose not to send them, or to only send the most
+            recent changes.
+          </p>
         </section>
         <section id="observeproperty-notification">
           <h5>Notification</h5>
@@ -1878,6 +1906,16 @@
                 <td>A string which denotes that this message relates to an <code>observeallproperties</code> operation.
                 </td>
               </tr>
+              <tr>
+                <td><code>lastNotificationID</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A unique identifier in UUIDv4 format [[rfc9562]] set to the value of the <code>messageID</code>
+                  member of the last <code>observeproperty</code> or <code>observeallproperties</code> notification
+                  message received for this <a>Thing</a>, so that the <a>Consumer</a> can catch up with any missed
+                  notifications since the last subscription, if possible.
+                </td>
+              </tr>
             </tbody>
           </table>
           <pre class="example" title="observeallproperties request message">
@@ -1886,6 +1924,7 @@
               "messageID": "b8988514-5a26-474f-9895-df20db848dd1",
               "messageType": "request",
               "operation": "observeallproperties",
+              "lastNotificationID": "bc542394-5348-4bcd-980e-ddfadad44630",
               "correlationID": "e8948c71-b460-46f8-b4e5-f93b04c6e67b"
             }
           </pre>
@@ -1947,6 +1986,23 @@
               "correlationID": "e8948c71-b460-46f8-b4e5-f93b04c6e67b"
             }
           </pre>
+          <p>If the <a>Consumer</a> provided a <code>lastNotificationID</code> in its request and the <a>Thing</a> has
+            a stored record of past changes in the values of <a>Properties</a>, then the <a>Thing</a> MAY send a
+            <a href="#observeproperty-notification">notification message</a> to the <a>Consumer</a> for each change in
+            the value of a <a>Property</a> since the last notification message the <a>Consumer</a> received. If the
+            <a>Thing</a> has no stored record of past property changes, or does not have a
+            record of a message with the given UUID, then it MAY ignore the <code>lastNotificationID</code> provided.
+          </p>
+          <p class="note" title="Catching up on missed property change notifications">
+            In the event that a connection between a Consumer and a Thing drops unexpectedly, upon initiating a new
+            connection to the Thing, a Consumer can use the <code>lastNotificationID</code> member of an
+            <code>observeallproperties</code> request to signal to a Thing that it would like to catch up on missed
+            property change notifications that would have been sent since the notification message identified by that
+            UUID. The Thing is not required to send these messages and may not have a complete set of changes still in
+            storage, so the Consumer should not assume that it has caught up on all missed notifications. If the number
+            of missed property changes is very large, the Thing may choose not to send them, or to only send the most
+            recent changes.
+          </p>
         </section>
         <section id="observeallproperties-notification">
           <h5>Notification</h5>
@@ -3013,6 +3069,16 @@
                   of the <a>Thing Description</a>.
                 </td>
               </tr>
+              <tr>
+                <td><code>lastNotificationID</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A unique identifier in UUIDv4 format [[rfc9562]] set to the value of the <code>messageID</code>
+                  member of the last <code>subscribeevent</code> or <code>subscribeallevents</code> notification
+                  message received for this <a>Event</a>, so that the <a>Consumer</a> can catch up with any missed
+                  notifications since the last subscription, if possible.
+                </td>
+              </tr>
             </tbody>
           </table>
           <pre class="example" title="subscribeevent request message">
@@ -3022,6 +3088,7 @@
               "messageType": "request",
               "operation": "subscribeevent",
               "name": "overheated",
+              "lastNotificationID": "444a32ae-edef-45d4-9821-a2fc54393659",
               "correlationID": "206a6935-5978-47a5-a327-1ce1c656728b"
             }
           </pre>
@@ -3099,6 +3166,23 @@
               "correlationID": "206a6935-5978-47a5-a327-1ce1c656728b"
             }
           </pre>
+          <p>If the <a>Consumer</a> provided a <code>lastNotificationID</code> in its request and the <a>Thing</a> has
+            a stored record of past events, then the <a>Thing</a> MAY send a
+            <a href="#subscribeevent-notification">notification message</a> to the <a>Consumer</a> for each event
+            emitted by the <a>Thing</a> since the last notification message the <a>Consumer</a> received. If the
+            <a>Thing</a> has no stored record of past events, or does not have a record of a message with the given
+            UUID, then it MAY ignore the <code>lastNotificationID</code> provided.
+          </p>
+          <p class="note" title="Catching up on missed events">
+            In the event that a connection between a Consumer and a Thing drops unexpectedly, upon initiating a new
+            connection to the Thing, a Consumer can use the <code>lastNotificationID</code> member of a
+            <code>subscribeevent</code> request to signal to a Thing that it would like to catch up on missed events
+            that would have been sent since the notification message identified by that UUID.
+            The Thing is not required to send these messages and may not have a complete set of events still in
+            storage, so the Consumer should not assume that it has caught up on all missed notifications. If the number
+            of missed events is very large, the Thing may choose not to send them, or to only send the most
+            recent ones.
+          </p>
         </section>
         <section id="subscribeevent-notification">
           <h5>Notification</h5>
@@ -3332,6 +3416,16 @@
                 <td>A string which denotes that this message relates to a <code>subscribeallevents</code> operation.
                 </td>
               </tr>
+              <tr>
+                <td><code>lastNotificationID</code></td>
+                <td>string</td>
+                <td>Optional</td>
+                <td>A unique identifier in UUIDv4 format [[rfc9562]] set to the value of the <code>messageID</code>
+                  member of the last <code>subscribeevent</code> or <code>subscribeallevents</code> notification
+                  message received for this <a>Thing</a>, so that the <a>Consumer</a> can catch up with any missed
+                  notifications since the last subscription, if possible.
+                </td>
+              </tr>
             </tbody>
           </table>
           <pre class="example" title="subscribeallevents request message">
@@ -3340,6 +3434,7 @@
               "messageID": "f3363a15-1193-435c-9351-b8c2708280b3",
               "messageType": "request",
               "operation": "subscribeallevents",
+              "lastNotificationID": "83d7346c-a4dc-441a-9070-06275165c589",
               "correlationID": "65972ee4-d26a-4eb3-a7e2-7f2bc797401f"
             }
           </pre>
@@ -3400,6 +3495,22 @@
               "correlationID": "65972ee4-d26a-4eb3-a7e2-7f2bc797401f"
             }
           </pre>
+          <p>If the <a>Consumer</a> provided a <code>lastNotificationID</code> in its request and the <a>Thing</a> has
+            a stored record of past events, then the <a>Thing</a> MAY send a
+            <a href="#subscribeallevents-notification">notification message</a> to the <a>Consumer</a> for each event
+            emitted by the <a>Thing</a> since the last notification message the <a>Consumer</a> received. If the
+            <a>Thing</a> has no stored record of past events, or does not have a record of a message with the given
+            UUID, then it MAY ignore the <code>lastNotificationID</code> provided.
+          </p>
+          <p class="note" title="Catching up on missed event notifications">
+            In the event that a connection between a Consumer and a Thing drops unexpectedly, upon initiating a new
+            connection to the Thing, a Consumer can use the <code>lastNotificationID</code> member of an
+            <code>observeallproperties</code> request to signal to a Thing that it would like to catch up on missed
+            events that would have been sent since the notification message identified by that UUID. The Thing is not
+            required to send these messages and may not have a complete set of events still in storage, so the Consumer
+            should not assume that it has caught up on all missed notifications. If the number of missed events is very
+            large, the Thing may choose not to send them, or to only send the most recent ones.
+          </p>
         </section>
         <section id="subscribeallevents-notification">
           <h5>Notification</h5>

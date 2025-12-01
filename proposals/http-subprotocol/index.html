@@ -8,7 +8,7 @@
   <script class="remove">
     // All config options at https://respec.org/docs/
     var respecConfig = {
-      specStatus: "CG-DRAFT",
+      specStatus: "base",
       editors: [{
         name: "Ben Francis",
         company: "Krellian",
@@ -17,12 +17,8 @@
         w3cid: "51527"
       }],
       github: "w3c/web-thing-protocol",
-      shortName: "web-thing-protocol",
       xref: true,
-      group: "web-thing-protocol",
       wgPublicList: "public-web-thing-protocol",
-      edDraftURI: "https://w3c.github.io/web-thing-protocol/",
-      latestVersion: "https://w3c.github.io/web-thing-protocol/"
     };
   </script>
   <style>
@@ -38,10 +34,10 @@
   <h2 id="subtitle">HTTP & WebSockets Strawman Proposal</h2>
 
   <section id="abstract">
-    <p>This document defines HTTP and WebSocket sub-protocols called the 
+    <p>This document defines HTTP and WebSocket sub-protocols called the
       Web Thing Protocol, for monitoring and controlling connected devices over
       the World Wide Web. The Web Thing Protocol is intended as a dedicated
-      protocol for the <a href="https://www.w3.org/WoT/">Web of Things</a>, to 
+      protocol for the <a href="https://www.w3.org/WoT/">Web of Things</a>, to
       enable a WoT
       <a href="https://www.w3.org/TR/wot-architecture/#dfn-consumer">Consumer</a>
       to communicate with one or more WoT
@@ -52,18 +48,16 @@
 
   <section id="sotd">
     <aside class="ed-note" title="Empty Sections">
-      Please note that this document is a work in progress and contains empty
-      sections. For an indication of what these sections may eventually contain,
-      please see this
-      <a href="https://docs.google.com/document/d/1KWv-aQfMgsqBFg0v4rVqzcVvzzisC7y4X4CMUYGc8rE/edit?usp=sharing">strawman
-        proposal</a>.
+      This document is a submission by a single member of the
+      <a href="https://www.w3.org/community/web-thing-protocol/">W3C Web Thing Protocol Community Group</a> and
+      does not represent the consensus of that group.
     </aside>
   </section>
 
   <section id="introduction" class="informative">
     <h2>Introduction</h2>
-    <p>This document defines a HTTP [[HTTP11]] and WebSocket 
-      [[WEBSOCKETS-PROTOCOL]] sub-protocols for monitoring and controlling 
+    <p>This document defines a HTTP [[HTTP11]] and WebSocket
+      [[WEBSOCKETS-PROTOCOL]] sub-protocols for monitoring and controlling
       connected devices over the Web.
     </p>
     <p>The <a href="https://www.w3.org/WoT/">Web of Things</a> (WoT) is a
@@ -209,224 +203,230 @@
 
   <section id="http-subprotocol">
     <h2>HTTP Sub-protocol</h2>
-     <p>
-        This section defines a sub-protocol which describes how a
-        <a>Consumer</a>
-        communicates with a
-        <a>Web Thing</a>
-        [[wot-architecture11]] using JSON [[JSON]] payloads over
-        the HTTP protocol [[RFC9112]].
-      </p>
+    <p>
+      This section defines a sub-protocol which describes how a
+      <a>Consumer</a>
+      communicates with a
+      <a>Web Thing</a>
+      [[wot-architecture11]] using JSON [[JSON]] payloads over
+      the HTTP protocol [[RFC9112]].
+    </p>
+    <p id="date-format">All date and time values MUST use the <code>date-time</code> format
+      defined in [[RFC3339]].
+    </p>
 
-      <section id="http-basic-profile-protocol-binding-properties">
-        <h4>Property Operations</h4>
-        <section id="http-basic-profile-protocol-binding-readproperty">
-          <h5><code>readproperty</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-1">
-            <p>
-              The URL of a property resource to be used when reading
-              the value of a <a>Property</a> MUST be obtained from a <a>Thing Description</a> by
-              locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the corresponding
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">
-                PropertyAffordance</a>
-              for which:
-            </p>
-            <ul>
-              <li>
-                After defaults have been applied, its <code>op</code> member
-                contains the value <code>readproperty</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the property resource.</span>
+    <section id="http-basic-profile-protocol-binding-properties">
+      <h4>Property Operations</h4>
+      <section id="http-basic-profile-protocol-binding-readproperty">
+        <h5><code>readproperty</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-1">
+          <p>
+            The URL of a property resource to be used when reading
+            the value of a <a>Property</a> MUST be obtained from a <a>Thing Description</a> by
+            locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the corresponding
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">
+              PropertyAffordance</a>
+            for which:
           </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-4">
-            <p>
-              In order to read the value of a <a>Property</a>, a <a>Consumer</a> MUST send
-              an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>GET</code></li>
-              <li>URL set to the URL of the property resource</li>
-              <li><code>Accept</code> header set to <code>application/json
+          <ul>
+            <li>
+              After defaults have been applied, its <code>op</code> member
+              contains the value <code>readproperty</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the property resource.</span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-4">
+          <p>
+            In order to read the value of a <a>Property</a>, a <a>Consumer</a> MUST send
+            an HTTP request to a <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>GET</code></li>
+            <li>URL set to the URL of the property resource</li>
+            <li><code>Accept</code> header set to <code>application/json
                 </code></li>
-            </ul>
-          </div>
-          <pre class="example">
+          </ul>
+        </div>
+        <pre class="example">
               GET /things/lamp/properties/on HTTP/1.1
               Host: mythingserver.com
               Accept: application/json
             </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-6">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to read the corresponding
-              <a>Property</a>, then upon successfully reading the value of the <a>Property</a>
-              it MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>200</code></li>
-              <li><code>Content-Type</code> header set to <code>application/json
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readproperty-6">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to read the corresponding
+            <a>Property</a>, then upon successfully reading the value of the <a>Property</a>
+            it MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>200</code></li>
+            <li><code>Content-Type</code> header set to <code>application/json
                 </code></li>
-              <li>A body with the value of the property serialized in JSON</li>
-            </ul>
-          </div>
-          <pre class="example">
+            <li>A body with the value of the property serialized in JSON</li>
+          </ul>
+        </div>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: application/json
             false
           </pre>
-        </section>
-        <section id="http-basic-profile-protocol-binding-writeproperty">
-          <h5><code>writeproperty</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-1">
-            <p>
-              The URL of a property resource to be used when writing
-              the value of a <a>Property</a> MUST be obtained from a <a>Thing Description</a> by
-              locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a>
-              inside the corresponding
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
-              for which:
-            </p>
-            <ul>
-              <li>
-                After defaults have been applied, its <code>op</code> member
-                contains the value <code>writeproperty</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the property resource.</span></p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-4">
-            <p>
-              In order to write the value of a <a>Property</a>, a <a>Consumer</a> MUST send
-              an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>PUT</code></li>
-              <li>URL set to the URL of the property resource</li>
-              <li><code>Content-Type</code> header set to <code>application/json
+      </section>
+      <section id="http-basic-profile-protocol-binding-writeproperty">
+        <h5><code>writeproperty</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-1">
+          <p>
+            The URL of a property resource to be used when writing
+            the value of a <a>Property</a> MUST be obtained from a <a>Thing Description</a> by
+            locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a>
+            inside the corresponding
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
+            for which:
+          </p>
+          <ul>
+            <li>
+              After defaults have been applied, its <code>op</code> member
+              contains the value <code>writeproperty</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the property resource.</span></p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-4">
+          <p>
+            In order to write the value of a <a>Property</a>, a <a>Consumer</a> MUST send
+            an HTTP request to a <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>PUT</code></li>
+            <li>URL set to the URL of the property resource</li>
+            <li><code>Content-Type</code> header set to <code>application/json
                 </code></li>
-              <li>A body with a requested new value for the property serialized
-                in JSON</li>
-            </ul>
-          </div>
-          <pre class="example">
+            <li>A body with a requested new value for the property serialized
+              in JSON</li>
+          </ul>
+        </div>
+        <pre class="example">
             PUT /things/lamp/properties/on HTTP/1.1
             Host: mythingserver.com
             Content-Type: application/json
             true
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-6">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to write the corresponding
-              <a>Property</a>, then upon successfully writing the value of the
-              property it MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>204</code></li>
-            </ul>
-          </div>
-          <pre class="example">
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writeproperty-6">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to write the corresponding
+            <a>Property</a>, then upon successfully writing the value of the
+            property it MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>204</code></li>
+          </ul>
+        </div>
+        <pre class="example">
             HTTP/1.1 204 No Content
           </pre>
-        </section>
+      </section>
 
-        <section id="http-basic-profile-protocol-binding-readallproperties">
-          <h5><code>readallproperties</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-1">
-            <p>
-              The URL of a properties resource to be used when
-              reading the value of all <a>Properties</a> at once MUST be obtained from a
-              <a>Thing Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
-              <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
-                <code>forms</code></a> member
-              for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>readallproperties</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
+      <section id="http-basic-profile-protocol-binding-readallproperties">
+        <h5><code>readallproperties</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-1">
           <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the properties resource.
-            </span>
+            The URL of a properties resource to be used when
+            reading the value of all <a>Properties</a> at once MUST be obtained from a
+            <a>Thing Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
+            <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
+              <code>forms</code></a> member
+            for which:
           </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-4">
-            <p>
-              In order to read the value of all <a>Properties</a>, a <a>Consumer</a> MUST send
-              an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>GET</code></li>
-              <li>URL set to the URL of the properties resource
-              </li>
-              <li><code>Accept</code> header set to <code>application/json
+          <ul>
+            <li>
+              Its <code>op</code> member contains the value
+              <code>readallproperties</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the properties resource.
+          </span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-4">
+          <p>
+            In order to read the value of all <a>Properties</a>, a <a>Consumer</a> MUST send
+            an HTTP request to a <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>GET</code></li>
+            <li>URL set to the URL of the properties resource
+            </li>
+            <li><code>Accept</code> header set to <code>application/json
                   </code></li>
-            </ul>
-          </div>
-          <pre class="example">
+          </ul>
+        </div>
+        <pre class="example">
               GET /things/lamp/properties HTTP/1.1
               Host: mythingserver.com
               Accept: application/json
             </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-5">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above, then upon successfully reading the values of all the
-              readable <a>Properties</a> to which the <a>Consumer</a> has permission to
-              access, it MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>200</code></li>
-              <li><code>Content-Type</code> header set to <code>application/json
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-readallproperties-5">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above, then upon successfully reading the values of all the
+            readable <a>Properties</a> to which the <a>Consumer</a> has permission to
+            access, it MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>200</code></li>
+            <li><code>Content-Type</code> header set to <code>application/json
                   </code></li>
-              <li>A body with the values of all readable properties serialized
-                in JSON, as an object keyed by property name</li>
-            </ul>
-          </div>
-          <pre class="example">
+            <li>A body with the values of all readable properties serialized
+              in JSON, as an object keyed by property name</li>
+          </ul>
+        </div>
+        <pre class="example">
               HTTP/1.1 200 OK
               Content-Type: application/json
               {
@@ -434,57 +434,58 @@
                 "level": 100
               }
             </pre>
-        </section>
-        <section id="http-basic-profile-protocol-binding-writemultipleproperties">
-          <h5><code>writemultipleproperties</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-1">
-            <p>
-              The URL of a properties resource to be used when
-              writing the value of multiple <a>Properties</a> at once MUST be obtained
-              from a <a>Thing Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
-              <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
-                <code>forms</code></a> member
-              for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>writemultipleproperties</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
+      </section>
+      <section id="http-basic-profile-protocol-binding-writemultipleproperties">
+        <h5><code>writemultipleproperties</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-1">
           <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-bindings-writemultipleproperties-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the properties resource.
-            </span>
+            The URL of a properties resource to be used when
+            writing the value of multiple <a>Properties</a> at once MUST be obtained
+            from a <a>Thing Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
+            <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
+              <code>forms</code></a> member
+            for which:
           </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-4">
-            <p>
-              In order to write the value of multiple properties at once, a
-              <a>Consumer</a> MUST send an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>PUT</code></li>
-              <li>URL set to the URL of the <a>Properties</a> resource
-              </li>
-              <li><code>Content-Type</code> header set to <code>application/json</code></li>
-              <li>A body with requested new values for the writable <a>Properties</a>
-                serialized in JSON, as an object keyed by property name</li>
-            </ul>
-          </div>
-          <pre class="example">
+          <ul>
+            <li>
+              Its <code>op</code> member contains the value
+              <code>writemultipleproperties</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-bindings-writemultipleproperties-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the properties resource.
+          </span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-4">
+          <p>
+            In order to write the value of multiple properties at once, a
+            <a>Consumer</a> MUST send an HTTP request to a <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>PUT</code></li>
+            <li>URL set to the URL of the <a>Properties</a> resource
+            </li>
+            <li><code>Content-Type</code> header set to <code>application/json</code></li>
+            <li>A body with requested new values for the writable <a>Properties</a>
+              serialized in JSON, as an object keyed by property name</li>
+          </ul>
+        </div>
+        <pre class="example">
             PUT /things/lamp/properties HTTP/1.1
             Host: mythingserver.com
             Content-Type: application/json
@@ -493,422 +494,427 @@
               "level": 50
             }
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-6">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above, then upon successfully writing the values of the requested
-              writable <a>Properties</a> it MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>204</code></li>
-            </ul>
-          </div>
-          <pre class="example">
-            HTTP/1.1 204 No Content
-          </pre>
-        </section>
-        <p class="note">
-          The <code>readmultipleproperties</code> operation is excluded due to
-          the complexities of the request payload format and because it
-          doesn't add much functionality over <code>readproperty</code> and
-          <code>readallproperties</code>.
-          <code>writeallproperties</code> is excluded because it
-          is just a special case of <code>writemultipleproperties</code>.
-        </p>
-        <section id="observeproperty">
-          <h5><code>observeproperty</code></h5>
-          <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-1">
-            <p>
-              The URL of a <a>Property</a> resource to be used when
-              observing the value of a property MUST be obtained from a Thing
-              Description by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside
-              the corresponding
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
-              for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>observeproperty</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>Its <code>subprotocol</code> member has a value of
-                <code>sse</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-writemultipleproperties-6">
           <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-2">
-              The resolved value of the <code>href</code> member MUST then be
-              used as the URL of the property resource.</span>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-3">
-              In order to observe a <a>Property</a>, a <a>Consumer</a> MUST follow the
-              Server-Sent Events [[EVENTSOURCE]] specification to open a
-              connection with the <a>Web Thing</a> at the URL of the
-              property resource.</span>
-          </p>
-          <p>
-            This involves the <a>Consumer</a> sending an HTTP request to
-            the <a>Web Thing</a> with:
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above, then upon successfully writing the values of the requested
+            writable <a>Properties</a> it MUST send an HTTP response with:
           </p>
           <ul>
-            <li>Method set to <code>GET</code></li>
-            <li>URL set to the URL of the property resource</li>
+            <li>Status code set to <code>204</code></li>
+          </ul>
+        </div>
+        <pre class="example">
+            HTTP/1.1 204 No Content
+          </pre>
+      </section>
+      <p class="note">
+        The <code>readmultipleproperties</code> operation is excluded due to
+        the complexities of the request payload format and because it
+        doesn't add much functionality over <code>readproperty</code> and
+        <code>readallproperties</code>.
+        <code>writeallproperties</code> is excluded because it
+        is just a special case of <code>writemultipleproperties</code>.
+      </p>
+      <section id="observeproperty">
+        <h5><code>observeproperty</code></h5>
+        <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-1">
+          <p>
+            The URL of a <a>Property</a> resource to be used when
+            observing the value of a property MUST be obtained from a Thing
+            Description by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside
+            the corresponding
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
+            for which:
+          </p>
+          <ul>
             <li>
-              <code>Accept</code> header set to <code>text/event-stream</code>
+              Its <code>op</code> member contains the value
+              <code>observeproperty</code>
             </li>
             <li>
-              <code>Connection</code> header set to <code>keep-alive</code>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>Its <code>subprotocol</code> member has a value of
+              <code>webthingprotocol</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
             </li>
           </ul>
-          <pre class="example">
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-2">
+            The resolved value of the <code>href</code> member MUST then be
+            used as the URL of the property resource.</span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-3">
+            In order to observe a <a>Property</a>, a <a>Consumer</a> MUST follow the
+            Server-Sent Events [[EVENTSOURCE]] specification to open a
+            connection with the <a>Web Thing</a> at the URL of the
+            property resource.</span>
+        </p>
+        <p>
+          This involves the <a>Consumer</a> sending an HTTP request to
+          the <a>Web Thing</a> with:
+        </p>
+        <ul>
+          <li>Method set to <code>GET</code></li>
+          <li>URL set to the URL of the property resource</li>
+          <li>
+            <code>Accept</code> header set to <code>text/event-stream</code>
+          </li>
+          <li>
+            <code>Connection</code> header set to <code>keep-alive</code>
+          </li>
+        </ul>
+        <pre class="example">
             GET /things/lamp/properties/level HTTP/1.1
             Host: mythingserver.com
             Accept: text/event-stream
             Connection: keep-alive
           </pre>
-          <p class="note" title="Opening a connection using JavaScript">
-            For Consumers implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be initiated using the <code>EventSource</code>
-            constructor.
-          <pre class="example">
+        <p class="note" title="Opening a connection using JavaScript">
+          For Consumers implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be initiated using the <code>EventSource</code>
+          constructor.
+        <pre class="example">
               const levelSource = new EventSource('/things/lamp/properties/level');
           </pre>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-4">
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to observe the
-              corresponding property, then it MUST follow the Server-Sent Events
-              [[EVENTSOURCE]] specification to maintain an open connection with
-              the <a>Consumer</a> and push a property value to the <a>Consumer</a> each time
-              the value of the specified <a>Property</a> changes.</span>
-          </p>
-          <p>
-            This involves the <a>Web Thing</a> initially sending an HTTP
-            response to the <a>Consumer</a> with:
-          </p>
-          <ul>
-            <li>Status code set to <code>200</code></li>
-            <li>
-              <code>Content-Type</code> header set to
-              <code>text/event-stream</code>
-            </li>
-          </ul>
-          <pre class="example">
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-4">
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to observe the
+            corresponding property, then it MUST follow the Server-Sent Events
+            [[EVENTSOURCE]] specification to maintain an open connection with
+            the <a>Consumer</a> and push a property value to the <a>Consumer</a> each time
+            the value of the specified <a>Property</a> changes.</span>
+        </p>
+        <p>
+          This involves the <a>Web Thing</a> initially sending an HTTP
+          response to the <a>Consumer</a> with:
+        </p>
+        <ul>
+          <li>Status code set to <code>200</code></li>
+          <li>
+            <code>Content-Type</code> header set to
+            <code>text/event-stream</code>
+          </li>
+        </ul>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: text/event-stream
           </pre>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5a">
-              Whenever the value of the specified <a>Property</a> changes while the <a>Web
-                Thing</a> has an open connection with a <a>Consumer</a>, the <a>Web Thing</a> MUST
-              send a property value to the <a>Consumer</a> using the event stream
-              format in the Server-Sent Events [[EVENTSOURCE]] specification.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5b">
-              For each message sent, the <a>Web Thing</a> MUST set the
-              <code>event</code> field to the name of the
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
-              and populate the <code>data</code>
-              field with the property value, serialized in JSON and following
-              the data schema specified in the
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5c">
-              The <code>id</code> field SHOULD be set to a unique
-              identifier for the property change, for use when re-establishing a
-              dropped connection (see below).</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5d">
-              It is RECOMMENDED that the
-              identifier is a timestamp representing the time at which the
-              property changed</span> (see
-            <a href="#date-format">Date Format</a> for date format
-            constraints).
-          </p>
-          <pre class="example">
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5a">
+            Whenever the value of the specified <a>Property</a> changes while the <a>Web
+              Thing</a> has an open connection with a <a>Consumer</a>, the <a>Web Thing</a> MUST
+            send a property value to the <a>Consumer</a> using the event stream
+            format in the Server-Sent Events [[EVENTSOURCE]] specification.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5b">
+            For each message sent, the <a>Web Thing</a> MUST set the
+            <code>event</code> field to the name of the
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
+            and populate the <code>data</code>
+            field with the property value, serialized in JSON and following
+            the data schema specified in the
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5c">
+            The <code>id</code> field SHOULD be set to a unique
+            identifier for the property change, for use when re-establishing a
+            dropped connection (see below).</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-5d">
+            It is RECOMMENDED that the
+            identifier is a timestamp representing the time at which the
+            property changed</span> (see
+          <a href="#date-format">Date Format</a> for date format
+          constraints).
+        </p>
+        <pre class="example">
             event: level\n
             data: 42\n
             id: 2021-11-17T15:33:20.827Z\n\n
           </pre>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-6a">
-              If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
-              (except as a result of the <code>unobserve</code> operation
-              defined below), the <a>Consumer</a> MUST re-establish the connection
-              following the steps outlined in the Server-Sent Events
-              specification [[EVENTSOURCE]].</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-6b">
-              Once the connection is
-              re-established the <a>Web Thing</a> SHOULD, if possible, send any missed
-              property changes which occurred since the last change specified by
-              the <a>Consumer</a> in a <code>Last-Event-ID</code> header.</span>
-          </p>
-          <p class="note" title="application/json wrapped in text/event-stream">
-            <a>Property</a> values are serialized in JSON and provided in the <code>data</code>
-            field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
-            <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the
-            <code>sse</code> subprotocol, and the embedded <code>application/json</code> content type is
-            indicated in <code>contentType</code> member of the Form (with defaults applied).
-          </p>
-        </section>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-6a">
+            If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
+            (except as a result of the <code>unobserve</code> operation
+            defined below), the <a>Consumer</a> MUST re-establish the connection
+            following the steps outlined in the Server-Sent Events
+            specification [[EVENTSOURCE]].</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeproperty-6b">
+            Once the connection is
+            re-established the <a>Web Thing</a> SHOULD, if possible, send any missed
+            property changes which occurred since the last change specified by
+            the <a>Consumer</a> in a <code>Last-Event-ID</code> header.</span>
+        </p>
+        <p class="note" title="application/json wrapped in text/event-stream">
+          <a>Property</a> values are serialized in JSON and provided in the <code>data</code>
+          field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
+          <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the combination
+          of an <code>op</code> member containing the value <code>observeproperty</code> and a
+          <code>subprotocol</code> member with the value <code>webthingprotocol</code>.
+          The embedded <code>application/json</code> content type is defined by the <code>contentType</code> member,
+          which defaults to <code>application/json</code>.
+        </p>
+      </section>
 
-        <section id="unobserveproperty">
-          <h5><code>unobserveproperty</code></h5>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unobserveproperty-1">
-              In order to stop observing a <a>Property</a>, a <a>Consumer</a> MUST terminate
-              the corresponding Server-Sent Events connection with the <a>Web Thing</a>
-              as specified in the Server-Sent Events specification
-              [[EVENTSOURCE]].</span>
-          </p>
-          <p class="note" title="Terminating a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be terminated using the <code>close()</code> method
-            on an <code>EventSource</code> [[EVENTSOURCE]] object.
-          <pre class="example">
+      <section id="unobserveproperty">
+        <h5><code>unobserveproperty</code></h5>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unobserveproperty-1">
+            In order to stop observing a <a>Property</a>, a <a>Consumer</a> MUST terminate
+            the corresponding Server-Sent Events connection with the <a>Web Thing</a>
+            as specified in the Server-Sent Events specification
+            [[EVENTSOURCE]].</span>
+        </p>
+        <p class="note" title="Terminating a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be terminated using the <code>close()</code> method
+          on an <code>EventSource</code> [[EVENTSOURCE]] object.
+        <pre class="example">
               levelSource.close();
             </pre>
-          </p>
-        </section>
+        </p>
+      </section>
 
-        <section id="observeallproperties">
-          <h5><code>observeallproperties</code></h5>
-          <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-1">
-            <p>
-              The URL of a properties resource to be used when observing
-              changes to all properties of a <a>Web Thing</a> MUST be obtained from a
-              <a>Thing Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
-              <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json"><code>forms</code></a>
-              member of a <a>Thing Description</a> for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>observeallproperties</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>Its <code>subprotocol</code> member has a value of
-                <code>sse</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
+      <section id="observeallproperties">
+        <h5><code>observeallproperties</code></h5>
+        <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-1">
           <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-2">
-              The resolved value of the <code>href</code> member MUST then be
-              used as the URL of the properties resource.</span>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-3">
-              In order to observe changes to all <a>Properties</a> of a <a>Web Thing</a>, a
-              <a>Consumer</a> MUST follow the Server-Sent Events [[EVENTSOURCE]]
-              specification to open a connection with the <a>Web Thing</a> at the URL
-              of the properties resource.</span>
-          </p>
-          <p>
-            This involves the <a>Consumer</a> sending an HTTP request to
-            the <a>Web Thing</a> with:
+            The URL of a properties resource to be used when observing
+            changes to all properties of a <a>Web Thing</a> MUST be obtained from a
+            <a>Thing Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
+            <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json"><code>forms</code></a>
+            member of a <a>Thing Description</a> for which:
           </p>
           <ul>
-            <li>Method set to <code>GET</code></li>
-            <li>URL set to the URL of the properties resource</li>
             <li>
-              <code>Accept</code> header set to <code>text/event-stream</code>
+              Its <code>op</code> member contains the value
+              <code>observeallproperties</code>
             </li>
             <li>
-              <code>Connection</code> header set to <code>keep-alive</code>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>Its <code>subprotocol</code> member has a value of
+              <code>webthingprotocol</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
             </li>
           </ul>
-          <pre class="example">
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-2">
+            The resolved value of the <code>href</code> member MUST then be
+            used as the URL of the properties resource.</span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-3">
+            In order to observe changes to all <a>Properties</a> of a <a>Web Thing</a>, a
+            <a>Consumer</a> MUST follow the Server-Sent Events [[EVENTSOURCE]]
+            specification to open a connection with the <a>Web Thing</a> at the URL
+            of the properties resource.</span>
+        </p>
+        <p>
+          This involves the <a>Consumer</a> sending an HTTP request to
+          the <a>Web Thing</a> with:
+        </p>
+        <ul>
+          <li>Method set to <code>GET</code></li>
+          <li>URL set to the URL of the properties resource</li>
+          <li>
+            <code>Accept</code> header set to <code>text/event-stream</code>
+          </li>
+          <li>
+            <code>Connection</code> header set to <code>keep-alive</code>
+          </li>
+        </ul>
+        <pre class="example">
             GET /things/lamp/properties HTTP/1.1
             Host: mythingserver.com
             Accept: text/event-stream
             Connection: keep-alive
           </pre>
-          <p class="note" title="Opening a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be initiated using the <code>EventSource</code>
-            constructor.
-          <pre class="example">
+        <p class="note" title="Opening a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be initiated using the <code>EventSource</code>
+          constructor.
+        <pre class="example">
               const lampPropertiesSource = new EventSource('/things/lamp/properties');
             </pre>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-4">
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above then it MUST follow the Server-Sent Events
-              [[EVENTSOURCE]] specification to maintain an open connection with
-              the <a>Consumer</a> and push new property values to the <a>Consumer</a> for all
-              <a>Properties</a> for which it has permission to observe.</span>
-          </p>
-          <p>
-            This involves the <a>Web Thing</a> initially sending an HTTP
-            response to the <a>Consumer</a> with:
-          </p>
-          <ul>
-            <li>Status code set to <code>200</code></li>
-            <li>
-              <code>Content-Type</code> header set to
-              <code>text/event-stream</code>
-            </li>
-          </ul>
-          <pre class="example">
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-4">
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above then it MUST follow the Server-Sent Events
+            [[EVENTSOURCE]] specification to maintain an open connection with
+            the <a>Consumer</a> and push new property values to the <a>Consumer</a> for all
+            <a>Properties</a> for which it has permission to observe.</span>
+        </p>
+        <p>
+          This involves the <a>Web Thing</a> initially sending an HTTP
+          response to the <a>Consumer</a> with:
+        </p>
+        <ul>
+          <li>Status code set to <code>200</code></li>
+          <li>
+            <code>Content-Type</code> header set to
+            <code>text/event-stream</code>
+          </li>
+        </ul>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: text/event-stream
           </pre>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5a">
-              Whenever a <a>Property</a> changes while the <a>Web Thing</a> has an open
-              connection with a Consumer, the <a>Web Thing</a> MUST send the new
-              property value to the <a>Consumer</a> using the event stream format in
-              the Server-Sent Events [[EVENTSOURCE]] specification.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5b">
-              For each message sent, the <a>Web Thing</a> MUST set the <code>event</code> field
-              to the name of the
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
-              and populate
-              the <code>data</code> field with the new property value.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5c">
-              The property data MUST follow the data schema specified in the
-              <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
-              and MUST be serialized in JSON.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5d">
-              The <code>id</code> field SHOULD be set to a unique identifier for
-              the event, for use when re-establishing a dropped connection (see
-              below).</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5e">
-              It is RECOMMENDED that the identifier is a timestamp
-              representing the time at which the <a>Property</a> changed</span> (see
-            <a href="#date-format">Date Format</a> for date format
-            constraints).
-          </p>
-          <pre class="example">
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5a">
+            Whenever a <a>Property</a> changes while the <a>Web Thing</a> has an open
+            connection with a Consumer, the <a>Web Thing</a> MUST send the new
+            property value to the <a>Consumer</a> using the event stream format in
+            the Server-Sent Events [[EVENTSOURCE]] specification.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5b">
+            For each message sent, the <a>Web Thing</a> MUST set the <code>event</code> field
+            to the name of the
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
+            and populate
+            the <code>data</code> field with the new property value.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5c">
+            The property data MUST follow the data schema specified in the
+            <a href="https://www.w3.org/TR/wot-thing-description/#propertyaffordance">PropertyAffordance</a>
+            and MUST be serialized in JSON.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5d">
+            The <code>id</code> field SHOULD be set to a unique identifier for
+            the event, for use when re-establishing a dropped connection (see
+            below).</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-5e">
+            It is RECOMMENDED that the identifier is a timestamp
+            representing the time at which the <a>Property</a> changed</span> (see
+          <a href="#date-format">Date Format</a> for date format
+          constraints).
+        </p>
+        <pre class="example">
             event: level\n
             data: 42\n
             id: 2021-11-17T15:33:20.827Z\n\n
           </pre>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-6a">
-              If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
-              (except as a result of the <code>unobserveallproperties</code>
-              operation defined below), the <a>Consumer</a> MUST re-establish the
-              connection following the steps outlined in the Server-Sent Events
-              specification [[EVENTSOURCE]].</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-6b">
-              Once the connection is
-              re-established the <a>Web Thing</a> SHOULD, if possible, send any missed
-              property changes which occurred since the last change specified by
-              the <a>Consumer</a> in a <code>Last-Event-ID</code> header.</span>
-          </p>
-          <p class="note" title="application/json wrapped in text/event-stream">
-            Property values are serialized in JSON and provided in the <code>data</code>
-            field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
-            <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the
-            <code>sse</code> subprotocol, and the embedded <code>application/json</code> content type is
-            indicated in <code>contentType</code> member of the Form (with defaults applied).
-          </p>
-        </section>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-6a">
+            If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
+            (except as a result of the <code>unobserveallproperties</code>
+            operation defined below), the <a>Consumer</a> MUST re-establish the
+            connection following the steps outlined in the Server-Sent Events
+            specification [[EVENTSOURCE]].</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-observeallproperties-6b">
+            Once the connection is
+            re-established the <a>Web Thing</a> SHOULD, if possible, send any missed
+            property changes which occurred since the last change specified by
+            the <a>Consumer</a> in a <code>Last-Event-ID</code> header.</span>
+        </p>
+        <p class="note" title="application/json wrapped in text/event-stream">
+          Property values are serialized in JSON and provided in the <code>data</code>
+          field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
+          <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the combination
+          of an <code>op</code> member containing the value <code>observeallproperties</code> and a
+          <code>subprotocol</code> member with the value <code>webthingprotocol</code>.
+          The embedded <code>application/json</code> content type is defined by the <code>contentType</code> member,
+          which defaults to <code>application/json</code>.
+        </p>
+      </section>
 
-        <section id="unobserveallproperties">
-          <h5><code>unobserveallproperties</code></h5>
-          <p>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unobserveallproperties-1">
-              In order to unobserve all properties, a <a>Consumer</a> MUST terminate
-              the corresponding Server-Sent Events connection with the
-              properties endpoint of the <a>Web Thing</a>, following the steps
-              specified in the Server-Sent Events specification [[EVENTSOURCE]].</span>
-          </p>
-          <p class="note" title="Terminating a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be terminated using the <code>close()</code> method
-            on an <code>EventSource</code> [[EVENTSOURCE]] object.
-          <pre class="example">
+      <section id="unobserveallproperties">
+        <h5><code>unobserveallproperties</code></h5>
+        <p>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unobserveallproperties-1">
+            In order to unobserve all properties, a <a>Consumer</a> MUST terminate
+            the corresponding Server-Sent Events connection with the
+            properties endpoint of the <a>Web Thing</a>, following the steps
+            specified in the Server-Sent Events specification [[EVENTSOURCE]].</span>
+        </p>
+        <p class="note" title="Terminating a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be terminated using the <code>close()</code> method
+          on an <code>EventSource</code> [[EVENTSOURCE]] object.
+        <pre class="example">
               lampPropertiesSource.close();
             </pre>
-          </p>
-        </section>
+        </p>
       </section>
-      <section id="http-basic-profile-protocol-binding-actions">
-        <h4>Action Operations</h4>
-        <section id="http-basic-profile-protocol-binding-invokeaction">
-          <h5><code>invokeaction</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-1">
-            <p>
-              The URL of an action resource to be used when invoking
-              an <a>Action</a> MUST be obtained from a <a>Thing Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the corresponding
-              <a href="https://www.w3.org/TR/wot-thing-description/#actionaffordance">ActionAffordance</a>
-              for which:
-            </p>
-            <ul>
-              <li>
-                After defaults have been applied, the value of its
-                <code>op</code> member is <code>invokeaction</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the action resource.</span></p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-4">
-            <p>
-              In order to invoke an <a>Action</a> on a <a>Web Thing</a>, a <a>Consumer</a> MUST send
-              an HTTP request to the <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>POST</code></li>
-              <li>URL set to the URL of the action resource</li>
-              <li><code>Accept</code> header set to <code>application/json
+    </section>
+    <section id="http-basic-profile-protocol-binding-actions">
+      <h4>Action Operations</h4>
+      <section id="http-basic-profile-protocol-binding-invokeaction">
+        <h5><code>invokeaction</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-1">
+          <p>
+            The URL of an action resource to be used when invoking
+            an <a>Action</a> MUST be obtained from a <a>Thing Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the corresponding
+            <a href="https://www.w3.org/TR/wot-thing-description/#actionaffordance">ActionAffordance</a>
+            for which:
+          </p>
+          <ul>
+            <li>
+              After defaults have been applied, the value of its
+              <code>op</code> member is <code>invokeaction</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the action resource.</span></p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-4">
+          <p>
+            In order to invoke an <a>Action</a> on a <a>Web Thing</a>, a <a>Consumer</a> MUST send
+            an HTTP request to the <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>POST</code></li>
+            <li>URL set to the URL of the action resource</li>
+            <li><code>Accept</code> header set to <code>application/json
               </code></li>
-              <li><code>Content-Type</code> header set to <code>application/json
+            <li><code>Content-Type</code> header set to <code>application/json
               </code> (only if the action has an input)</li>
-              <li>A body with an input to the action, if any, serialized in
-                JSON</li>
-            </ul>
-          </div>
-          <pre class="example">
+            <li>A body with an input to the action, if any, serialized in
+              JSON</li>
+          </ul>
+        </div>
+        <pre class="example">
           POST /things/lamp/actions/fade HTTP/1.1
           Host: mythingserver.com
           Content-Type: application/json
@@ -918,250 +924,250 @@
             "duration": 5
           }
           </pre>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-5">
+            If the action does not have an input then the <code>Content-type</code> header of
+            the request SHOULD NOT be set, and the body should be empty.
+          </span>
+        </p>
+        <p class="note">
+          A valid JSON value &mdash; such as <code>null</code>, empty quotation marks
+          (<code>""</code>), or empty braces (<code>{}</code>) &mdash; could be a valid
+          action input and is not considered to be an "empty" body.
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-6">
           <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-5">
-              If the action does not have an input then the <code>Content-type</code> header of
-              the request SHOULD NOT be set, and the body should be empty.
-            </span>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above then it MUST respond with one of three response formats:
           </p>
-          <p class="note">
-            A valid JSON value &mdash; such as <code>null</code>, empty quotation marks
-            (<code>""</code>), or empty braces (<code>{}</code>) &mdash; could be a valid
-            action input and is not considered to be an "empty" body.
-          </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-6">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above then it MUST respond with one of three response formats:
-            </p>
-            <ol>
-              <li>
-                <a href="#sync-action-response">Synchronous Action Response</a>
-              </li>
-              <li>
-                <a href="#async-action-response">Asynchronous Action Response</a>
-              </li>
-              <li>
-                <a href="#error-responses">Error Response</a>
-              </li>
-            </ol>
-          </div>
-          <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-24">
-              The <code>synchronous</code> member of an
-              <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
-              MUST be set to <code>true</code> or <code>false</code>.
-            </span>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-7">
-              If the <code>synchronous</code> member of the
-              <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
-              [[wot-thing-description11]] is set to <code>true</code> then the Web
-              Thing MUST respond with a
-              <a href="#sync-action-response">Synchronous Action Response</a>.
-            </span>
-          </p>
-          <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-8">
-              If the <code>synchronous</code> member of the
-              <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
-              [[wot-thing-description11]] is set to <code>false</code> then the <a>Web Thing</a>
-              MUST respond with an
-              <a href="#async-action-response">Asynchronous Action Response</a>.
-            </span>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-10">
-              For long-running actions which are not expected to finish executing
-              within the timeout period of an HTTP request (e.g. 30 to 120
-              seconds), it is RECOMMENDED that a <a>Web Thing</a> respond with an
-              Asynchronous Action Response so that a <a>Consumer</a> may continue to
-              monitor the status of an action request with a
-              <code>queryaction</code> operation on a dynamically created
-              <code>ActionStatus</code> resource, after the initial
-              <code>invokeaction</code> response.</span></p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-11">
-              For short-lived actions which are expected to finish executing
-              within the timeout period of an HTTP request, a <a>Web Thing</a> MAY wait
-              until the action has completed to send a Synchronous Action
-              Response.</span></p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-12">
-              If a <a>Web Thing</a> encounters an error in attempting to execute an
-              action before responding to the <code>invokeaction</code> request,
-              then it MUST send an Error Response.</span></p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-13">
-              Conforming <a>Consumers</a> MUST support all three types of response
-              to the initial <code>invokeaction</code> request.</span>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-14">
-              After the initial request,
-              support for subsequent operations on an <code>ActionStatus</code>
-              resource is OPTIONAL.</span>
-          </p>
+          <ol>
+            <li>
+              <a href="#sync-action-response">Synchronous Action Response</a>
+            </li>
+            <li>
+              <a href="#async-action-response">Asynchronous Action Response</a>
+            </li>
+            <li>
+              <a href="#http-error-responses">Error Response</a>
+            </li>
+          </ol>
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-24">
+            The <code>synchronous</code> member of an
+            <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
+            MUST be set to <code>true</code> or <code>false</code>.
+          </span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-7">
+            If the <code>synchronous</code> member of the
+            <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
+            [[wot-thing-description11]] is set to <code>true</code> then the Web
+            Thing MUST respond with a
+            <a href="#sync-action-response">Synchronous Action Response</a>.
+          </span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-8">
+            If the <code>synchronous</code> member of the
+            <a href="https://w3c.github.io/wot-thing-description/#actionaffordance">ActionAffordance</a>
+            [[wot-thing-description11]] is set to <code>false</code> then the <a>Web Thing</a>
+            MUST respond with an
+            <a href="#async-action-response">Asynchronous Action Response</a>.
+          </span>
+        </p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-10">
+            For long-running actions which are not expected to finish executing
+            within the timeout period of an HTTP request (e.g. 30 to 120
+            seconds), it is RECOMMENDED that a <a>Web Thing</a> respond with an
+            Asynchronous Action Response so that a <a>Consumer</a> may continue to
+            monitor the status of an action request with a
+            <code>queryaction</code> operation on a dynamically created
+            <code>ActionStatus</code> resource, after the initial
+            <code>invokeaction</code> response.</span></p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-11">
+            For short-lived actions which are expected to finish executing
+            within the timeout period of an HTTP request, a <a>Web Thing</a> MAY wait
+            until the action has completed to send a Synchronous Action
+            Response.</span></p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-12">
+            If a <a>Web Thing</a> encounters an error in attempting to execute an
+            action before responding to the <code>invokeaction</code> request,
+            then it MUST send an Error Response.</span></p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-13">
+            Conforming <a>Consumers</a> MUST support all three types of response
+            to the initial <code>invokeaction</code> request.</span>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-14">
+            After the initial request,
+            support for subsequent operations on an <code>ActionStatus</code>
+            resource is OPTIONAL.</span>
+        </p>
 
-          <h6 id="ActionStatus"><code>ActionStatus</code> object</h6>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-15">
-            <p>
-              The status of an asynchronous action invocation request is represented by an
-              <code>ActionStatus</code> object which includes the following
-              members:
-            </p>
-            <table class="def">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Description</th>
-                  <th>Assignment</th>
-                  <th>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-16">
-                  <td><code>status</code></td>
-                  <td>The status of the action request.</td>
-                  <td>mandatory</td>
-                  <td>
-                    <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
-                      <code>string</code></a> (one of <code>pending</code>,
-                    <code>running</code>, <code>completed</code> or
-                    <code>failed</code>)
-                  </td>
-                </tr>
-                <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-17">
-                  <td><code>output</code></td>
-                  <td>
-                    The output data, if any, of a completed action which
-                    MUST conform with the <code>output</code> data schema of the
-                    corresponding
-                    <a href="https://www.w3.org/TR/wot-thing-description/#actionaffordance">ActionAffordance</a>.
-                  </td>
-                  <td>optional</td>
-                  <td>any type</td>
-                </tr>
-                <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-18">
-                  <td><code>error</code></td>
-                  <td>
-                    An error message, if any, associated with a failed action
-                    which MUST use the JSON serialization of the Problem Details
-                    format [[RFC7807]] (only needed in response to a
-                    <a href="#http-basic-profile-protocol-binding-queryaction"><code>queryaction</code></a>
-                    operation).
-                  </td>
-                  <td>optional</td>
-                  <td><code>object</code></td>
-                </tr>
-                <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-19">
-                  <td><code>href</code></td>
-                  <td>
-                    The [[URL]] of an <code>ActionStatus</code> resource which
-                    can be used by <code>queryaction</code> and
-                    <code>cancelaction</code> operations, the
-                    <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                      scheme</a> [[RFC3986]] of which MUST resolve to
-                    <code>http</code> or <code>https</code> (only needed for an
-                    <a href="#async-action-response">Asynchronous Action
-                      Response</a>).
-                  </td>
-                  <td>optional</td>
-                  <td><code>string</code></td>
-                </tr>
-                <tr class="rfc2119-table-assertion">
-                  <td><code>timeRequested</code></td>
-                  <td>
-                    A timestamp indicating the time at which the Thing received
-                    the request to execute the action. (See
-                    <a href="#date-format">Date Format</a> for date format
-                    constraints).
-                  </td>
-                  <td>optional</td>
-                  <td><code>string</code></td>
-                </tr>
-                <tr class="rfc2119-table-assertion">
-                  <td><code>timeEnded</code></td>
-                  <td>
-                    A timestamp indicating the time at which the <a>Thing</a>
-                    successfully completed executing the action, or failed to
-                    execute the action. (See
-                    <a href="#date-format">Date Format</a> for date format
-                    constraints).
-                  </td>
-                  <td>optional</td>
-                  <td><code>string</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="note">
-            It is possible that a <a>Thing</a>'s clock may not be set to the correct
-            time. If timings are important then a <a>Consumer</a> may therefore choose
-            to treat the <code>timeEnded</code> member of an
-            <code>ActionStatus</code> object as being relative to the
-            <code>timeRequested</code> member, but not necessarily as relative
-            to its own internal clock, or the clocks of other <a>Things</a>.
+        <h6 id="ActionStatus"><code>ActionStatus</code> object</h6>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-15">
+          <p>
+            The status of an asynchronous action invocation request is represented by an
+            <code>ActionStatus</code> object which includes the following
+            members:
           </p>
+          <table class="def">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Description</th>
+                <th>Assignment</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-16">
+                <td><code>status</code></td>
+                <td>The status of the action request.</td>
+                <td>mandatory</td>
+                <td>
+                  <a href="http://www.w3.org/TR/2012/REC-xmlschema11-2-20120405/#string">
+                    <code>string</code></a> (one of <code>pending</code>,
+                  <code>running</code>, <code>completed</code> or
+                  <code>failed</code>)
+                </td>
+              </tr>
+              <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-17">
+                <td><code>output</code></td>
+                <td>
+                  The output data, if any, of a completed action which
+                  MUST conform with the <code>output</code> data schema of the
+                  corresponding
+                  <a href="https://www.w3.org/TR/wot-thing-description/#actionaffordance">ActionAffordance</a>.
+                </td>
+                <td>optional</td>
+                <td>any type</td>
+              </tr>
+              <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-18">
+                <td><code>error</code></td>
+                <td>
+                  An error message, if any, associated with a failed action
+                  which MUST use the JSON serialization of the Problem Details
+                  format [[RFC7807]] (only needed in response to a
+                  <a href="#http-basic-profile-protocol-binding-queryaction"><code>queryaction</code></a>
+                  operation).
+                </td>
+                <td>optional</td>
+                <td><code>object</code></td>
+              </tr>
+              <tr class="rfc2119-table-assertion" id="http-basic-profile-protocol-binding-invokeaction-19">
+                <td><code>href</code></td>
+                <td>
+                  The [[URL]] of an <code>ActionStatus</code> resource which
+                  can be used by <code>queryaction</code> and
+                  <code>cancelaction</code> operations, the
+                  <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                    scheme</a> [[RFC3986]] of which MUST resolve to
+                  <code>http</code> or <code>https</code> (only needed for an
+                  <a href="#async-action-response">Asynchronous Action
+                    Response</a>).
+                </td>
+                <td>optional</td>
+                <td><code>string</code></td>
+              </tr>
+              <tr class="rfc2119-table-assertion">
+                <td><code>timeRequested</code></td>
+                <td>
+                  A timestamp indicating the time at which the Thing received
+                  the request to execute the action. (See
+                  <a href="#date-format">Date Format</a> for date format
+                  constraints).
+                </td>
+                <td>optional</td>
+                <td><code>string</code></td>
+              </tr>
+              <tr class="rfc2119-table-assertion">
+                <td><code>timeEnded</code></td>
+                <td>
+                  A timestamp indicating the time at which the <a>Thing</a>
+                  successfully completed executing the action, or failed to
+                  execute the action. (See
+                  <a href="#date-format">Date Format</a> for date format
+                  constraints).
+                </td>
+                <td>optional</td>
+                <td><code>string</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          It is possible that a <a>Thing</a>'s clock may not be set to the correct
+          time. If timings are important then a <a>Consumer</a> may therefore choose
+          to treat the <code>timeEnded</code> member of an
+          <code>ActionStatus</code> object as being relative to the
+          <code>timeRequested</code> member, but not necessarily as relative
+          to its own internal clock, or the clocks of other <a>Things</a>.
+        </p>
 
-          <h6 id="sync-action-response">Synchronous Action Response</h6>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-20">
-            <p>
-              If providing a Synchronous Action Response for an action with an output,
-              a <a>Web Thing</a> MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>200</code></li>
-              <li><code>Content-Type</code> header set to <code>application/json</code></li>
-              <li>A body containing the output of the action, serialized in JSON</li>
-            </ul>
-          </div>
-          <pre class="example" title="Synchronous action response with an output">
+        <h6 id="sync-action-response">Synchronous Action Response</h6>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-20">
+          <p>
+            If providing a Synchronous Action Response for an action with an output,
+            a <a>Web Thing</a> MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>200</code></li>
+            <li><code>Content-Type</code> header set to <code>application/json</code></li>
+            <li>A body containing the output of the action, serialized in JSON</li>
+          </ul>
+        </div>
+        <pre class="example" title="Synchronous action response with an output">
             HTTP/1.1 200 OK
             Content-Type: application/json
             20
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-20a">
-            <p>
-              If providing a Synchronous Action Response for an action with no output,
-              a Web Thing MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>204</code></li>
-              <li><code>Content-Type</code> header not set</li>
-              <li>An empty body</li>
-            </ul>
-          </div>
-          <pre class="example" title="Synchronous action response without an output">
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-20a">
+          <p>
+            If providing a Synchronous Action Response for an action with no output,
+            a Web Thing MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>204</code></li>
+            <li><code>Content-Type</code> header not set</li>
+            <li>An empty body</li>
+          </ul>
+        </div>
+        <pre class="example" title="Synchronous action response without an output">
             HTTP/1.1 204 No Content
           </pre>
-          <p class="note">
-            A valid JSON value &mdash; such as <code>null</code>, empty quotation marks
-            (<code>""</code>), or empty braces (<code>{}</code>) &mdash; could be a valid
-            action output and is not considered to be an "empty" body.
+        <p class="note">
+          A valid JSON value &mdash; such as <code>null</code>, empty quotation marks
+          (<code>""</code>), or empty braces (<code>{}</code>) &mdash; could be a valid
+          action output and is not considered to be an "empty" body.
+        </p>
+        <h6 id="async-action-response">Asynchronous Action Response</h6>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-21">
+          <p>
+            If providing an Asynchronous Action Response, a <a>Web Thing</a> MUST send
+            an HTTP response containing the URL of an <code>ActionStatus</code>
+            resource, the
+            <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+              scheme</a> [[RFC3986]] of which MUST resolve to <code>http</code>
+            or <code>https</code>. The response MUST have:
           </p>
-          <h6 id="async-action-response">Asynchronous Action Response</h6>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-21">
-            <p>
-              If providing an Asynchronous Action Response, a <a>Web Thing</a> MUST send
-              an HTTP response containing the URL of an <code>ActionStatus</code>
-              resource, the
-              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                scheme</a> [[RFC3986]] of which MUST resolve to <code>http</code>
-              or <code>https</code>. The response MUST have:
-            </p>
-            <ul>
-              <li>Status code set to <code>201</code></li>
-              <li><code>Content-Type</code> header set to
-                <code>application/json</code>
-              </li>
-              <li>
-                <code>Location</code> header set to the URL of the
-                <code>ActionStatus</code> resource
-              </li>
-              <li>A body containing an <a href="#ActionStatus">
-                  <code>ActionStatus</code></a> object serialized
-                in JSON, with its <code>href</code> member set to the URL
-                of the <code>ActionStatus</code> resource
-              </li>
-            </ul>
-          </div>
-          <pre class="example">
+          <ul>
+            <li>Status code set to <code>201</code></li>
+            <li><code>Content-Type</code> header set to
+              <code>application/json</code>
+            </li>
+            <li>
+              <code>Location</code> header set to the URL of the
+              <code>ActionStatus</code> resource
+            </li>
+            <li>A body containing an <a href="#ActionStatus">
+                <code>ActionStatus</code></a> object serialized
+              in JSON, with its <code>href</code> member set to the URL
+              of the <code>ActionStatus</code> resource
+            </li>
+          </ul>
+        </div>
+        <pre class="example">
             HTTP/1.1 201 CREATED
             Content-Type: application/json
             Location: /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
@@ -1171,86 +1177,86 @@
               "timeRequested": "2021-11-10T11:43:19.135Z"
             }
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-22">
-            <p>
-              In resource constrained environments, the <code>ActionStatus</code> objects of older completed/failed
-              actions MAY be deleted to make room for newly invoked actions.
-            </p>
-          </div>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-23">
-            <p>
-              A <a>Web Thing</a> SHOULD return a <code>503</code> error response if the invocation cannot be accepted
-              because the action is unavailable,
-              e.g. because the <a>Thing</a> is overloaded.
-            </p>
-          </div>
-        </section>
-
-        <section id="http-basic-profile-protocol-binding-queryaction">
-          <h5><code>queryaction</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-22">
           <p>
-            A <code>queryaction</code> operation is used to query the current
-            state of an ongoing action request.
+            In resource constrained environments, the <code>ActionStatus</code> objects of older completed/failed
+            actions MAY be deleted to make room for newly invoked actions.
           </p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-1a">
-              A <a>Web Thing</a> which provides <a href="#async-action-response">
-                Asynchronous Action Responses</a> to an <code>invokeaction</code>
-              operation on an <a>Action</a> MUST also support
-              <code>queryaction</code> operations on
-              that same <a>Action</a>.</span>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-1b">
-              A <a>Web Thing</a> which only provides <a href="#sync-action-response">
-                Synchronous Action Response</a>s to an <code>invokeaction</code>
-              operation on an <a>Action</a> SHOULD NOT support
-              <code>queryaction</code> operations on that same
-              <a>Action</a>.</span>
+        </div>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-invokeaction-23">
+          <p>
+            A <a>Web Thing</a> SHOULD return a <code>503</code> error response if the invocation cannot be accepted
+            because the action is unavailable,
+            e.g. because the <a>Thing</a> is overloaded.
           </p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-2">
-              The URL of an <code>ActionStatus</code> resource to be used in a
-              <code>queryaction</code> operation MUST be obtained from the
-              <code>Location</code> header of an <a href="#async-action-response">
-                Asynchronous Action Response</a>, or the <code>href</code> member of
-              the <code>ActionStatus</code> object in its body.</span>
+        </div>
+      </section>
+
+      <section id="http-basic-profile-protocol-binding-queryaction">
+        <h5><code>queryaction</code></h5>
+        <p>
+          A <code>queryaction</code> operation is used to query the current
+          state of an ongoing action request.
+        </p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-1a">
+            A <a>Web Thing</a> which provides <a href="#async-action-response">
+              Asynchronous Action Responses</a> to an <code>invokeaction</code>
+            operation on an <a>Action</a> MUST also support
+            <code>queryaction</code> operations on
+            that same <a>Action</a>.</span>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-1b">
+            A <a>Web Thing</a> which only provides <a href="#sync-action-response">
+              Synchronous Action Response</a>s to an <code>invokeaction</code>
+            operation on an <a>Action</a> SHOULD NOT support
+            <code>queryaction</code> operations on that same
+            <a>Action</a>.</span>
+        </p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-2">
+            The URL of an <code>ActionStatus</code> resource to be used in a
+            <code>queryaction</code> operation MUST be obtained from the
+            <code>Location</code> header of an <a href="#async-action-response">
+              Asynchronous Action Response</a>, or the <code>href</code> member of
+            the <code>ActionStatus</code> object in its body.</span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-3">
+          <p>
+            In order to query the status of an action request, a <a>Consumer</a> MUST
+            send an HTTP request to a <a>Web Thing</a> with:
           </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-3">
-            <p>
-              In order to query the status of an action request, a <a>Consumer</a> MUST
-              send an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>GET</code></li>
-              <li>
-                URL set to the URL of the <code>ActionStatus</code> resource
-              </li>
-              <li>
-                <code>Accept</code> header set to <code>application/json
+          <ul>
+            <li>Method set to <code>GET</code></li>
+            <li>
+              URL set to the URL of the <code>ActionStatus</code> resource
+            </li>
+            <li>
+              <code>Accept</code> header set to <code>application/json
               </code>
-              </li>
-            </ul>
-          </div>
-          <pre class="example">
+            </li>
+          </ul>
+        </div>
+        <pre class="example">
           GET /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655
           Host: mythingserver.com
           Accept: application/json
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-5">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to query the corresponding
-              <code>ActionStatus</code> resource, then upon successfully reading
-              the status of the action request it MUST send an HTTP response
-              with:
-            </p>
-            <ul>
-              <li>Status code set to <code>200</code></li>
-              <li><code>Content-Type</code> header set to <code>application/json
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-5">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to query the corresponding
+            <code>ActionStatus</code> resource, then upon successfully reading
+            the status of the action request it MUST send an HTTP response
+            with:
+          </p>
+          <ul>
+            <li>Status code set to <code>200</code></li>
+            <li><code>Content-Type</code> header set to <code>application/json
               </code></li>
-              <li>A body containing an <code>ActionStatus</code> object
-                representing the current status of the action request, serialized
-                in JSON</li>
-            </ul>
-          </div>
-          <pre class="example">
+            <li>A body containing an <code>ActionStatus</code> object
+              representing the current status of the action request, serialized
+              in JSON</li>
+          </ul>
+        </div>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: application/json
             {
@@ -1258,18 +1264,18 @@
               "timeRequested": "2021-11-10T11:43:19.135Z"
             }
           </pre>
-          <p>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-7a">
-              If the queried action failed to execute, then
-              the <code>status</code> member of the <code>ActionStatus</code> object
-              MUST be set to <code>"failed"</code>.</span>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-7b">
-              If the queried action failed to execute, then
-              the <code>error</code>
-              member MAY provide additional error information
-              conforming to the Problem Details format [[RFC7807]].</span>
-          </p>
-          <pre class="example">
+        <p>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-7a">
+            If the queried action failed to execute, then
+            the <code>status</code> member of the <code>ActionStatus</code> object
+            MUST be set to <code>"failed"</code>.</span>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryaction-7b">
+            If the queried action failed to execute, then
+            the <code>error</code>
+            member MAY provide additional error information
+            conforming to the Problem Details format [[RFC7807]].</span>
+        </p>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: application/json
             {
@@ -1288,140 +1294,141 @@
               "timeEnded": "2021-11-10T11:43:20.513Z"
             }
           </pre>
-        </section>
+      </section>
 
-        <section id="http-basic-profile-protocol-binding-cancelaction">
-          <h5><code>cancelaction</code></h5>
+      <section id="http-basic-profile-protocol-binding-cancelaction">
+        <h5><code>cancelaction</code></h5>
+        <p>
+          A <code>cancelaction</code> operation is used to cancel an ongoing
+          action request.
+        </p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-1a">
+            A <a>Web Thing</a> which provides <a href="#async-action-response">
+              Asynchronous Action Response</a>s to an <code>invokeaction</code>
+            operation on an <a>Action</a> MAY also support
+            <code>cancelaction</code> operations on
+            that same <a>Action</a>.</span>
+          <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-1b">
+            A <a>Web Thing</a> which only provides <a href="#sync-action-response">
+              Synchronous Action Response</a>s to an <code>invokeaction</code>
+            operation on an <a>Action</a> SHOULD NOT support
+            <code>cancelaction</code> operations on that same
+            <a>Action</a>.</span>
+        </p>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-2">
+            The URL of an <code>ActionStatus</code> resource to be used in a
+            <code>cancelaction</code> operation MUST be obtained from the
+            <code>Location</code> header of an <a href="#async-action-response">
+              Asynchronous Action Response</a>, or the <code>href</code> member of
+            the <code>ActionStatus</code> object in its body.</span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-3">
           <p>
-            A <code>cancelaction</code> operation is used to cancel an ongoing
-            action request.
+            In order to cancel an action request, a <a>Consumer</a> MUST send an HTTP
+            request to a <a>Web Thing</a> with:
           </p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-1a">
-              A <a>Web Thing</a> which provides <a href="#async-action-response">
-                Asynchronous Action Response</a>s to an <code>invokeaction</code>
-              operation on an <a>Action</a> MAY also support
-              <code>cancelaction</code> operations on
-              that same <a>Action</a>.</span>
-            <span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-1b">
-              A <a>Web Thing</a> which only provides <a href="#sync-action-response">
-                Synchronous Action Response</a>s to an <code>invokeaction</code>
-              operation on an <a>Action</a> SHOULD NOT support
-              <code>cancelaction</code> operations on that same
-              <a>Action</a>.</span>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-2">
-              The URL of an <code>ActionStatus</code> resource to be used in a
-              <code>cancelaction</code> operation MUST be obtained from the
-              <code>Location</code> header of an <a href="#async-action-response">
-                Asynchronous Action Response</a>, or the <code>href</code> member of
-              the <code>ActionStatus</code> object in its body.</span>
-          </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-3">
-            <p>
-              In order to cancel an action request, a <a>Consumer</a> MUST send an HTTP
-              request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>DELETE</code></li>
-              <li>
-                URL set to the URL of the <code>ActionStatus</code> resource
-              </li>
-            </ul>
-          </div>
-          <pre class="example">
+          <ul>
+            <li>Method set to <code>DELETE</code></li>
+            <li>
+              URL set to the URL of the <code>ActionStatus</code> resource
+            </li>
+          </ul>
+        </div>
+        <pre class="example">
             DELETE /things/lamp/actions/fade/123e4567-e89b-12d3-a456-426655 HTTP/1.1
             Host: mythingserver.com
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-5">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to cancel the corresponding
-              action request, then upon successfully cancelling the
-              action it MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>204</code></li>
-            </ul>
-          </div>
-          <pre class="example">
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-cancelaction-5">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to cancel the corresponding
+            action request, then upon successfully cancelling the
+            action it MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>204</code></li>
+          </ul>
+        </div>
+        <pre class="example">
             HTTP/1.1 204 No Content
           </pre>
-        </section>
+      </section>
 
-        <section id="queryallactions">
-          <h5><code>queryallactions</code></h5>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-1">
-            <p>
-              The URL of an actions resource to be used when
-              querying the status of all ongoing action requests MUST be obtained
-              from a <a>Thing Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
-              <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
-                <code>forms</code></a> member
-              for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>queryallactions</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the actions resource.</span>
+      <section id="queryallactions">
+        <h5><code>queryallactions</code></h5>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-1">
+          <p>
+            The URL of an actions resource to be used when
+            querying the status of all ongoing action requests MUST be obtained
+            from a <a>Thing Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
+            <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json">
+              <code>forms</code></a> member
+            for which:
           </p>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-4">
-            <p>
-              In order to query the status of all ongoing action requests, a
-              <a>Consumer</a> MUST send an HTTP request to a <a>Web Thing</a> with:
-            </p>
-            <ul>
-              <li>Method set to <code>GET</code></li>
-              <li>URL set to the URL of the actions resource
-              </li>
-              <li><code>Accept</code> header set to <code>application/json
+          <ul>
+            <li>
+              Its <code>op</code> member contains the value
+              <code>queryallactions</code>
+            </li>
+            <li>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
+            </li>
+            <li>The value of its <code>subprotocol</code> member is <code>webthingprotocol</code></li>
+          </ul>
+        </div>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the actions resource.</span>
+        </p>
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-4">
+          <p>
+            In order to query the status of all ongoing action requests, a
+            <a>Consumer</a> MUST send an HTTP request to a <a>Web Thing</a> with:
+          </p>
+          <ul>
+            <li>Method set to <code>GET</code></li>
+            <li>URL set to the URL of the actions resource
+            </li>
+            <li><code>Accept</code> header set to <code>application/json
               </code></li>
-            </ul>
-          </div>
-          <pre class="example">
+          </ul>
+        </div>
+        <pre class="example">
           GET /things/lamp/actions HTTP/1.1
           Host: mythingserver.com
           Accept: application/json
           </pre>
-          <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-6a">
-            <p>
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above, then upon successfully retrieving the status of all ongoing
-              action requests to which the <a>Consumer</a> has permission to access, it
-              MUST send an HTTP response with:
-            </p>
-            <ul>
-              <li>Status code set to <code>200</code></li>
-              <li><code>Content-Type</code> header set to <code>application/json
+        <div class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-6a">
+          <p>
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above, then upon successfully retrieving the status of all ongoing
+            action requests to which the <a>Consumer</a> has permission to access, it
+            MUST send an HTTP response with:
+          </p>
+          <ul>
+            <li>Status code set to <code>200</code></li>
+            <li><code>Content-Type</code> header set to <code>application/json
               </code></li>
-              <li>A body containing an object, keyed by <a>Action</a> name,
-                with the value of each object member being an array of
-                <a href="#ActionStatus"><code>ActionStatus</code></a> objects
-                representing the action requests, serialized in JSON.
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-6b">
-              Each array in the result object
-              MUST be sorted in reverse chronological order such that the
-              most recent action request appears first.</span>
-          <pre class="example">
+            <li>A body containing an object, keyed by <a>Action</a> name,
+              with the value of each object member being an array of
+              <a href="#ActionStatus"><code>ActionStatus</code></a> objects
+              representing the action requests, serialized in JSON.
+            </li>
+          </ul>
+        </div>
+        <p><span class="rfc2119-assertion" id="http-basic-profile-protocol-binding-queryallactions-6b">
+            Each array in the result object
+            MUST be sorted in reverse chronological order such that the
+            most recent action request appears first.</span>
+        <pre class="example">
           HTTP/1.1 200 OK
           Content-Type: application/json
           {
@@ -1451,374 +1458,425 @@
             ]
           }
           </pre>
-        </section>
-
-        <section class="note" title="Retention of ActionStatus objects">
-          When an action request is cancelled with a
-          <code>cancelaction</code> operation, its <code>ActionStatus</code>
-          object is deleted and need not be retained. For all other
-          action requests it is assumed that a <a>Web Thing</a> will
-          store the <code>ActionStatus</code> object so that its status may
-          later be queried with a <code>queryaction</code> or
-          <code>queryallactions</code> operation. It is not expected that
-          <code>ActionStatus</code> objects should be retained indefinitely,
-          they may be stored in volatile memory and/or periodically pruned.
-          The length of time for which to retain <code>ActionStatus</code>
-          objects is expected to be implementation-specific and may depend on
-          application-specific requirements or resource constraints.
-        </section>
       </section>
-      <section id="http-sse-profile-protocol-binding-events">
-        <h4>Event Operations</h4>
-        <p>
-          The HTTP SSE Profile uses Server-Sent Events [[EVENTSOURCE]] as a
-          mechanism for <a>Consumers</a> to subscribe to events emitted
-          by a <a>Web Thing</a>.
-        </p>
-        <p class="note">
-          <a>Consumers</a> are not required to implement the
-          <a href="https://www.w3.org/TR/eventsource/#the-eventsource-interface">
-            <code>EventSource</code>
-            JavaScript API</a> from the Server-Sent Events
-          specification in order to conform with this profile. Any programming
-          language may be used to consume an event stream.
-        </p>
-        <section id="http-sse-profile-protocol-binding-subscribeevent">
-          <h5><code>subscribeevent</code></h5>
-          <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-1">
-            <p>
-              The URL of an event resource to be used when
-              subscribing to an <a>Event</a> MUST be obtained from a <a>Thing Description</a>
-              by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the
-              corresponding
-              <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
-              for which:
-            </p>
-            <ul>
-              <li>
-                After defaults have been applied, its <code>op</code> member
-                contains the value <code>subscribeevent</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>Its <code>subprotocol</code> member has a value of
-                <code>sse</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-3">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the event resource.</span>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-4">
-              In order to subscribe to an <a>Event</a>, a <a>Consumer</a> MUST follow the
-              Server-Sent Events [[EVENTSOURCE]] specification to open a
-              connection with the <a>Web Thing</a> at the URL of the event
-              resource.</span>
-          </p>
+
+      <div class="note" title="Retention of ActionStatus objects">
+        When an action request is cancelled with a
+        <code>cancelaction</code> operation, its <code>ActionStatus</code>
+        object is deleted and need not be retained. For all other
+        action requests it is assumed that a <a>Web Thing</a> will
+        store the <code>ActionStatus</code> object so that its status may
+        later be queried with a <code>queryaction</code> or
+        <code>queryallactions</code> operation. It is not expected that
+        <code>ActionStatus</code> objects should be retained indefinitely,
+        they may be stored in volatile memory and/or periodically pruned.
+        The length of time for which to retain <code>ActionStatus</code>
+        objects is expected to be implementation-specific and may depend on
+        application-specific requirements or resource constraints.
+      </div>
+    </section>
+    <section id="http-sse-profile-protocol-binding-events">
+      <h4>Event Operations</h4>
+      <p>
+        The HTTP SSE Profile uses Server-Sent Events [[EVENTSOURCE]] as a
+        mechanism for <a>Consumers</a> to subscribe to events emitted
+        by a <a>Web Thing</a>.
+      </p>
+      <p class="note">
+        <a>Consumers</a> are not required to implement the
+        <a href="https://www.w3.org/TR/eventsource/#the-eventsource-interface">
+          <code>EventSource</code>
+          JavaScript API</a> from the Server-Sent Events
+        specification in order to conform with this profile. Any programming
+        language may be used to consume an event stream.
+      </p>
+      <section id="http-sse-profile-protocol-binding-subscribeevent">
+        <h5><code>subscribeevent</code></h5>
+        <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-1">
           <p>
-            This involves the <a>Consumer</a> sending an HTTP request to
-            the <a>Web Thing</a> with:
+            The URL of an event resource to be used when
+            subscribing to an <a>Event</a> MUST be obtained from a <a>Thing Description</a>
+            by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the
+            corresponding
+            <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
+            for which:
           </p>
           <ul>
-            <li>Method set to <code>GET</code></li>
-            <li>URL set to the URL of the event resource</li>
             <li>
-              <code>Accept</code> header set to <code>text/event-stream</code>
+              After defaults have been applied, its <code>op</code> member
+              contains the value <code>subscribeevent</code>
             </li>
             <li>
-              <code>Connection</code> header set to <code>keep-alive</code>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>Its <code>subprotocol</code> member has a value of
+              <code>webthingprotocol</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
             </li>
           </ul>
-          <pre class="example">
+        </div>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-3">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the event resource.</span>
+        </p>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-4">
+            In order to subscribe to an <a>Event</a>, a <a>Consumer</a> MUST follow the
+            Server-Sent Events [[EVENTSOURCE]] specification to open a
+            connection with the <a>Web Thing</a> at the URL of the event
+            resource.</span>
+        </p>
+        <p>
+          This involves the <a>Consumer</a> sending an HTTP request to
+          the <a>Web Thing</a> with:
+        </p>
+        <ul>
+          <li>Method set to <code>GET</code></li>
+          <li>URL set to the URL of the event resource</li>
+          <li>
+            <code>Accept</code> header set to <code>text/event-stream</code>
+          </li>
+          <li>
+            <code>Connection</code> header set to <code>keep-alive</code>
+          </li>
+        </ul>
+        <pre class="example">
           GET /things/lamp/events/overheated HTTP/1.1
           Host: mythingserver.com
           Accept: text/event-stream
           Connection: keep-alive
           </pre>
-          <p class="note" title="Opening a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be initiated using the <code>EventSource</code>
-            constructor.
-          <pre class="example">
+        <p class="note" title="Opening a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be initiated using the <code>EventSource</code>
+          constructor.
+        <pre class="example">
               const overheatedEventSource = new EventSource('/things/lamp/events/overheated');
             </pre>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-5">
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above and the <a>Consumer</a> has permission to subscribe to the
-              corresponding <a>Event</a>, then it MUST follow the Server-Sent Events
-              [[EVENTSOURCE]] specification to maintain an open connection with
-              the <a>Consumer</a> and push event data to the <a>Consumer</a> as events of the
-              specified type are emitted.</span>
-          </p>
-          <p>
-            This involves the <a>Web Thing</a> initially sending an HTTP
-            response to the <a>Consumer</a> with:
-          </p>
-          <ul>
-            <li>Status code set to <code>200</code></li>
-            <li>
-              <code>Content-Type</code> header set to
-              <code>text/event-stream</code>
-            </li>
-          </ul>
-          <pre class="example">
+        </p>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-5">
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above and the <a>Consumer</a> has permission to subscribe to the
+            corresponding <a>Event</a>, then it MUST follow the Server-Sent Events
+            [[EVENTSOURCE]] specification to maintain an open connection with
+            the <a>Consumer</a> and push event data to the <a>Consumer</a> as events of the
+            specified type are emitted.</span>
+        </p>
+        <p>
+          This involves the <a>Web Thing</a> initially sending an HTTP
+          response to the <a>Consumer</a> with:
+        </p>
+        <ul>
+          <li>Status code set to <code>200</code></li>
+          <li>
+            <code>Content-Type</code> header set to
+            <code>text/event-stream</code>
+          </li>
+        </ul>
+        <pre class="example">
           HTTP/1.1 200 OK
           Content-Type: text/event-stream
           </pre>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6a">
-              Whenever an event of the specified type occurs while the <a>Web Thing</a>
-              has an open connection with a <a>Consumer</a>, the <a>Web Thing</a> MUST
-              send event data to the <a>Consumer</a> using the event stream format in the
-              Server-Sent Events [[EVENTSOURCE]] specification.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6b">
-              For each message sent, the <a>Web Thing</a> MUST set the <code>event</code> field to the
-              name of the <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
-              and populate the
-              <code>data</code> field with event data, if any.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6c">
-              The
-              event data MUST follow the data schema specified in the
-              <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
-              and be serialized in JSON.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6d">
-              The <code>id</code> field SHOULD be set to a unique identifier for
-              the event, for use when re-establishing a dropped connection (see
-              below).</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6e">
-              It is RECOMMENDED that the identifier is a timestamp
-              representing the time at which the event occurred</span> (see
-            <a href="#date-format">Date Format</a> for date format
-            constraints).
-          </p>
-          <pre class="example">
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6a">
+            Whenever an event of the specified type occurs while the <a>Web Thing</a>
+            has an open connection with a <a>Consumer</a>, the <a>Web Thing</a> MUST
+            send event data to the <a>Consumer</a> using the event stream format in the
+            Server-Sent Events [[EVENTSOURCE]] specification.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6b">
+            For each message sent, the <a>Web Thing</a> MUST set the <code>event</code> field to the
+            name of the <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
+            and populate the
+            <code>data</code> field with event data, if any.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6c">
+            The
+            event data MUST follow the data schema specified in the
+            <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
+            and be serialized in JSON.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6d">
+            The <code>id</code> field SHOULD be set to a unique identifier for
+            the event, for use when re-establishing a dropped connection (see
+            below).</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-6e">
+            It is RECOMMENDED that the identifier is a timestamp
+            representing the time at which the event occurred</span> (see
+          <a href="#date-format">Date Format</a> for date format
+          constraints).
+        </p>
+        <pre class="example">
             event: overheated\n
             data: 90\n
             id: 2021-11-16T16:53:50.817Z\n\n
           </pre>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-7a">
-              If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
-              (except as a result of the <code>unsubscribeevent</code> operation
-              defined below), the <a>Consumer</a> MUST re-establish the connection
-              following the steps outlined in the Server-Sent Events specification
-              [[EVENTSOURCE]].</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-7b">
-              Once the connection is re-established the <a>Web Thing</a>
-              SHOULD, if possible, send any missed events which occurred since
-              the last event specified by the <a>Consumer</a> in a
-              <code>Last-Event-ID</code> header.</span>
-          </p>
-          <p class="note" title="application/json wrapped in text/event-stream">
-            Event payloads are serialized in JSON and provided in the <code>data</code>
-            field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
-            <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the
-            <code>sse</code> subprotocol, and the embedded <code>application/json</code> content type is
-            indicated in <code>contentType</code> member of the Form (with defaults applied).
-          </p>
-        </section>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-7a">
+            If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
+            (except as a result of the <code>unsubscribeevent</code> operation
+            defined below), the <a>Consumer</a> MUST re-establish the connection
+            following the steps outlined in the Server-Sent Events specification
+            [[EVENTSOURCE]].</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeevent-7b">
+            Once the connection is re-established the <a>Web Thing</a>
+            SHOULD, if possible, send any missed events which occurred since
+            the last event specified by the <a>Consumer</a> in a
+            <code>Last-Event-ID</code> header.</span>
+        </p>
+        <p class="note" title="application/json wrapped in text/event-stream">
+          Event payloads are serialized in JSON and provided in the <code>data</code>
+          field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
+          <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the combination
+          of an <code>op</code> member containing the value <code>subscribeevent</code> and a
+          <code>subprotocol</code> member with the value <code>webthingprotocol</code>.
+          The embedded <code>application/json</code> content type is defined by the <code>contentType</code> member,
+          which defaults to <code>application/json</code>.
+        </p>
+      </section>
 
-        <section id="http-sse-profile-protocol-binding-events-unsubscribeevent">
-          <h5><code>unsubscribeevent</code></h5>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unsubscribeevent-1">
-              In order to unsubscribe from an <a>Event</a>, a <a>Consumer</a> MUST terminate
-              the corresponding Server-Sent Events connection with the <a>Web Thing</a>
-              as specified in the Server-Sent Events specification
-              [[EVENTSOURCE]].</span>
-          </p>
-          <p class="note" title="Terminating a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be terminated using the <code>close()</code> method
-            on an <code>EventSource</code> [[EVENTSOURCE]] object.
-          </p>
-          <pre class="example">
+      <section id="http-sse-profile-protocol-binding-events-unsubscribeevent">
+        <h5><code>unsubscribeevent</code></h5>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unsubscribeevent-1">
+            In order to unsubscribe from an <a>Event</a>, a <a>Consumer</a> MUST terminate
+            the corresponding Server-Sent Events connection with the <a>Web Thing</a>
+            as specified in the Server-Sent Events specification
+            [[EVENTSOURCE]].</span>
+        </p>
+        <p class="note" title="Terminating a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be terminated using the <code>close()</code> method
+          on an <code>EventSource</code> [[EVENTSOURCE]] object.
+        </p>
+        <pre class="example">
               overheatedEventSource.close();
             </pre>
-        </section>
+      </section>
 
-        <section id="http-sse-profile-protocol-binding-events-subscribeallevents">
-          <h5><code>subscribeallevents</code></h5>
-          <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-1">
-            <p>
-              The URL of an events resource to be used when subscribing to all
-              <a>Events</a> emitted by a <a>Web Thing</a> MUST be obtained from a <a>Thing
-                Description</a> by locating a
-              <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
-              <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json"><code>forms</code></a>
-              member of a <a>Thing Description</a> for which:
-            </p>
-            <ul>
-              <li>
-                Its <code>op</code> member contains the value
-                <code>subscribeallevents</code>
-              </li>
-              <li>
-                After being resolved against a base URL where applicable, the
-                <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
-                  scheme</a> [[RFC3986]] of the value of its <code>href</code>
-                member is <code>http</code> or <code>https</code>
-              </li>
-              <li>Its <code>subprotocol</code> member has a value of
-                <code>sse</code>
-              </li>
-              <li>
-                After defaults have been applied, the value of its
-                <code>contentType</code> member is <code>application/json</code>
-              </li>
-            </ul>
-          </div>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-3b">
-              The resolved value of the <code>href</code> member MUST then be used
-              as the URL of the events resource.</span>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4">
-              In order to subscribe to all <a>Events</a> emitted by a <a>Web Thing</a>, a
-              <a>Consumer</a> MUST follow the Server-Sent Events [[EVENTSOURCE]]
-              specification to open a connection with the <a>Web Thing</a> at the URL of
-              the events resource.</span>
-          </p>
+      <section id="http-sse-profile-protocol-binding-events-subscribeallevents">
+        <h5><code>subscribeallevents</code></h5>
+        <div class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-1">
           <p>
-            This involves the <a>Consumer</a> sending an HTTP request to
-            the <a>Web Thing</a> with:
+            The URL of an events resource to be used when subscribing to all
+            <a>Events</a> emitted by a <a>Web Thing</a> MUST be obtained from a <a>Thing
+              Description</a> by locating a
+            <a href="https://www.w3.org/TR/wot-thing-description/#form">Form</a> inside the top level
+            <a href="https://www.w3.org/TR/wot-thing-description/#form-serialization-json"><code>forms</code></a>
+            member of a <a>Thing Description</a> for which:
           </p>
           <ul>
-            <li>Method set to <code>GET</code></li>
-            <li>URL set to the URL of the events resource</li>
             <li>
-              <code>Accept</code> header set to <code>text/event-stream</code>
+              Its <code>op</code> member contains the value
+              <code>subscribeallevents</code>
             </li>
             <li>
-              <code>Connection</code> header set to <code>keep-alive</code>
+              After being resolved against a base URL where applicable, the
+              <a href="https://tools.ietf.org/html/rfc3986#section-3.1">URI
+                scheme</a> [[RFC3986]] of the value of its <code>href</code>
+              member is <code>http</code> or <code>https</code>
+            </li>
+            <li>Its <code>subprotocol</code> member has a value of
+              <code>webthingprotocol</code>
+            </li>
+            <li>
+              After defaults have been applied, the value of its
+              <code>contentType</code> member is <code>application/json</code>
             </li>
           </ul>
-          <pre class="example">
+        </div>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-3b">
+            The resolved value of the <code>href</code> member MUST then be used
+            as the URL of the events resource.</span>
+        </p>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4">
+            In order to subscribe to all <a>Events</a> emitted by a <a>Web Thing</a>, a
+            <a>Consumer</a> MUST follow the Server-Sent Events [[EVENTSOURCE]]
+            specification to open a connection with the <a>Web Thing</a> at the URL of
+            the events resource.</span>
+        </p>
+        <p>
+          This involves the <a>Consumer</a> sending an HTTP request to
+          the <a>Web Thing</a> with:
+        </p>
+        <ul>
+          <li>Method set to <code>GET</code></li>
+          <li>URL set to the URL of the events resource</li>
+          <li>
+            <code>Accept</code> header set to <code>text/event-stream</code>
+          </li>
+          <li>
+            <code>Connection</code> header set to <code>keep-alive</code>
+          </li>
+        </ul>
+        <pre class="example">
             GET /things/lamp/events HTTP/1.1
             Host: mythingserver.com
             Accept: text/event-stream
             Connection: keep-alive
           </pre>
-          <p class="note" title="Opening a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be initiated using the <code>EventSource</code>
-            constructor.
-          <pre class="example">
+        <p class="note" title="Opening a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be initiated using the <code>EventSource</code>
+          constructor.
+        <pre class="example">
               const lampEventsSource = new EventSource('/things/lamp/events');
             </pre>
-          </p>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-3">
-              If a <a>Web Thing</a> receives an HTTP request following the format
-              above then it MUST follow the Server-Sent Events
-              [[EVENTSOURCE]] specification to maintain an open connection with
-              the <a>Consumer</a> and push event data to the <a>Consumer</a> for all event
-              types for which it has permission to subscribe.</span>
-          </p>
-          <p>
-            This involves the <a>Web Thing</a> initially sending an HTTP
-            response to the <a>Consumer</a> with:
-          </p>
-          <ul>
-            <li>Status code set to <code>200</code></li>
-            <li>
-              <code>Content-Type</code> header set to
-              <code>text/event-stream</code>
-            </li>
-          </ul>
-          <pre class="example">
+        </p>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-3">
+            If a <a>Web Thing</a> receives an HTTP request following the format
+            above then it MUST follow the Server-Sent Events
+            [[EVENTSOURCE]] specification to maintain an open connection with
+            the <a>Consumer</a> and push event data to the <a>Consumer</a> for all event
+            types for which it has permission to subscribe.</span>
+        </p>
+        <p>
+          This involves the <a>Web Thing</a> initially sending an HTTP
+          response to the <a>Consumer</a> with:
+        </p>
+        <ul>
+          <li>Status code set to <code>200</code></li>
+          <li>
+            <code>Content-Type</code> header set to
+            <code>text/event-stream</code>
+          </li>
+        </ul>
+        <pre class="example">
             HTTP/1.1 200 OK
             Content-Type: text/event-stream
           </pre>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4a">
-              Whenever an event occurs while the <a>Web Thing</a> has an open connection
-              with a <a>Consumer</a>, the <a>Web Thing</a> MUST send event data to the <a>Consumer</a>
-              using the event stream format in the Server-Sent Events
-              [[EVENTSOURCE]] specification.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4b">
-              For each message sent, the <a>Web Thing</a>
-              MUST set the <code>event</code> field to the
-              name of the <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
-              and populate the
-              <code>data</code> field with event data, if any.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4c">
-              The
-              event data MUST follow the data schema specified in the
-              <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
-              and be serialized in JSON.</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4d">
-              The <code>id</code> field SHOULD be set to a unique identifier for
-              the event, for use when re-establishing a dropped connection (see
-              below).</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4e">
-              It is RECOMMENDED that the identifier is a timestamp
-              representing the time at which the event occurred</span>
-            (see <a href="#date-format">Date Format</a> for date format
-            constraints).
-          </p>
-          <pre class="example">
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4a">
+            Whenever an event occurs while the <a>Web Thing</a> has an open connection
+            with a <a>Consumer</a>, the <a>Web Thing</a> MUST send event data to the <a>Consumer</a>
+            using the event stream format in the Server-Sent Events
+            [[EVENTSOURCE]] specification.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4b">
+            For each message sent, the <a>Web Thing</a>
+            MUST set the <code>event</code> field to the
+            name of the <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
+            and populate the
+            <code>data</code> field with event data, if any.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4c">
+            The
+            event data MUST follow the data schema specified in the
+            <a href="https://www.w3.org/TR/wot-thing-description/#eventaffordance">EventAffordance</a>
+            and be serialized in JSON.</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4d">
+            The <code>id</code> field SHOULD be set to a unique identifier for
+            the event, for use when re-establishing a dropped connection (see
+            below).</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-4e">
+            It is RECOMMENDED that the identifier is a timestamp
+            representing the time at which the event occurred</span>
+          (see <a href="#date-format">Date Format</a> for date format
+          constraints).
+        </p>
+        <pre class="example">
             event: overheated\n
             data: 90\n
             id: 2021-11-16T16:53:50.817Z\n\n
           </pre>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-5a">
-              If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
-              (except as a result of the <code>unsubscribeallevents</code>
-              operation defined below), the <a>Consumer</a> MUST re-establish the
-              connection following the steps outlined in the Server-Sent Events
-              specification [[EVENTSOURCE]].</span>
-            <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-5b">
-              Once the connection is re-established
-              the <a>Web Thing</a> SHOULD, if possible, send any missed events which
-              occurred since the last event specified by the <a>Consumer</a> in a
-              <code>Last-Event-ID</code> header.</span>
-          </p>
-          <p class="note" title="application/json wrapped in text/event-stream">
-            Event payloads are serialized in JSON and provided in the <code>data</code>
-            field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
-            <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the
-            <code>sse</code> subprotocol, and the embedded <code>application/json</code> content type is
-            indicated in <code>contentType</code> member of the Form (with defaults applied).
-          </p>
-        </section>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-5a">
+            If the connection between the <a>Consumer</a> and <a>Web Thing</a> drops
+            (except as a result of the <code>unsubscribeallevents</code>
+            operation defined below), the <a>Consumer</a> MUST re-establish the
+            connection following the steps outlined in the Server-Sent Events
+            specification [[EVENTSOURCE]].</span>
+          <span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-subscribeallevents-5b">
+            Once the connection is re-established
+            the <a>Web Thing</a> SHOULD, if possible, send any missed events which
+            occurred since the last event specified by the <a>Consumer</a> in a
+            <code>Last-Event-ID</code> header.</span>
+        </p>
+        <p class="note" title="application/json wrapped in text/event-stream">
+          Event payloads are serialized in JSON and provided in the <code>data</code>
+          field of a Server-Sent Event serialized in <code>text/event-stream</code> format. The
+          <code>text/event-stream</code> content type used in HTTP headers is assumed to be implied by the combination
+          of an <code>op</code> member containing the value <code>subscribeallevents</code> and a
+          <code>subprotocol</code> member with the value <code>webthingprotocol</code>.
+          The embedded <code>application/json</code> content type is defined by the <code>contentType</code> member,
+          which defaults to <code>application/json</code>.
+        </p>
+      </section>
 
-        <section id="http-sse-profile-protocol-binding-events-unsubscribeallevents">
-          <h5><code>unsubscribeallevents</code></h5>
-          <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unsubscribeallevents-1">
-              In order to unsubscribe from all <a>Events</a>, a <a>Consumer</a> MUST terminate
-              the corresponding Server-Sent Events connection with the events
-              endpoint of the <a>Web Thing</a>, following the steps specified in the
-              Server-Sent Events specification [[EVENTSOURCE]].</span>
-          </p>
-          <p class="note" title="Terminating a connection using JavaScript">
-            For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
-            in a runtime which exposes the
-            <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
-              <code>EventSource</code></a> interface, a Server-Sent Events
-            connection can be terminated using the <code>close()</code> method
-            on an <code>EventSource</code> [[EVENTSOURCE]] object.
-          <pre class="example">
+      <section id="http-sse-profile-protocol-binding-events-unsubscribeallevents">
+        <h5><code>unsubscribeallevents</code></h5>
+        <p><span class="rfc2119-assertion" id="http-sse-profile-protocol-binding-unsubscribeallevents-1">
+            In order to unsubscribe from all <a>Events</a>, a <a>Consumer</a> MUST terminate
+            the corresponding Server-Sent Events connection with the events
+            endpoint of the <a>Web Thing</a>, following the steps specified in the
+            Server-Sent Events specification [[EVENTSOURCE]].</span>
+        </p>
+        <p class="note" title="Terminating a connection using JavaScript">
+          For <a>Consumers</a> implemented in JavaScript [[ECMASCRIPT]] and executed
+          in a runtime which exposes the
+          <a href="https://html.spec.whatwg.org/multipage/server-sent-events.html#the-eventsource-interface">
+            <code>EventSource</code></a> interface, a Server-Sent Events
+          connection can be terminated using the <code>close()</code> method
+          on an <code>EventSource</code> [[EVENTSOURCE]] object.
+        <pre class="example">
               lampEventsSource.close();
             </pre>
-          </p>
-        </section>
+        </p>
       </section>
     </section>
+    <!-- Errors -->
+    <section id="http-error-responses">
+      <h4>Error Responses</h3>
+        <p>
+          <span class="rfc2119-assertion" id="common-constraints-errors-1">
+            If any of the operations defined in the protocol bindings of HTTP
+            profiles are unsuccessful then the <a>Web Thing</a> MUST send an HTTP
+            response with an HTTP error code which describes the reason for the
+            failure.</span>
+        </p>
+        <div class="rfc2119-assertion" id="common-constraints-errors-2">
+          <p>
+            It is RECOMMENDED that error
+            responses use one of the following HTTP error codes:
+          </p>
+          <ul>
+            <li><code>400 Bad Request</code></li>
+            <li><code>401 Unauthorized</code></li>
+            <li><code>403 Forbidden</code></li>
+            <li><code>404 Not Found</code></li>
+            <li><code>500 Internal Server Error</code></li>
+            <li><code>503 Service Unavailable</code></li>
+          </ul>
+        </div>
+        <p>
+          <span class="rfc2119-assertion" id="common-constraints-errors-3">
+            A <a>Web Thing</a> MAY respond with 3xx status codes for the purposes of
+            redirection, caching or authentication.</span>
+          <span class="rfc2119-assertion" id="common-constraints-errors-4">
+            A <a>Web Thing</a> MUST NOT respond with a <code>300 Multiple Choices</code>
+            status code.</span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="common-constraints-errors-5">
+            <a>Web Things</a> MAY respond with other valid HTTP error codes
+            (e.g. <code>418 I'm a teapot</code>).</span>
+          <span class="rfc2119-assertion" id="common-constraints-errors-6">
+            <a>Consumers</a> MAY interpret other valid HTTP error codes as a generic <code>4xx</code> or
+            <code>5xx</code>
+            error with no special defined behavior.</span>
+        </p>
+        <p>
+          <span class="rfc2119-assertion" id="common-constraints-errors-7">
+            If an HTTP error response contains a body, the content of that body
+            MUST conform with the Problem Details format [[RFC7807]].</span>
+        </p>
+    </section>
+  </section>
   </section>
 
   <section id="websocket-subprotocol">
@@ -1898,7 +1956,7 @@
         connection.</p>
     </section>
 
-    <section id="message-format">
+    <section id="websocket-message-format">
       <h3>Message Format</h3>
       <p>All messages MUST be a JSON <a href="https://www.rfc-editor.org/rfc/rfc8259#section-4">object</a> [[JSON]].</p>
       <table id="common-members-table" class="def">
@@ -2156,7 +2214,7 @@
         <section id="readproperty-request">
           <h5>Request</h5>
           <p>To request a property reading from a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
-              href="#websocket-messages">message</a> to the <a>Thing</a>
+              href="#websocket-message-format">message</a> to the <a>Thing</a>
             which contains the following members:</p>
           <table class="def">
             <caption>Members of a <code>readproperty</code> request message</caption>
@@ -2281,7 +2339,7 @@
         <section id="writeproperty-request">
           <h5>Request</h5>
           <p>To set the value of a <a>Property</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
-              href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:</p>
+              href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:</p>
           <table class="def">
             <caption>Members of a <code>writeproperty</code> request message</caption>
             <thead>
@@ -2435,7 +2493,7 @@
         <section id="readallproperties-request">
           <h5>Request</h5>
           <p>To request a reading of all of a <a>Thing</a>'s readable <a>Properties</a> at once, a <a>Consumer</a> MUST
-            send a <a href="#websocket-messages">message</a> to the <a>Thing</a>
+            send a <a href="#websocket-message-format">message</a> to the <a>Thing</a>
             which contains the following members:</p>
           <table class="def">
             <caption>Members of a <code>readallproperties</code> request message</caption>
@@ -2545,7 +2603,7 @@
           <h5>Error Response</h5>
           <p>If a <a>Thing</a> receives a <code>readallproperties</code> request message from a <a>Consumer</a>
             but the reading of at least one of the properties unexpectedly fails, then it MUST send an
-            <a href="#error-response">error response</a> to the <a>Consumer</a> with <code>status</code> set to
+            <a href="#http-error-responses">error response</a> to the <a>Consumer</a> with <code>status</code> set to
             <code>500</code>.
           </p>
           <pre class="example" title="Example readallproperties Internal Server Error error response message">
@@ -2580,7 +2638,7 @@
           <p>To request a reading of multiple readable <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a>
             MUST
             send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>readmultipleproperties</code> request message</caption>
@@ -2702,7 +2760,7 @@
             <code>names</code> member which is empty, contains an invalid <a>Property</a> name, or the name of a
             <a
               href="https://www.w3.org/TR/wot-thing-description/#td-vocab-writeOnly--DataSchema"><code>writeOnly</code></a>
-            [[wot-thing-description11]] <a>Property</a>, then it MUST send an <a href="#error-response">error
+            [[wot-thing-description11]] <a>Property</a>, then it MUST send an <a href="#http-error-responses">error
               response</a>
             to
             the <a>Consumer</a> with <code>status</code> set to <code>400</code>.
@@ -2730,7 +2788,7 @@
             a
             <code>names</code> member containing valid <a>Property</a> names but the reading of at least one of the
             properties
-            unexpectedly fails, then it MUST send an <a href="#error-response">error response</a> to
+            unexpectedly fails, then it MUST send an <a href="#http-error-responses">error response</a> to
             the <a>Consumer</a> with <code>status</code> set to <code>500</code>.
           </p>
           <pre class="example" title="Example readmultipleproperties Internal Server Error error response message">
@@ -2764,7 +2822,7 @@
           <h5>Request</h5>
           <p>To set the value of all <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST
             send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>writeallproperties</code> request message</caption>
@@ -2953,7 +3011,7 @@
           <h5>Request</h5>
           <p>To set the value of multiple <a>Properties</a> of a <a>Thing</a> at once, a <a>Consumer</a> MUST
             send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>writemultipleproperties</code> request message</caption>
@@ -3146,7 +3204,8 @@
         <h4><code>observeproperty</code></h4>
         <section id="observeproperty-request">
           <h5>Request</h5>
-          <p>To observe a <a>Property</a>, a <a>Consumer</a> MUST send a <a href="#websocket-messages">message</a> to
+          <p>To observe a <a>Property</a>, a <a>Consumer</a> MUST send a <a href="#websocket-message-format">message</a>
+            to
             the
             <a>Thing</a> which contains the following members:
           </p>
@@ -3375,7 +3434,7 @@
         <section id="unobserveproperty-request">
           <h5>Request</h5>
           <p>To stop observing a <a>Property</a>, a <a>Consumer</a> MUST send a <a
-              href="#websocket-messages">message</a>
+              href="#websocket-message-format">message</a>
             to the
             <a>Thing</a> which contains the following members:
           </p>
@@ -3498,7 +3557,7 @@
         <section id="observeallproperties-request">
           <h5>Request</h5>
           <p>To observe all <a>Properties</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of an <code>observeallproperties</code> request message</caption>
@@ -3703,7 +3762,7 @@
         <section id="unobserveallproperties-request">
           <h5>Request</h5>
           <p>To stop observing all <a>Properties</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of an <code>unobserveallproperties</code> request message</caption>
@@ -3812,7 +3871,7 @@
         <section id="invokeaction-request">
           <h5>Request</h5>
           <p>To invoke an <a>Action</a> on a <a>Thing</a>, a <a>Consumer</a> MUST send a <a
-              href="#websocket-messages">message</a> to the <a>Thing</a>
+              href="#websocket-message-format">message</a> to the <a>Thing</a>
             which contains the following members:</p>
           <table class="def">
             <caption>Members of an <code>invokeaction</code> request message</caption>
@@ -4087,7 +4146,7 @@
         <section id="queryaction-request">
           <h5>Request</h5>
           <p>To query the status of an ongoing asynchronous <a>Action</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>queryaction</code> request message</caption>
@@ -4327,7 +4386,7 @@
         <section id="cancelaction-request">
           <h5>Request</h5>
           <p>To cancel an ongoing asynchronous <a>Action</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>cancelaction</code> request message</caption>
@@ -4446,7 +4505,7 @@
         <section id="queryallactions-request">
           <h5>Request</h5>
           <p>To query the status of all ongoing asynchronous <a>Actions</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>queryallactions</code> request message</caption>
@@ -4653,7 +4712,8 @@
         <h4><code>subscribeevent</code></h4>
         <section id="subscribeevent-request">
           <h5>Request</h5>
-          <p>To subscribe to an <a>Event</a>, a <a>Consumer</a> MUST send a <a href="#websocket-messages">message</a> to
+          <p>To subscribe to an <a>Event</a>, a <a>Consumer</a> MUST send a <a
+              href="#websocket-message-format">message</a> to
             the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
@@ -4883,7 +4943,7 @@
         <section id="unsubscribeevent-request">
           <h5>Request</h5>
           <p>To cancel a subscription to an <a>Event</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of an <code>unsubscribeevent</code> request message</caption>
@@ -5008,7 +5068,7 @@
         <section id="subscribeallevents-request">
           <h5>Request</h5>
           <p>To subscribe to all <a>Events</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of a <code>subscribeallevents</code> request message</caption>
@@ -5211,7 +5271,7 @@
         <section id="unsubscribeallevents-request">
           <h5>Request</h5>
           <p>To cancel subscriptions to all <a>Events</a> of a <a>Thing</a>, a <a>Consumer</a> MUST send a
-            <a href="#websocket-messages">message</a> to the <a>Thing</a> which contains the following members:
+            <a href="#websocket-message-format">message</a> to the <a>Thing</a> which contains the following members:
           </p>
           <table class="def">
             <caption>Members of an <code>unsubscribeallevents</code> request message</caption>
@@ -5924,7 +5984,7 @@
   <section id="privacy-considerations">
     <h2>Privacy Considerations</h2>
     <p>
-      It is RECOMMENDED that, where necessary, private information should be protected by <a>Things</a> requiring 
+      It is RECOMMENDED that, where necessary, private information should be protected by <a>Things</a> requiring
       <a>Consumers</a> to authenticate when opening a WebSocket connection, and through the use of
       encryption to protect messages whilst they are in transit (see <a href="#security-considerations">Security
         Considerations</a> section below).
@@ -5977,7 +6037,7 @@
       process them then there is a risk it may either fill up the device's memory by buffering those messages, become
       unresponsive due to 100% CPU usage, or both. In order to mitigate the risk of DDoS attacks it is RECOMMENDED to
       implement throttling or rate limiting for the rate at which messages are received over a WebSocket connection.
-      A mechanism for negotiating rate limiting between a <a>Thing</a> and a <a>Consumer</a> is currently beyond the 
+      A mechanism for negotiating rate limiting between a <a>Thing</a> and a <a>Consumer</a> is currently beyond the
       scope of this specification.
     </p>
     <p>
